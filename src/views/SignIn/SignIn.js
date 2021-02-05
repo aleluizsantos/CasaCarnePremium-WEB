@@ -1,26 +1,21 @@
 import React from "react";
-import { Container, Row, Col, Jumbotron, Card, CardBody } from "reactstrap";
+
+import { Row, Col } from "reactstrap";
+
+import "./styles.css";
+import signinImg from "../../assets/img/signIn-img.jpg";
 
 const SignIn = () => {
   return (
-    <div className="App">
-      <Container>
-        <Row>
-          <Col />
-          <Col lg="8">
-            <Jumbotron>
-              <h3>
-                <u>Login Form</u>
-              </h3>
-              <hr />
-              <Card>
-                <CardBody>{/* <LoginForm /> */}</CardBody>
-              </Card>
-            </Jumbotron>
-          </Col>
-          <Col />
-        </Row>
-      </Container>
+    <div id="page-signin">
+      <Row>
+        <Col className="signinImg" md="5" sx="12">
+          <span>image</span>
+        </Col>
+        <Col className="content" md="7" sx="12">
+          <span>main</span>
+        </Col>
+      </Row>
     </div>
   );
 };

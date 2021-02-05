@@ -1,0 +1,32 @@
+#page-signin {
+    display: flex;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+    background: green;
+    overflow: hidden;
+
+}
+
+#page-signin .signinImg {
+    background: url("../../assets/img/signIn-img.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-x: center;
+}
+#page-signin .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    background:blue;
+}
+
+@media (max-width: 576px) {
+    #page-signin .signinImg {
+        display: none;
+    }
+    #page-signin .content {
+        width: 100vw;
+    }
+}

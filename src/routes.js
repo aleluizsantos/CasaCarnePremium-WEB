@@ -41,14 +41,6 @@ const listRoutes = [
     security: true,
   },
   {
-    name: "Sign-In",
-    icon: "nc-icon nc-tile-56",
-    component: SignInView,
-    layout: MinimalLayout,
-    path: "/signIn",
-    security: false,
-  },
-  {
     name: "Notification",
     icon: "nc-icon nc-bell-55",
     component: NotificationsView,
@@ -105,6 +97,12 @@ const Routes = () => {
           />
         )
       )}
+      <RouteWithLayout
+        component={SignInView}
+        layout={MinimalLayout}
+        path={"/signIn"}
+        exact
+      />
       <Redirect to="/signIn" />
     </Switch>
   );
