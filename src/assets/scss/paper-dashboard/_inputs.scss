@@ -16,8 +16,8 @@
 
 
     &:focus{
-        border: 1px solid $dark-gray;
-        @include box-shadow(none);
+        border: 1px solid $warning-color;
+        @include box-shadow(0 0 0.4em $warning-color);
         outline: 0 !important;
         color: $default-color;
 

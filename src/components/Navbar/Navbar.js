@@ -27,7 +27,7 @@ const NavbarHeader = (props) => {
   const sidebarToggle = createRef();
 
   // Total vez que redimencionar a janela
-  // window.addEventListener("resize", () => updateColor());
+  window.addEventListener("resize", () => updateColor());
 
   const toggle = () => {
     if (isOpen) {
@@ -59,21 +59,17 @@ const NavbarHeader = (props) => {
     sidebarToggle.current.classList.toggle("toggled");
   };
   // function that adds color dark/transparent to the navbar on resize (this is for the collapse)
-  // const updateColor = (e) => {
-  //   if (window.innerWidth < 993 && isOpen) {
-  //     setColor("dark");
-  //   } else {
-  //     setColor("transparent");
-  //   }
-  // };
+  const updateColor = (e) => {
+    if (window.innerWidth < 993 && isOpen) {
+      setColor("dark");
+    } else {
+      setColor("white");
+    }
+  };
 
   return (
     // add or remove classes depending if we are on full-screen-maps page or not
-    <Navbar
-      color={color}
-      expand="lg"
-      className={"fixed-top navbar-absolute navbar-transparent "}
-    >
+    <Navbar color={color} expand="lg" className={"fixed-top navbar-absolute "}>
       <Container fluid>
         <div className="navbar-wrapper">
           <div className="navbar-toggle">

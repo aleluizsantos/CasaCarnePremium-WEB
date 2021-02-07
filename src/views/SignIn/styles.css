@@ -3,7 +3,7 @@
     justify-content: center;
     width: 100vw;
     height: 100vh;
-    background: green;
+    background: #f1f1f1;
     overflow: hidden;
 
 }
@@ -19,14 +19,29 @@
     justify-content: center;
     align-items: center;
     width: 100vw;
-    background:blue;
+}
+#page-signin .content .contentCard {
+    width: 70%;
 }
 
-@media (max-width: 576px) {
+#page-signin .content .contentCard .button-container {
+    margin: 0 15px;
+}
+
+@media (max-width: 770px) {
     #page-signin .signinImg {
         display: none;
     }
-    #page-signin .content {
-        width: 100vw;
+}
+@media (max-height: 625px) {
+    #page-signin .signinImg {
+        background: url("../../assets/img/signIn-img.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position-x: center;
+        background-position-y: bottom;
+    }
+    #page-signin {
+        overflow-y: auto;
     }
 }
