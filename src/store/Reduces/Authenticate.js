@@ -6,11 +6,20 @@ import {
   LOGOUT,
 } from "../Actions/types";
 
-const INITIAL_STATE = {
-  signed: false,
-  user: null,
-  token: null,
-};
+const token = localStorage.getItem("_accessAuthenticatedTokenPremium");
+const user = JSON.parse(localStorage.getItem("_activeUserPremium"));
+
+const INITIAL_STATE = user
+  ? {
+      signed: true,
+      user: user,
+      token: token,
+    }
+  : {
+      signed: false,
+      user: null,
+      token: null,
+    };
 export default function Authenticate(state = INITIAL_STATE, action) {
   const { type, payload } = action;
 

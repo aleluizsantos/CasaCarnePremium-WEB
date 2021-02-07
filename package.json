@@ -21,7 +21,8 @@
     "react-router-dom": "5.2.0",
     "react-scripts": "3.4.1",
     "reactstrap": "8.4.1",
-    "redux": "^4.0.5"
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "gulp": "4.0.2",
-    "gulp-append-prepend": "1.0.8"
+    "gulp-append-prepend": "1.0.8",
+    "redux-devtools-extension": "^2.13.8"
   }
 }

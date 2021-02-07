@@ -7,7 +7,7 @@ import { Main as MainLayout, Minimal as MinimalLayout } from "./layouts";
 import {
   Dashboard as DashboardView,
   Icons as IconsView,
-  SignIn as SignInView,
+  Login as LoginView,
   Tables as TablesView,
   Notifications as NotificationsView,
   Typography as TypographyView,
@@ -98,12 +98,12 @@ const Routes = () => {
         )
       )}
       <RouteWithLayout
-        component={SignInView}
+        component={LoginView}
         layout={MinimalLayout}
-        path={"/signIn"}
+        path={"/login"}
         exact
       />
-      <Redirect to="/signIn" />
+      <Redirect to="/login" />
     </Switch>
   );
 };

@@ -1,8 +1,9 @@
+import decode from "jwt-decode";
 import api from "../services/api";
 
 export const login = async (email, password) => {
   return await api
-    .post("//auth/authenticate", { email, password })
+    .post("/auth/authenticate", { email, password })
     .then((response) => {
       const { user, token } = response.data;
       localStorage.setItem("_accessAuthenticatedTokenPremium", token);
@@ -19,4 +20,19 @@ export const logout = () => {
 
 export const register = () => {
   return;
+};
+
+export const isAuthenticated = () => {
+  const token = localStorage.getItem("_accessAuthenticatedTokenPremium");
+
+  if (token !== null) {
+    // desestruturando pegando apenas a data de expiração do token
+    const { exp } = decode(token);
+
+    // Verificar se o token esta válido
+    if (exp >= new Date().getTime() / 1000) {
+      return true;
+    }
+  }
+  return false;
 };

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { signIn } from "../../store/Actions";
@@ -22,13 +22,19 @@ import {
 } from "reactstrap";
 
 import "./styles.css";
-
-const SignIn = (props) => {
+import { isAuthenticated } from "../../hooks";
+const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const history = useHistory();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (() => {
+      isAuthenticated() && history.push("/dashboard");
+    })();
+  }, [history]);
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -82,7 +88,7 @@ const SignIn = (props) => {
 
                 <hr />
                 <div className="button-container">
-                  <Button type="submit" outline color="warning" block>
+                  <Button type="submit" color="warning" block>
                     LOGIN
                   </Button>
                 </div>
@@ -94,4 +100,4 @@ const SignIn = (props) => {
     </div>
   );
 };
-export default SignIn;
+export default Login;

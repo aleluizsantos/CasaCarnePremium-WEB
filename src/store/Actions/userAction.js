@@ -7,7 +7,7 @@ import {
   SET_MESSAGE,
 } from "./types";
 
-import { login } from "../../hooks/Auth";
+import { login } from "../../hooks";
 
 export const signIn = (email, password) => (dispatch) => {
   return login(email, password).then(
@@ -21,11 +21,7 @@ export const signIn = (email, password) => (dispatch) => {
     },
     (error) => {
       const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+        error.response.data.error || error.message || error.toString();
 
       dispatch({
         type: LOGIN_FAIL,
