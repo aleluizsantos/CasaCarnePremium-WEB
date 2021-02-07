@@ -1,4 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+
+import { signIn } from "../../store/Actions";
 
 // reactstrap components
 import {
@@ -19,11 +23,18 @@ import {
 
 import "./styles.css";
 
-import { userAction } from "../../store/Actions";
+const SignIn = (props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-const SignIn = () => {
-  const login = () => {
-    userAction.auth("aleluizsantos@gamil.com", "123456");
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    dispatch(signIn(email, password)).then(() => {
+      history.push("/dashboard");
+    });
   };
 
   return (
@@ -39,12 +50,14 @@ const SignIn = () => {
               </p>
             </CardHeader>
             <CardBody>
-              <Form>
+              <Form onSubmit={handleLogin}>
                 <Col md="12">
                   <FormGroup>
                     <Label for="email">Email</Label>
                     <Input
                       placeholder="e-mail"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
                       type="text"
                       valid={false}
                       invalid={false}
@@ -59,6 +72,8 @@ const SignIn = () => {
                     <Input
                       placeholder="Senha"
                       type="password"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
                       valid={false}
                       invalid={false}
                     />
@@ -67,7 +82,7 @@ const SignIn = () => {
 
                 <hr />
                 <div className="button-container">
-                  <Button onClick={login} outline color="warning" block>
+                  <Button type="submit" outline color="warning" block>
                     LOGIN
                   </Button>
                 </div>
