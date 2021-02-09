@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Switch, Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 import { PrivateRouteWithLayout, RouteWithLayout } from "./components";
 import { Main as MainLayout, Minimal as MinimalLayout } from "./layouts";
@@ -14,6 +16,8 @@ import {
   Upgrade as UpgradeView,
   Users as UserViews,
 } from "./views";
+
+import { clearMessage } from "./store/Actions";
 
 const listRoutes = [
   {
@@ -75,6 +79,13 @@ const listRoutes = [
 ];
 
 const Routes = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  useEffect(() => {
+    history.listen((location) => dispatch(clearMessage()));
+  }, [dispatch, history]);
+
   return (
     <Switch>
       <Redirect exact from="/" to="/dashboard" />

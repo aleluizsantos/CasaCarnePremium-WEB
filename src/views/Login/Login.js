@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 
 import { signIn } from "../../store/Actions";
@@ -29,6 +29,7 @@ const Login = (props) => {
 
   const history = useHistory();
   const dispatch = useDispatch();
+  const { message } = useSelector((state) => state.Message);
 
   useEffect(() => {
     (() => {
@@ -85,6 +86,14 @@ const Login = (props) => {
                     />
                   </FormGroup>
                 </Col>
+
+                {message && (
+                  <div className="form-group">
+                    <div className="alert alert-danger" role="alert">
+                      {message}
+                    </div>
+                  </div>
+                )}
 
                 <hr />
                 <div className="button-container">
