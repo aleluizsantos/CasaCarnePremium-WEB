@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import validate from "validate.js";
 import { signIn } from "../../store/Actions";
 
 // reactstrap components
@@ -24,12 +25,33 @@ import "./styles.css";
 import { isAuthenticated } from "../../hooks";
 
 const Login = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: {},
+    touched: {},
+    errors: {},
+  });
 
   const history = useHistory();
   const dispatch = useDispatch();
   const { message } = useSelector((state) => state.Message);
+
+  // Validações do campos
+  const schema = {
+    email: {
+      presence: { allowEmpty: false, message: "é obrigatório" },
+      email: { email: true },
+      length: {
+        maximum: 128,
+      },
+    },
+    password: {
+      presence: { allowEmpty: false, message: "é obrigatório" },
+      length: {
+        maximum: 128,
+      },
+    },
+  };
 
   // Caso o usuário já esteja conectado redirecionar para dashboard
   useEffect(() => {
@@ -41,10 +63,43 @@ const Login = (props) => {
   // Efetuar login
   const handleLogin = async (event) => {
     event.preventDefault();
-    dispatch(signIn(email, password)).then(() => {
-      history.push("/dashboard");
-    });
+    dispatch(signIn(formState.values.email, formState.values.password)).then(
+      () => {
+        history.push("/dashboard");
+      }
+    );
   };
+
+  const handleChange = (event) => {
+    event.persist();
+
+    let dataForm = {
+      ...formState,
+      values: {
+        ...formState.values,
+        [event.target.name]:
+          event.target.type === "checkbox"
+            ? event.target.checked
+            : event.target.value,
+      },
+      touched: {
+        ...formState.touched,
+        [event.target.name]: true,
+      },
+    };
+
+    const errors = validate(dataForm.values, schema);
+    dataForm = {
+      ...dataForm,
+      isValid: errors ? false : true,
+      errors: errors || {},
+    };
+
+    setFormState(dataForm);
+  };
+
+  const hasError = (field) =>
+    formState.touched[field] && formState.errors[field] ? true : false;
 
   return (
     <div id="page-signin">
@@ -53,6 +108,13 @@ const Login = (props) => {
         <Col className="content">
           <Card className="contentCard">
             <CardHeader className="text-center">
+              {message && (
+                <div className="form-group">
+                  <div className="alert alert-danger" role="alert">
+                    {message}
+                  </div>
+                </div>
+              )}
               <CardTitle tag="h4">Sign-In</CardTitle>
               <p className="card-category">
                 Bem vindo ao sistema Casa Carne Premium
@@ -65,11 +127,12 @@ const Login = (props) => {
                     <Label for="email">Email</Label>
                     <Input
                       placeholder="e-mail"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      name="email"
+                      value={formState.values.email || ""}
+                      onChange={handleChange}
                       type="text"
-                      valid={false}
-                      invalid={false}
+                      // valid={!hasError("email")}
+                      invalid={hasError("email")}
                     />
                     <FormFeedback valid>E-mail válido.</FormFeedback>
                     <FormText>Informe seu e-mail email@email.com</FormText>
@@ -80,26 +143,22 @@ const Login = (props) => {
                     <Label>Senha</Label>
                     <Input
                       placeholder="Senha"
+                      name="password"
                       type="password"
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                      valid={false}
-                      invalid={false}
+                      value={formState.values.password || ""}
+                      onChange={handleChange}
                     />
                   </FormGroup>
                 </Col>
 
-                {message && (
-                  <div className="form-group">
-                    <div className="alert alert-danger" role="alert">
-                      {message}
-                    </div>
-                  </div>
-                )}
-
                 <hr />
                 <div className="button-container">
-                  <Button type="submit" color="warning" block>
+                  <Button
+                    type="submit"
+                    color="warning"
+                    block
+                    disabled={!formState.isValid}
+                  >
                     LOGIN
                   </Button>
                 </div>
