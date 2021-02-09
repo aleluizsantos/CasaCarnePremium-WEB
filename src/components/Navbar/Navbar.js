@@ -1,5 +1,6 @@
 import React, { useState, createRef } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
   Collapse,
   Navbar,
@@ -19,12 +20,14 @@ import {
 } from "reactstrap";
 
 import { listRoutes } from "../../routes";
+import { signOut } from "../../store/Actions";
 
 const NavbarHeader = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState("white");
   const sidebarToggle = createRef();
+  const dispatch = useDispatch();
 
   // Total vez que redimencionar a janela
   window.addEventListener("resize", () => updateColor());
@@ -65,6 +68,10 @@ const NavbarHeader = (props) => {
     } else {
       setColor("white");
     }
+  };
+  // Efetuar o logout
+  const handleLogout = () => {
+    dispatch(signOut());
   };
 
   return (
@@ -134,6 +141,18 @@ const NavbarHeader = (props) => {
                 <i className="nc-icon nc-settings-gear-65" />
                 <p>
                   <span className="d-lg-none d-md-block">Account</span>
+                </p>
+              </Link>
+            </NavItem>
+            <NavItem>
+              <Link
+                to="/signin"
+                onClick={handleLogout}
+                className="nav-link btn-rotate"
+              >
+                <i className="nc-icon nc-button-power" />
+                <p>
+                  <span className="d-lg-none d-md-block">Sair</span>
                 </p>
               </Link>
             </NavItem>

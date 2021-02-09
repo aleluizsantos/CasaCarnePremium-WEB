@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-
 import { signIn } from "../../store/Actions";
 
 // reactstrap components
@@ -23,6 +22,7 @@ import {
 
 import "./styles.css";
 import { isAuthenticated } from "../../hooks";
+
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,13 +31,15 @@ const Login = (props) => {
   const dispatch = useDispatch();
   const { message } = useSelector((state) => state.Message);
 
+  // Caso o usuário já esteja conectado redirecionar para dashboard
   useEffect(() => {
     (() => {
       isAuthenticated() && history.push("/dashboard");
     })();
   }, [history]);
 
-  const handleLogin = (event) => {
+  // Efetuar login
+  const handleLogin = async (event) => {
     event.preventDefault();
     dispatch(signIn(email, password)).then(() => {
       history.push("/dashboard");

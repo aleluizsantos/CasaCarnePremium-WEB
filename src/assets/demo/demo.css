@@ -1,12 +1,11 @@
 .logo-imgs {
   width: 100%;
 }
-.sidebar-logo {
+.sidebar .sidebar-logo {
   display: flex;
   justify-content: center;
   padding: 10px  5px;
 }
-
 
 .tim-row {
   margin-bottom: 20px;

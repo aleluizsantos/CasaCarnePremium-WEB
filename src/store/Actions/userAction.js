@@ -1,13 +1,6 @@
-import {
-  REGISTER_SUCCESS,
-  REGISTER_FAIL,
-  LOGIN_SUCCESS,
-  LOGIN_FAIL,
-  LOGOUT,
-  SET_MESSAGE,
-} from "./types";
+import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT, SET_MESSAGE } from "./types";
 
-import { login } from "../../hooks";
+import { login, logout } from "../../hooks";
 
 export const signIn = (email, password) => (dispatch) => {
   return login(email, password).then(
@@ -35,4 +28,11 @@ export const signIn = (email, password) => (dispatch) => {
       return Promise.reject();
     }
   );
+};
+
+export const signOut = () => (dispatch) => {
+  logout();
+  dispatch({
+    type: LOGOUT,
+  });
 };
