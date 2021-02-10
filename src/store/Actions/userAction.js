@@ -7,7 +7,7 @@ export const signIn = (email, password) => (dispatch) => {
     (data) => {
       dispatch({
         type: LOGIN_SUCCESS,
-        payload: { user: data },
+        payload: data,
       });
 
       return Promise.resolve();

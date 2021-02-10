@@ -27,15 +27,15 @@ const Dashboard = (props) => {
             <Card className="card-stats">
               <CardBody>
                 <Row>
-                  <Col md="4" xs="5">
+                  <Col md="3" xs="4">
                     <div className="icon-big text-center icon-warning">
                       <i className="nc-icon nc-globe text-warning" />
                     </div>
                   </Col>
-                  <Col md="8" xs="7">
+                  <Col md="9" xs="8">
                     <div className="numbers">
-                      <p className="card-category">Capacity</p>
-                      <CardTitle tag="p">150GB</CardTitle>
+                      <p className="card-category">Cliente Inscritos</p>
+                      <CardTitle tag="p">12</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -44,7 +44,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> Update Now
+                  <i className="fas fa-sync-alt" /> 10/02/2021
                 </div>
               </CardFooter>
             </Card>
@@ -53,15 +53,15 @@ const Dashboard = (props) => {
             <Card className="card-stats">
               <CardBody>
                 <Row>
-                  <Col md="4" xs="5">
+                  <Col md="3" xs="4">
                     <div className="icon-big text-center icon-warning">
                       <i className="nc-icon nc-money-coins text-success" />
                     </div>
                   </Col>
-                  <Col md="8" xs="7">
+                  <Col md="9" xs="8">
                     <div className="numbers">
-                      <p className="card-category">Revenue</p>
-                      <CardTitle tag="p">$ 1,345</CardTitle>
+                      <p className="card-category">Receita dia</p>
+                      <CardTitle tag="p">$ 1.345,00</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -70,7 +70,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-calendar" /> Last day
+                  <i className="far fa-calendar" /> 10/02/2021
                 </div>
               </CardFooter>
             </Card>
@@ -79,14 +79,14 @@ const Dashboard = (props) => {
             <Card className="card-stats">
               <CardBody>
                 <Row>
-                  <Col md="4" xs="5">
+                  <Col md="2" xs="3">
                     <div className="icon-big text-center icon-warning">
                       <i className="nc-icon nc-vector text-danger" />
                     </div>
                   </Col>
-                  <Col md="8" xs="7">
+                  <Col md="10" xs="9">
                     <div className="numbers">
-                      <p className="card-category">Errors</p>
+                      <p className="card-category">Pedidos Recebidos</p>
                       <CardTitle tag="p">23</CardTitle>
                       <p />
                     </div>
@@ -96,7 +96,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-clock" /> In the last hour
+                  <i className="far fa-clock" /> 12:34:00
                 </div>
               </CardFooter>
             </Card>
@@ -105,15 +105,15 @@ const Dashboard = (props) => {
             <Card className="card-stats">
               <CardBody>
                 <Row>
-                  <Col md="4" xs="5">
+                  <Col md="3" xs="4">
                     <div className="icon-big text-center icon-warning">
                       <i className="nc-icon nc-favourite-28 text-primary" />
                     </div>
                   </Col>
-                  <Col md="8" xs="7">
+                  <Col md="9" xs="8">
                     <div className="numbers">
-                      <p className="card-category">Followers</p>
-                      <CardTitle tag="p">+45K</CardTitle>
+                      <p className="card-category">Online</p>
+                      <CardTitle tag="p">100</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -122,7 +122,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> Update now
+                  <i className="fas fa-sync-alt" /> 10/02/2021 12:25:12
                 </div>
               </CardFooter>
             </Card>

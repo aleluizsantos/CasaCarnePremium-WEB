@@ -1,5 +1,6 @@
 import React, { createRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Nav } from "reactstrap";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
@@ -10,6 +11,7 @@ let ps;
 
 const Sidebar = (props) => {
   const sidebar = createRef();
+  const { user } = useSelector((state) => state.Authenticate);
 
   useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -44,6 +46,10 @@ const Sidebar = (props) => {
           <Link to="/admin/dashboard">
             <img src={logo} alt="react-logo" />
           </Link>
+        </div>
+        <div className="user">
+          <h6>{user.name}</h6>
+          <span>{user.email}</span>
         </div>
       </div>
 
