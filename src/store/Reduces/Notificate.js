@@ -1,9 +1,15 @@
-import { OPEN_CLOSE } from "../Actions/types";
+import {
+  NEW_ORDERS,
+  OPEN_CLOSE,
+  CLIENT_ONLINE,
+  CLIENT_REGISTERED,
+  UPDATE,
+} from "../Actions/types";
 
 const INITIAL_STATE = {
   open_close: false,
-  amountNewOrder: 0,
-  onlineClients: 0,
+  newOrders: 0,
+  clientsOnline: 0,
   clientsRegistered: 0,
   update: {},
 };
@@ -13,6 +19,14 @@ export default function Notificate(state = INITIAL_STATE, action) {
   switch (type) {
     case OPEN_CLOSE:
       return { ...state, open_close: payload };
+    case NEW_ORDERS:
+      return { ...state, newOrders: payload };
+    case CLIENT_ONLINE:
+      return { ...state, clientsOnline: payload };
+    case CLIENT_REGISTERED:
+      return { ...state, clientsRegistered: payload };
+    case UPDATE:
+      return { ...state, update: payload };
     default:
       return state;
   }

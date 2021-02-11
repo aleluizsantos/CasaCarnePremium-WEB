@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Nav, CustomInput } from "reactstrap";
@@ -6,14 +6,15 @@ import { Nav, CustomInput } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "logo.svg";
-import { statusOpenClose } from "../../store/Actions";
+import { upgradeOpenClose } from "../../store/Actions";
+
 let ps;
 
 const Sidebar = (props) => {
-  const [openClose, setOpenClose] = useState(false);
   const sidebar = createRef();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.Authenticate);
+  const { open_close } = useSelector((state) => state.Notificate);
 
   useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -39,7 +40,7 @@ const Sidebar = (props) => {
   // Alterar status do estabelecimento
   const handleOpenClose = () => {
     // setOpenClose(!openClose);
-    dispatch(statusOpenClose());
+    dispatch(upgradeOpenClose());
   };
 
   return (
@@ -60,12 +61,12 @@ const Sidebar = (props) => {
         </div>
 
         <div className="openClose">
-          <h6>{openClose ? "Aberto" : "Fechado"}</h6>
+          <h6>{open_close ? "Aberto" : "Fechado"}</h6>
           <CustomInput
             type="switch"
-            defaultChecked={openClose}
+            defaultChecked={open_close}
             id="open_close"
-            valid={openClose}
+            valid={open_close}
             name="open_close"
             onClick={handleOpenClose}
           />
