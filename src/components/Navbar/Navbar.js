@@ -17,8 +17,6 @@ import {
   InputGroupText,
   InputGroupAddon,
   Input,
-  CustomInput,
-  Badge,
 } from "reactstrap";
 
 import { listRoutes } from "../../routes";
@@ -104,7 +102,7 @@ const NavbarHeader = (props) => {
           <form>
             {/* Search  */}
             <InputGroup className="no-border">
-              <Input placeholder="Search..." />
+              <Input placeholder="Pesquisar..." />
               <InputGroupAddon addonType="append">
                 <InputGroupText>
                   <i className="nc-icon nc-zoom-split" />
@@ -114,13 +112,14 @@ const NavbarHeader = (props) => {
           </form>
           <Nav navbar>
             <NavItem>
-              <Link to="#pablo" className="nav-link btn-magnify">
+              <Link to="#" className="nav-link btn-magnify">
                 <i className="nc-icon nc-layout-11" />
                 <p>
                   <span className="d-lg-none d-md-block">Status</span>
                 </p>
               </Link>
             </NavItem>
+
             <Dropdown
               nav
               isOpen={dropdownOpen}
@@ -139,7 +138,7 @@ const NavbarHeader = (props) => {
               </DropdownMenu>
             </Dropdown>
             <NavItem>
-              <Link to="#pablo" className="nav-link btn-rotate">
+              <Link to="#" className="nav-link btn-rotate">
                 <i className="nc-icon nc-settings-gear-65" />
                 <p>
                   <span className="d-lg-none d-md-block">Account</span>

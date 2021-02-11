@@ -1,16 +1,18 @@
-import React, { createRef, useEffect } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { Nav } from "reactstrap";
+import { useSelector, useDispatch } from "react-redux";
+import { Nav, CustomInput } from "reactstrap";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "logo.svg";
-
+import { statusOpenClose } from "../../store/Actions";
 let ps;
 
 const Sidebar = (props) => {
+  const [openClose, setOpenClose] = useState(false);
   const sidebar = createRef();
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.Authenticate);
 
   useEffect(() => {
@@ -34,6 +36,11 @@ const Sidebar = (props) => {
       ? "active"
       : "";
   };
+  // Alterar status do estabelecimento
+  const handleOpenClose = () => {
+    // setOpenClose(!openClose);
+    dispatch(statusOpenClose());
+  };
 
   return (
     <div
@@ -50,6 +57,18 @@ const Sidebar = (props) => {
         <div className="user">
           <h6>{user.name}</h6>
           <span>{user.email}</span>
+        </div>
+
+        <div className="openClose">
+          <h6>{openClose ? "Aberto" : "Fechado"}</h6>
+          <CustomInput
+            type="switch"
+            defaultChecked={openClose}
+            id="open_close"
+            valid={openClose}
+            name="open_close"
+            onClick={handleOpenClose}
+          />
         </div>
       </div>
 

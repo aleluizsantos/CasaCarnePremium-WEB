@@ -73,6 +73,15 @@
   z-index: 1;
 }
 
+.openClose {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 5px 0;
+  margin-left: 12px;
+  
+}
+
 @media all and (min-width: 992px) {
   .sidebar .nav>li.active-pro {
     position: absolute;
