@@ -6,8 +6,11 @@
     }
 
     nav{
-        display: inline-block;
-        float: left;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        // display: inline-block;
+        // float: left;
         padding-left: 0;
     }
 
