@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-
+import { useHistory } from "react-router-dom";
 import { url } from "../../services/host";
-import { getProduct } from "../../hooks";
+import { getProduct, getCategory } from "../../hooks";
 import { Pagination, ModalView } from "../../components";
 
 // reactstrap components
@@ -15,12 +15,19 @@ import {
   Row,
   Col,
   Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu,
 } from "reactstrap";
 
 const Product = () => {
+  const history = useHistory();
   const [dataProduct, setDataProduct] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
   const [pageCurrent, setPageCurrent] = useState(1);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [categorys, setCategorys] = useState([]);
 
   useEffect(() => {
     (() => {
@@ -34,6 +41,14 @@ const Product = () => {
     })();
   }, [pageCurrent]);
 
+  const dropdownToggle = (e) => {
+    categorys.length <= 0 &&
+      getCategory().then((response) => {
+        setCategorys([{ name: "Todas categorias" }, ...response.data]);
+      });
+    setDropdownOpen(!dropdownOpen);
+  };
+
   const BadgePromotion = (value) => {
     switch (value) {
       case true:
@@ -46,6 +61,10 @@ const Product = () => {
     return <span>{value ? "Promotion" : "Normal"}</span>;
   };
 
+  const handleCreateNewProduct = () => {
+    history.push({ pathname: "/product-add" });
+  };
+
   return (
     <>
       <div className="content">
@@ -54,6 +73,39 @@ const Product = () => {
             <Card>
               <CardHeader>
                 <CardTitle tag="h4">Meus Produtos</CardTitle>
+                <div className="contentGroupBotton">
+                  <Dropdown
+                    isOpen={dropdownOpen}
+                    toggle={(e) => dropdownToggle(e)}
+                  >
+                    <DropdownToggle>
+                      <i className="nc-icon nc-bullet-list-67" />
+                      <span> Categoria</span>
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {categorys.map((item) => (
+                        <DropdownItem
+                          key={item.id}
+                          id={item.id}
+                          tag="a"
+                          onClick={(event) => console.log(event.target.id)}
+                        >
+                          <img
+                            className="imageCategory"
+                            src={item.image_url}
+                            alt={item.description}
+                          />
+                          {"  "}
+                          {item.name}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
+                  <Button color="primary" onClick={handleCreateNewProduct}>
+                    <i className="nc-icon nc-simple-add" /> Novo Produto
+                  </Button>
+                </div>
+
                 <ModalView />
               </CardHeader>
               <CardBody>

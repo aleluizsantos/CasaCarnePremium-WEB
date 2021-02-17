@@ -16,6 +16,7 @@ import {
   Typography as TypographyView,
   Upgrade as UpgradeView,
   Users as UserViews,
+  ProductAdd as ProductAddView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -121,6 +122,12 @@ const Routes = () => {
         component={LoginView}
         layout={MinimalLayout}
         path={"/login"}
+        exact
+      />
+      <RouteWithLayout
+        component={ProductAddView}
+        layout={MainLayout}
+        path={"/product-add"}
         exact
       />
       <Redirect to="/login" />

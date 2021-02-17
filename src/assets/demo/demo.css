@@ -29,6 +29,10 @@
 .tim-white-buttons {
   background-color: #777777;
 }
+.contentGroupBotton {
+  display: flex;
+  flex-direction: row;
+}
 
 .typography-line {
   padding-left: 25%;
@@ -220,6 +224,14 @@
   outline: none;
   display: none;
 }
+
+.imageCategory {
+  width: 40px;
+  height: 40px;
+  border-radius: 50px;
+}
+
+
 /* table */
 .table-responsive {
   margin: 3 0px 0;

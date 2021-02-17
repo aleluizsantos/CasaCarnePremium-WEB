@@ -12,3 +12,10 @@ export const getProduct = async (pageCurrent = 1) => {
       return response.data;
     });
 };
+
+export const getCategory = async () => {
+  const { Authorization } = authHeader();
+  return await api.get("/category", {
+    headers: { Authorization: Authorization },
+  });
+};

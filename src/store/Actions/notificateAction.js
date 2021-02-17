@@ -18,7 +18,9 @@ export const statusOpenClose = () => (dispatch) => {
     },
     (error) => {
       const message =
-        error.response.data.error || error.message || error.toString();
+        (error.error && error.response.data.error) ||
+        error.message ||
+        error.toString();
 
       dispatch({
         type: SET_MESSAGE,

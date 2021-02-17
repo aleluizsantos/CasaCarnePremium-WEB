@@ -8,3 +8,4 @@ export { default as Tables } from "./Tables";
 export { default as Typography } from "./Typography";
 export { default as Upgrade } from "./Upgrade";
 export { default as Users } from "./Users";
+export { default as ProductAdd } from "./ProductAdd";
