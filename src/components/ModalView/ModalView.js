@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 const ModalView = (props) => {
   const { className, title, children } = props;
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState(true);
   const [backdrop] = useState("static");
   const [keyboard] = useState(true);
 

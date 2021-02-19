@@ -61,8 +61,8 @@ const Product = () => {
     return <span>{value ? "Promotion" : "Normal"}</span>;
   };
 
-  const handleCreateNewProduct = () => {
-    history.push({ pathname: "/product-add" });
+  const handleNewProduct = () => {
+    history.push({ pathname: "productNew" });
   };
 
   return (
@@ -73,7 +73,7 @@ const Product = () => {
             <Card>
               <CardHeader>
                 <CardTitle tag="h4">Meus Produtos</CardTitle>
-                <div className="contentGroupBotton">
+                <div className="contentButton">
                   <Dropdown
                     isOpen={dropdownOpen}
                     toggle={(e) => dropdownToggle(e)}
@@ -90,23 +90,17 @@ const Product = () => {
                           tag="a"
                           onClick={(event) => console.log(event.target.id)}
                         >
-                          <img
-                            className="imageCategory"
-                            src={item.image_url}
-                            alt={item.description}
-                          />
-                          {"  "}
                           {item.name}
                         </DropdownItem>
                       ))}
                     </DropdownMenu>
                   </Dropdown>
-                  <Button color="primary" onClick={handleCreateNewProduct}>
-                    <i className="nc-icon nc-simple-add" /> Novo Produto
+                  <Button color="info" onClick={() => handleNewProduct()}>
+                    <i class="fa fa-plus-square" aria-hidden="true" /> Novo
+                    Produto
                   </Button>
                 </div>
-
-                <ModalView />
+                {/* <ModalView /> */}
               </CardHeader>
               <CardBody>
                 <Table responsive>

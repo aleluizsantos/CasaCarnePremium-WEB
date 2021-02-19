@@ -14,9 +14,7 @@ export const signIn = (email, password) => (dispatch) => {
     },
     (error) => {
       const message =
-        (error.error && error.response.data.error) ||
-        error.message ||
-        error.toString();
+        error.response.data.error || error.message || error.toString();
 
       dispatch({
         type: LOGIN_FAIL,

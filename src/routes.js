@@ -11,12 +11,12 @@ import {
   Icons as IconsView,
   Login as LoginView,
   Product as ProductView,
+  ProductNew as ProductNewView,
   Tables as TablesView,
   Notifications as NotificationsView,
   Typography as TypographyView,
   Upgrade as UpgradeView,
   Users as UserViews,
-  ProductAdd as ProductAddView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -119,15 +119,15 @@ const Routes = () => {
         )
       )}
       <RouteWithLayout
-        component={LoginView}
-        layout={MinimalLayout}
-        path={"/login"}
+        component={ProductNewView}
+        layout={MainLayout}
+        path={"/productNew"}
         exact
       />
       <RouteWithLayout
-        component={ProductAddView}
-        layout={MainLayout}
-        path={"/product-add"}
+        component={LoginView}
+        layout={MinimalLayout}
+        path={"/login"}
         exact
       />
       <Redirect to="/login" />
