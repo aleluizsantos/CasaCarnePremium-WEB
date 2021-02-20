@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import validate from "validate.js";
-import { signIn } from "../../store/Actions";
 
 // reactstrap components
 import {
@@ -22,6 +21,7 @@ import {
 } from "reactstrap";
 
 import "./styles.css";
+import { signIn } from "../../store/Actions";
 import { isAuthenticated } from "../../hooks";
 
 const Login = (props) => {

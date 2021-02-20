@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+
 import { url } from "../../services/host";
-import { getProduct, getCategory } from "../../hooks";
+import { SET_MESSAGE } from "../../store/Actions/types";
+import { getProduct, getCategory, deleteProduto } from "../../hooks";
 import { Pagination, ModalView } from "../../components";
 
 // reactstrap components
@@ -23,11 +26,16 @@ import {
 
 const Product = () => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [categorys, setCategorys] = useState([]);
+  const [modal, setModal] = useState(false);
+  const [titleModal, setTitleModal] = useState("");
+  const [messageModal, setMessageModal] = useState("");
+  const [indexProdModal, setIndexProdModal] = useState("");
 
   useEffect(() => {
     (() => {
@@ -44,7 +52,7 @@ const Product = () => {
   const dropdownToggle = (e) => {
     categorys.length <= 0 &&
       getCategory().then((response) => {
-        setCategorys([{ name: "Todas categorias" }, ...response.data]);
+        setCategorys([{ name: "Todas categorias" }, ...response]);
       });
     setDropdownOpen(!dropdownOpen);
   };
@@ -65,6 +73,33 @@ const Product = () => {
     history.push({ pathname: "productNew" });
   };
 
+  const handleShowModal = (product) => {
+    setIndexProdModal(product.id);
+    setModal(true);
+    setTitleModal("Remover Produto");
+    setMessageModal(`Deseja realmente excluir o produto '${product.name}'.`);
+  };
+
+  const handleEditProduct = (product) => {
+    history.push({
+      pathname: "/productNew",
+      state: product,
+    });
+  };
+
+  const handleDeleteProduct = (index) => {
+    deleteProduto(index).then((response) => {
+      // Remover o produto do array
+      const newProduct = dataProduct.filter((item) => item.id !== index);
+      setDataProduct(newProduct);
+
+      dispatch({
+        type: SET_MESSAGE,
+        payload: response.message,
+      });
+    });
+  };
+
   return (
     <>
       <div className="content">
@@ -72,7 +107,15 @@ const Product = () => {
           <Col md="12">
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Meus Produtos</CardTitle>
+                <ModalView
+                  index={indexProdModal}
+                  title={titleModal}
+                  messageModal={messageModal}
+                  action={(index) => handleDeleteProduct(index)}
+                  modal={modal}
+                  toggle={() => setModal(!modal)}
+                />
+                <CardTitle tag="h4">Meus Produtos </CardTitle>
                 <div className="contentButton">
                   <Dropdown
                     isOpen={dropdownOpen}
@@ -83,9 +126,9 @@ const Product = () => {
                       <span> Categoria</span>
                     </DropdownToggle>
                     <DropdownMenu>
-                      {categorys.map((item) => (
+                      {categorys.map((item, idx) => (
                         <DropdownItem
-                          key={item.id}
+                          key={idx}
                           id={item.id}
                           tag="a"
                           onClick={(event) => console.log(event.target.id)}
@@ -96,11 +139,10 @@ const Product = () => {
                     </DropdownMenu>
                   </Dropdown>
                   <Button color="info" onClick={() => handleNewProduct()}>
-                    <i class="fa fa-plus-square" aria-hidden="true" /> Novo
+                    <i className="fa fa-plus-square" aria-hidden="true" /> Novo
                     Produto
                   </Button>
                 </div>
-                {/* <ModalView /> */}
               </CardHeader>
               <CardBody>
                 <Table responsive>
@@ -153,6 +195,7 @@ const Product = () => {
                               color="danger"
                               outline
                               size="sm"
+                              onClick={() => handleShowModal(item)}
                             >
                               <i className="fa fa-trash" />
                             </Button>
@@ -161,6 +204,7 @@ const Product = () => {
                               color="success"
                               outline
                               size="sm"
+                              onClick={() => handleEditProduct(item)}
                             >
                               <i className="fa fa-edit" />
                             </Button>

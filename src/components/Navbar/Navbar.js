@@ -1,6 +1,8 @@
-import React, { useState, createRef } from "react";
+import React, { useState, createRef, useEffect } from "react";
+// react plugin for creating notifications over the dashboard
+import NotificationAlert from "react-notification-alert";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Collapse,
   Navbar,
@@ -27,7 +29,30 @@ const NavbarHeader = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState("white");
   const sidebarToggle = createRef();
+  const notificationAlert = createRef();
   const dispatch = useDispatch();
+  const { message } = useSelector((state) => state.Message);
+
+  useEffect(() => {
+    const notify = (place) => {
+      let options = {};
+      options = {
+        place: place,
+        message: (
+          <div>
+            <div>{message}</div>
+          </div>
+        ),
+        type: "info",
+        icon: "nc-icon nc-bell-55",
+        autoDismiss: 7,
+      };
+      notificationAlert.current.notificationAlert(options);
+    };
+    (() => {
+      message !== "" && message !== undefined && notify("tr");
+    })();
+  }, [message, notificationAlert]);
 
   // Total vez que redimencionar a janela
   window.addEventListener("resize", () => updateColor());
@@ -78,6 +103,7 @@ const NavbarHeader = (props) => {
     // add or remove classes depending if we are on full-screen-maps page or not
     <Navbar color={color} expand="lg" className={"fixed-top navbar-absolute "}>
       <Container fluid>
+        <NotificationAlert ref={notificationAlert} />
         <div className="navbar-wrapper">
           <div className="navbar-toggle">
             <button

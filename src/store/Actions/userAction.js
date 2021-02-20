@@ -1,4 +1,10 @@
-import { LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT, SET_MESSAGE } from "./types";
+import {
+  LOGIN_SUCCESS,
+  LOGIN_FAIL,
+  LOGOUT,
+  SET_MESSAGE,
+  CLEAR_MESSAGE,
+} from "./types";
 
 import { login, logout } from "../../hooks";
 
@@ -8,6 +14,10 @@ export const signIn = (email, password) => (dispatch) => {
       dispatch({
         type: LOGIN_SUCCESS,
         payload: data,
+      });
+
+      dispatch({
+        type: CLEAR_MESSAGE,
       });
 
       return Promise.resolve();
