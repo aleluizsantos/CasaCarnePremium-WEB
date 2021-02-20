@@ -29,6 +29,7 @@ const Product = () => {
   const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
+  const [totalProduct, setTotalProduct] = useState(0);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [categorys, setCategorys] = useState([]);
@@ -44,6 +45,7 @@ const Product = () => {
         const { countProducts } = response;
         const numPage = Math.ceil(countProducts / 10);
         setDataProduct(response.products);
+        setTotalProduct(countProducts);
         setTotalPages(numPage);
       });
     })();
@@ -138,6 +140,10 @@ const Product = () => {
                       ))}
                     </DropdownMenu>
                   </Dropdown>
+                  <Button color="info" onClick={() => {}}>
+                    <i className="fa fa-plus-square" aria-hidden="true" /> Novo
+                    Categoria
+                  </Button>
                   <Button color="info" onClick={() => handleNewProduct()}>
                     <i className="fa fa-plus-square" aria-hidden="true" /> Novo
                     Produto
@@ -216,6 +222,9 @@ const Product = () => {
                 </Table>
               </CardBody>
               <CardFooter>
+                <span className="totalProduct">
+                  Total de produto: <strong>{totalProduct}</strong>{" "}
+                </span>
                 {!!totalPages && (
                   <Pagination
                     totalPage={totalPages}

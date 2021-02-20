@@ -8,6 +8,7 @@ import {
   getMeasureUnit,
   toCurrency,
   createProduct,
+  updateProduct,
 } from "../../hooks";
 
 // reactstrap components
@@ -17,6 +18,7 @@ import {
   CardHeader,
   CardBody,
   CardTitle,
+  CardFooter,
   FormGroup,
   Form,
   Input,
@@ -39,7 +41,7 @@ const ProductNew = (props) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("0.00");
-  const [promotion, setPromotion] = useState(false);
+  const [promotion, setPromotion] = useState(0);
   const [pricePromotion, setPricePromotion] = useState(0);
   const [stockQuantity, setStockQuantity] = useState(0);
   const [category_id, setCategory_id] = useState("");
@@ -52,7 +54,7 @@ const ProductNew = (props) => {
         setDescription(state.description);
         setPrice(state.price);
         setPreviewImage([state.image_url]);
-        setPromotion(state.promotion);
+        setPromotion(state.promotion ? 1 : 0);
         setPricePromotion(state.pricePromotion);
         setCategory_id(state.category_id);
         setMeasureUnid_id(state.measureUnid_id);
@@ -69,7 +71,7 @@ const ProductNew = (props) => {
 
   // Selecionar imagem e salvar no state
   // --------------------------------------------------------------------
-  function handleSelectImage(event) {
+  const handleSelectImage = (event) => {
     if (!event.target.files) {
       return;
     }
@@ -84,22 +86,23 @@ const ProductNew = (props) => {
       return URL.createObjectURL(image);
     });
     setPreviewImage(selectImagePreview);
-  }
+  };
 
   const handleRemoverImage = () => {
     setImage([]);
     setPreviewImage([]);
   };
-  function handleChangePrice(number) {
+
+  const handleChangePrice = (number) => {
     const numberFormat = toCurrency(number);
     setPrice(numberFormat);
-  }
-  function handleChangePricePromotion(number) {
+  };
+  const handleChangePricePromotion = (number) => {
     const numberFormat = toCurrency(number);
     setPricePromotion(numberFormat);
-  }
+  };
 
-  function clearFields() {
+  const clearFields = () => {
     setName("");
     setDescription("");
     setPrice(0);
@@ -109,17 +112,26 @@ const ProductNew = (props) => {
     setMeasureUnid_id("");
     setImage([]);
     setPreviewImage([]);
-  }
+  };
 
-  async function handlerSubmit(event) {
+  const handlerSubmit = (event) => {
     event.preventDefault();
     setIsloading(true);
+
+    // validação dos dados
+    if (name === "" || description === "" || price === "") {
+      setIsloading(false);
+      return dispatch({
+        type: SET_MESSAGE,
+        payload: "Verifique os campos obrigatórios",
+      });
+    }
 
     const data = new FormData();
     data.append("name", name);
     data.append("description", description);
     data.append("price", parseFloat(price));
-    data.append("promotion", promotion);
+    data.append("promotion", !!promotion);
     data.append("pricePromotion", parseFloat(pricePromotion));
     data.append("category_id", parseInt(category_id));
     data.append("measureUnid_id", parseInt(measureUnid_id));
@@ -129,17 +141,31 @@ const ProductNew = (props) => {
       data.append("image", img);
     });
 
-    // SALVAR os dados do novo produto
-    createProduct(data).then((response) => {
-      response.success &&
-        dispatch({
-          type: SET_MESSAGE,
-          payload: "Seu produto foi adiconado com sucesso.",
-        });
-      clearFields();
-      setIsloading(false);
-    });
-  }
+    // Salvar ou criar um novo produto, se existir o state enviado pelo
+    // produto ATUALIZAR senão SALVAR
+    if (state !== undefined) {
+      // ATUALIZAR os dados do produto
+      updateProduct(state.id, data).then((response) => {
+        response.success &&
+          dispatch({
+            type: SET_MESSAGE,
+            payload: "Seu produto foi atualizado com sucesso.",
+          });
+        history.goBack();
+      });
+    } else {
+      // SALVAR os dados do novo produto
+      createProduct(data).then((response) => {
+        response.success &&
+          dispatch({
+            type: SET_MESSAGE,
+            payload: "Seu produto foi adiconado com sucesso.",
+          });
+        clearFields();
+        setIsloading(false);
+      });
+    }
+  };
 
   return (
     <>
@@ -160,7 +186,7 @@ const ProductNew = (props) => {
                       <Row>
                         <Col md="12">
                           <FormGroup>
-                            <label>Nome</label>
+                            <label>Nome*</label>
                             <Input
                               placeholder="nome do produto"
                               type="text"
@@ -173,7 +199,7 @@ const ProductNew = (props) => {
                       <Row>
                         <Col className="pr-1" md="4">
                           <FormGroup>
-                            <label>Categoria</label>
+                            <label>Categoria*</label>
                             <Input
                               type="select"
                               placeholder="Selecione Categoria"
@@ -195,7 +221,7 @@ const ProductNew = (props) => {
                         </Col>
                         <Col className="px-1" md="4">
                           <FormGroup>
-                            <label>Unid. Medida</label>
+                            <label>Unid. Medida*</label>
                             <Input
                               type="select"
                               name="select"
@@ -216,7 +242,7 @@ const ProductNew = (props) => {
                         </Col>
                         <Col className="pl-1" md="4">
                           <FormGroup>
-                            <label>Preço</label>
+                            <label>Preço*</label>
                             <Input
                               placeholder="0,00"
                               type="text"
@@ -249,9 +275,9 @@ const ProductNew = (props) => {
                               type="select"
                               name="select"
                               value={promotion}
-                              onChange={(event) =>
-                                setPromotion(parseInt(event.target.value, 10))
-                              }
+                              onChange={(event) => {
+                                setPromotion(parseInt(event.target.value, 10));
+                              }}
                             >
                               <option value={0}>Não</option>
                               <option value={1}>Sim</option>
@@ -350,24 +376,26 @@ const ProductNew = (props) => {
                     </Col>
                   </Row>
                   <Row>
-                    <div className="ml-auto mr-auto">
-                      <Button
-                        className="btn-round"
-                        color="primary"
-                        onClick={() => history.push({ pathname: "product" })}
-                      >
-                        Voltar
-                      </Button>
-                      <Button
-                        className="btn-round"
-                        disabled={isLoading}
-                        color="primary"
-                        type="submit"
-                      >
-                        {isLoading && <Spinner size="sm" color="warning" />}{" "}
-                        Cadastrar
-                      </Button>
-                    </div>
+                    <CardFooter>
+                      <div className="ml-auto mr-auto">
+                        <Button
+                          className="btn-round"
+                          color="dark"
+                          onClick={() => history.goBack()}
+                        >
+                          Voltar
+                        </Button>{" "}
+                        <Button
+                          className="btn-round"
+                          disabled={isLoading}
+                          color="primary"
+                          type="submit"
+                        >
+                          {isLoading && <Spinner size="sm" color="warning" />}{" "}
+                          Cadastrar
+                        </Button>
+                      </div>
+                    </CardFooter>
                   </Row>
                 </Form>
               </CardBody>
