@@ -274,7 +274,22 @@
   outline: none;
   display: none;
 }
-/* table */
+/******* SELECT CATEGORY **********/
+.selectCategory span:nth-child(n + 2) {
+  margin-left: 8px;
+}
+.selectCategory span {
+  font-size: 10px;
+  color: rgb(126, 126, 126);
+  background-color: #cfcfcf;
+  padding: 5px;
+  border-radius: 5px;
+}
+.selectCategory i {
+  cursor: pointer;
+  padding: 2px;
+}
+/******* TABLE **********/
 .table-responsive {
   margin: 3 0px 0;
 }

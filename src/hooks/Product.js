@@ -4,20 +4,6 @@ import { authHeader } from "../services/authHeader";
 const { Authorization } = authHeader();
 
 /**
- * Listar todos os produtos
- * @param {number} pageCurrent passar a pagina current
- */
-export const getProduct = async (pageCurrent = 1) => {
-  return await api
-    .get("product/all", {
-      headers: { Authorization: Authorization },
-      params: { page: pageCurrent },
-    })
-    .then((response) => {
-      return response.data;
-    });
-};
-/**
  * Criar um produto novo
  * @param {FormData} dataForm envio do formData com os dados e imagem
  */
@@ -73,4 +59,36 @@ export const getCategory = async () => {
       headers: { Authorization: Authorization },
     })
     .then((response) => response.data);
+};
+
+/**
+ * Listar todos os produtos
+ * @param {number} pageCurrent passar a pagina current
+ */
+export const getProduct = async (pageCurrent = 1) => {
+  return await api
+    .get("product/all", {
+      headers: { Authorization: Authorization },
+      params: { page: pageCurrent },
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+/**
+ * Retorna uma lista de produtos pela categorias selecionadas
+ * @param {string} categorysId Recebe uma string de id das categorys separadas por ,
+ * exemplo 1,5,6
+ */
+export const getCategoryProduct = async (categorysId) => {
+  return await api
+    .get("product", {
+      headers: { Authorization: Authorization },
+      params: {
+        category_id: categorysId,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    });
 };

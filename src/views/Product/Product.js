@@ -4,7 +4,12 @@ import { useDispatch } from "react-redux";
 
 import { url } from "../../services/host";
 import { SET_MESSAGE } from "../../store/Actions/types";
-import { getProduct, getCategory, deleteProduto } from "../../hooks";
+import {
+  getProduct,
+  getCategory,
+  deleteProduto,
+  getCategoryProduct,
+} from "../../hooks";
 import { Pagination, ModalView } from "../../components";
 
 // reactstrap components
@@ -28,7 +33,9 @@ const Product = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
+  const [dataProductCategory, setDataProductCategory] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
+  const [totalProductInit, setTotalProductInit] = useState(0);
   const [totalProduct, setTotalProduct] = useState(0);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -37,6 +44,7 @@ const Product = () => {
   const [titleModal, setTitleModal] = useState("");
   const [messageModal, setMessageModal] = useState("");
   const [indexProdModal, setIndexProdModal] = useState("");
+  const [selectCategory, setSelectCategory] = useState([]);
 
   useEffect(() => {
     (() => {
@@ -46,6 +54,7 @@ const Product = () => {
         const numPage = Math.ceil(countProducts / 10);
         setDataProduct(response.products);
         setTotalProduct(countProducts);
+        setTotalProductInit(countProducts);
         setTotalPages(numPage);
       });
     })();
@@ -54,9 +63,47 @@ const Product = () => {
   const dropdownToggle = (e) => {
     categorys.length <= 0 &&
       getCategory().then((response) => {
-        setCategorys([{ name: "Todas categorias" }, ...response]);
+        setCategorys(response);
       });
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const handleSelectCategoy = (item) => {
+    const exist = selectCategory.findIndex((cat) => cat.id === item.id);
+    if (exist === -1 || selectCategory.length === 0) {
+      // Remover da lista Category
+      const newListCat = categorys.filter(
+        (category) => category.id !== item.id
+      );
+      setCategorys(newListCat);
+      setSelectCategory([...selectCategory, item]);
+      const categoryId = [...selectCategory, item]
+        .map((item) => item.id)
+        .toString();
+      getCategoryProduct(categoryId).then((response) => {
+        const { countProducts } = response;
+        const numPage = Math.ceil(countProducts / 10);
+        setDataProductCategory(response.products);
+        setTotalPages(numPage);
+        setTotalProduct(countProducts);
+      });
+    }
+  };
+
+  const handleRemoveSelectCategory = (item) => {
+    const newSelectCat = selectCategory.filter((cat) => cat.id !== item.id);
+    const newDataProductCat = dataProductCategory.filter(
+      (prod) => prod.category_id !== item.id
+    );
+    setDataProductCategory(newDataProductCat);
+    setCategorys([...categorys, item]); //Retornar a categoria no Dropbox
+    setSelectCategory(newSelectCat);
+
+    if (newSelectCat.length <= 0) {
+      const numPage = Math.ceil(totalProductInit / 10);
+      setTotalPages(numPage);
+      setTotalProduct(totalProductInit);
+    }
   };
 
   const BadgePromotion = (value) => {
@@ -133,7 +180,7 @@ const Product = () => {
                           key={idx}
                           id={item.id}
                           tag="a"
-                          onClick={(event) => console.log(event.target.id)}
+                          onClick={() => handleSelectCategoy(item)}
                         >
                           {item.name}
                         </DropdownItem>
@@ -148,6 +195,18 @@ const Product = () => {
                     <i className="fa fa-plus-square" aria-hidden="true" /> Novo
                     Produto
                   </Button>
+                </div>
+                <div className="selectCategory">
+                  {selectCategory.map((item) => (
+                    <span key={item.id}>
+                      <i
+                        className="fa fa-times"
+                        aria-hidden="true"
+                        onClick={() => handleRemoveSelectCategory(item)}
+                      />{" "}
+                      {item.name}
+                    </span>
+                  ))}
                 </div>
               </CardHeader>
               <CardBody>
@@ -167,7 +226,11 @@ const Product = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {dataProduct.map((item, idx) => (
+                    {(dataProductCategory.length > 0 ||
+                    selectCategory.length > 0
+                      ? dataProductCategory
+                      : dataProduct
+                    ).map((item, idx) => (
                       <tr key={idx}>
                         <td>
                           <div className="contentImageName">
@@ -190,7 +253,6 @@ const Product = () => {
                         <td className="text-right">{item.price}</td>
                         <td className="text-center">
                           {BadgePromotion(item.promotion)}
-                          {/* {item.promotion ? "Promoção" : "Normal"} */}
                         </td>
                         <td className="text-right">{item.pricePromotion}</td>
                         <td className="text-center">{item.category}</td>
