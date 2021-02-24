@@ -77,8 +77,8 @@ export const getProduct = async (pageCurrent = 1) => {
 };
 /**
  * Retorna uma lista de produtos pela categorias selecionadas
- * @param {string} categorysId Recebe uma string de id das categorys separadas por ,
- * exemplo 1,5,6
+ * @param {string} categorysId Recebe uma string de id das categorys separadas por
+ * virgula por exemplo: 1,5,6
  */
 export const getCategoryProduct = async (categorysId) => {
   return await api
@@ -87,6 +87,16 @@ export const getCategoryProduct = async (categorysId) => {
       params: {
         category_id: categorysId,
       },
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
+export const getPromotionProduct = async () => {
+  return await api
+    .get("product/promotion", {
+      headers: { Authorization: Authorization },
     })
     .then((response) => {
       return response.data;

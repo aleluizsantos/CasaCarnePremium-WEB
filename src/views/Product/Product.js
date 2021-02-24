@@ -9,10 +9,11 @@ import {
   getCategory,
   deleteProduto,
   getCategoryProduct,
+  getPromotionProduct,
 } from "../../hooks";
 import { Pagination, ModalView } from "../../components";
 
-// reactstrap components
+// reactstrap componentss
 import {
   Card,
   CardHeader,
@@ -61,6 +62,9 @@ const Product = () => {
   }, [pageCurrent]);
 
   const dropdownToggle = (e) => {
+    // Verificar se esta selecionado Produto em promoção
+    const exist = selectCategory.findIndex((cat) => cat.id === -1);
+    !!!exist && setSelectCategory([]);
     categorys.length <= 0 &&
       getCategory().then((response) => {
         setCategorys(response);
@@ -69,25 +73,21 @@ const Product = () => {
   };
 
   const handleSelectCategoy = (item) => {
-    const exist = selectCategory.findIndex((cat) => cat.id === item.id);
-    if (exist === -1 || selectCategory.length === 0) {
-      // Remover da lista Category
-      const newListCat = categorys.filter(
-        (category) => category.id !== item.id
-      );
-      setCategorys(newListCat);
-      setSelectCategory([...selectCategory, item]);
-      const categoryId = [...selectCategory, item]
-        .map((item) => item.id)
-        .toString();
-      getCategoryProduct(categoryId).then((response) => {
-        const { countProducts } = response;
-        const numPage = Math.ceil(countProducts / 10);
-        setDataProductCategory(response.products);
-        setTotalPages(numPage);
-        setTotalProduct(countProducts);
-      });
-    }
+    // Remover da lista Category
+    const newListCat = categorys.filter((category) => category.id !== item.id);
+    setCategorys(newListCat);
+    setSelectCategory([...selectCategory, item]);
+    const categoryId = [...selectCategory, item]
+      .map((item) => item.id)
+      .toString();
+    getCategoryProduct(categoryId).then((response) => {
+      const { countProducts } = response;
+      const numPage = Math.ceil(countProducts / 10);
+      setDataProductCategory(response.products);
+      setTotalPages(numPage);
+      setTotalProduct(countProducts);
+    });
+    // }
   };
 
   const handleRemoveSelectCategory = (item) => {
@@ -96,8 +96,13 @@ const Product = () => {
       (prod) => prod.category_id !== item.id
     );
     setDataProductCategory(newDataProductCat);
-    setCategorys([...categorys, item]); //Retornar a categoria no Dropbox
     setSelectCategory(newSelectCat);
+
+    if (item.id === -1) {
+      setDataProductCategory([]);
+    } else {
+      setCategorys([...categorys, item]); //Retornar a categoria no Dropbox
+    }
 
     if (newSelectCat.length <= 0) {
       const numPage = Math.ceil(totalProductInit / 10);
@@ -129,6 +134,15 @@ const Product = () => {
     setMessageModal(`Deseja realmente excluir o produto '${product.name}'.`);
   };
 
+  const handleProductPromotion = () => {
+    const exist = selectCategory.findIndex((cat) => cat.id === -1);
+    !!exist &&
+      getPromotionProduct().then((response) => {
+        setDataProductCategory(response);
+        setSelectCategory([{ id: -1, name: "Produtos em Promoções" }]);
+      });
+  };
+
   const handleEditProduct = (product) => {
     history.push({
       pathname: "/productNew",
@@ -141,7 +155,10 @@ const Product = () => {
       // Remover o produto do array
       const newProduct = dataProduct.filter((item) => item.id !== index);
       setDataProduct(newProduct);
-
+      // Definir novo total de quantidade de produtos
+      const newTotalProduct = totalProductInit - 1;
+      setTotalProductInit(newTotalProduct);
+      setTotalProduct(newTotalProduct);
       dispatch({
         type: SET_MESSAGE,
         payload: response.message,
@@ -187,9 +204,12 @@ const Product = () => {
                       ))}
                     </DropdownMenu>
                   </Dropdown>
-                  <Button color="info" onClick={() => {}}>
-                    <i className="fa fa-plus-square" aria-hidden="true" /> Novo
-                    Categoria
+                  <Button
+                    color="primary"
+                    onClick={() => handleProductPromotion()}
+                  >
+                    <i className="fa fa-bookmark" aria-hidden="true" /> Produto
+                    em Promoção
                   </Button>
                   <Button color="info" onClick={() => handleNewProduct()}>
                     <i className="fa fa-plus-square" aria-hidden="true" /> Novo
@@ -197,6 +217,7 @@ const Product = () => {
                   </Button>
                 </div>
                 <div className="selectCategory">
+                  {selectCategory.length > 0 && <strong>Filtro:</strong>}
                   {selectCategory.map((item) => (
                     <span key={item.id}>
                       <i

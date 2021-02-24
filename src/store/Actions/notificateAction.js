@@ -37,7 +37,9 @@ export const upgradeOpenClose = () => (dispatch) => {
       });
       dispatch({
         type: SET_MESSAGE,
-        payload: data.message,
+        payload: data.open_close
+          ? "Loja aberta, boa vendas."
+          : "Loja Fechada,  bom descanço!",
       });
     },
     (error) => {

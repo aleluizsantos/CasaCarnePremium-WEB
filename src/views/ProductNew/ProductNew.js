@@ -345,10 +345,7 @@ const ProductNew = (props) => {
                         </Col>
                       </Row>
                     </Col>
-                    <Col
-                      md="3"
-                      className="row justify-content-center align-items-center"
-                    >
+                    <Col md="3" className="row justify-content-center">
                       <div className="contentImageProdut">
                         {previewImage.length > 0 ? (
                           previewImage.map((image, idx) => (
@@ -378,19 +375,13 @@ const ProductNew = (props) => {
                   <Row>
                     <CardFooter>
                       <div className="ml-auto mr-auto">
-                        <Button
-                          className="btn-round"
-                          color="dark"
-                          onClick={() => history.goBack()}
-                        >
+                        <Button color="dark" onClick={() => history.goBack()}>
                           Voltar
                         </Button>{" "}
-                        <Button
-                          className="btn-round"
-                          disabled={isLoading}
-                          color="primary"
-                          type="submit"
-                        >
+                        <Button color="dark" onClick={() => {}}>
+                          Nova Categoria
+                        </Button>{" "}
+                        <Button disabled={isLoading} color="info" type="submit">
                           {isLoading && <Spinner size="sm" color="warning" />}{" "}
                           Cadastrar
                         </Button>
