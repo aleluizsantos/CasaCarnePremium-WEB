@@ -102,3 +102,13 @@ export const getPromotionProduct = async () => {
       return response.data;
     });
 };
+
+export const getProductGroupCategory = async () => {
+  return await api
+    .get("product/group", {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => {
+      return response.data;
+    });
+};

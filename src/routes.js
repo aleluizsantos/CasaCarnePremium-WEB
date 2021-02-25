@@ -12,7 +12,7 @@ import {
   Login as LoginView,
   Product as ProductView,
   ProductNew as ProductNewView,
-  CategoryProduct as CategoryProductView,
+  ProductCategory as ProductCategoryViews,
   Tables as TablesView,
   Notifications as NotificationsView,
   Typography as TypographyView,
@@ -48,11 +48,11 @@ const listRoutes = [
     security: true,
   },
   {
-    name: "Categoria Produto",
+    name: "Categoria Produtos",
     icon: "nc-icon nc-bullet-list-67",
-    component: CategoryProductView,
+    component: ProductCategoryViews,
     layout: MainLayout,
-    path: "/category",
+    path: "/categoryProduct",
     security: true,
   },
   {
