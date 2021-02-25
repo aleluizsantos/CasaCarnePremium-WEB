@@ -26,7 +26,6 @@ export const updateProduct = async (id, dataForm) => {
     })
     .then((response) => response.data);
 };
-
 /**
  * Excluir um produto
  * @param {number} index passar o id do produto que irá Deletar
@@ -40,7 +39,7 @@ export const deleteProduto = async (index) => {
 };
 
 /**
- * Buscar todas as unidade de medidas
+ * Retorna uma lista todas as unidade de medidas
  */
 export const getMeasureUnit = async () => {
   return await api
@@ -49,18 +48,6 @@ export const getMeasureUnit = async () => {
     })
     .then((response) => response.data);
 };
-
-/**
- * Buscar todas as Categorias
- */
-export const getCategory = async () => {
-  return await api
-    .get("/category", {
-      headers: { Authorization: Authorization },
-    })
-    .then((response) => response.data);
-};
-
 /**
  * Listar todos os produtos
  * @param {number} pageCurrent passar a pagina current
@@ -92,7 +79,9 @@ export const getCategoryProduct = async (categorysId) => {
       return response.data;
     });
 };
-
+/**
+ * Retorna a lista de produtos em promoção
+ */
 export const getPromotionProduct = async () => {
   return await api
     .get("product/promotion", {
@@ -102,7 +91,10 @@ export const getPromotionProduct = async () => {
       return response.data;
     });
 };
-
+/**
+ * Retorna um listagem agrupado por categorias, informando a quantidade
+ * de cada produto por categoria
+ */
 export const getProductGroupCategory = async () => {
   return await api
     .get("product/group", {

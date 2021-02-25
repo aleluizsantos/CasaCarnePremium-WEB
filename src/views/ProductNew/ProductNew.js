@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 
 import { SET_MESSAGE } from "../../store/Actions/types";
 import {
-  getCategory,
+  getCategorys,
   getMeasureUnit,
   toCurrency,
   createProduct,
@@ -64,7 +64,7 @@ const ProductNew = (props) => {
 
   useEffect(() => {
     (() => {
-      getCategory().then((response) => setCategorys(response));
+      getCategorys().then((response) => setCategorys(response));
       getMeasureUnit().then((response) => setMeasureUnit(response));
     })();
   }, []);
@@ -364,10 +364,10 @@ const ProductNew = (props) => {
                           </label>
                         )}
                         <input
-                          accept="image/*"
-                          onChange={handleSelectImage}
                           id="icon-button-file"
                           type="file"
+                          accept="image/*"
+                          onChange={handleSelectImage}
                         />
                       </div>
                     </Col>

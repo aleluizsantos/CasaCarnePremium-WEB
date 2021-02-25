@@ -6,7 +6,7 @@ import { url } from "../../services/host";
 import { SET_MESSAGE } from "../../store/Actions/types";
 import {
   getProduct,
-  getCategory,
+  getCategorys,
   deleteProduto,
   getCategoryProduct,
   getPromotionProduct,
@@ -65,7 +65,7 @@ const Product = () => {
     const exist = selectCategory.findIndex((cat) => cat.id === -1);
     !!!exist && setSelectCategory([]);
     categorys.length <= 0 &&
-      getCategory().then((response) => {
+      getCategorys().then((response) => {
         setCategorys(response);
       });
     setDropdownOpen(!dropdownOpen);

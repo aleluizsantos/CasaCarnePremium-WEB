@@ -16,4 +16,3 @@ export const setOpenClose = async () => {
       return response.data;
     });
 };
-// Checar os novos pedidos
