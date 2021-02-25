@@ -35,17 +35,16 @@ const Product = () => {
   const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
   const [dataProductCategory, setDataProductCategory] = useState([]);
-  const [totalPages, setTotalPages] = useState(null);
   const [totalProductInit, setTotalProductInit] = useState(0);
-  const [totalProduct, setTotalProduct] = useState(0);
+  const [totalProductCurrent, setTotalProductCurrent] = useState(0);
+  const [totalPages, setTotalPages] = useState(null);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [categorys, setCategorys] = useState([]);
   const [modal, setModal] = useState(false);
-  const [titleModal, setTitleModal] = useState("");
-  const [messageModal, setMessageModal] = useState("");
-  const [indexProdModal, setIndexProdModal] = useState("");
+  const [idProdSelected, setIdProdSelected] = useState("");
   const [selectCategory, setSelectCategory] = useState([]);
+  const [productSelected, setProductSelected] = useState(null);
 
   useEffect(() => {
     (() => {
@@ -54,7 +53,7 @@ const Product = () => {
         const { countProducts } = response;
         const numPage = Math.ceil(countProducts / 10);
         setDataProduct(response.products);
-        setTotalProduct(countProducts);
+        setTotalProductCurrent(countProducts);
         setTotalProductInit(countProducts);
         setTotalPages(numPage);
       });
@@ -85,7 +84,7 @@ const Product = () => {
       const numPage = Math.ceil(countProducts / 10);
       setDataProductCategory(response.products);
       setTotalPages(numPage);
-      setTotalProduct(countProducts);
+      setTotalProductCurrent(countProducts);
     });
     // }
   };
@@ -107,7 +106,7 @@ const Product = () => {
     if (newSelectCat.length <= 0) {
       const numPage = Math.ceil(totalProductInit / 10);
       setTotalPages(numPage);
-      setTotalProduct(totalProductInit);
+      setTotalProductCurrent(totalProductInit);
     }
   };
 
@@ -123,15 +122,21 @@ const Product = () => {
     return <span>{value ? "Promotion" : "Normal"}</span>;
   };
 
-  const handleNewProduct = () => {
+  const goToAddNewProduct = () => {
     history.push({ pathname: "productNew" });
   };
 
+  const goToEditProduct = (product) => {
+    history.push({
+      pathname: "/productNew",
+      state: product,
+    });
+  };
+
   const handleShowModal = (product) => {
-    setIndexProdModal(product.id);
+    setIdProdSelected(product.id);
+    setProductSelected(product);
     setModal(true);
-    setTitleModal("Remover Produto");
-    setMessageModal(`Deseja realmente excluir o produto '${product.name}'.`);
   };
 
   const handleProductPromotion = () => {
@@ -143,13 +148,6 @@ const Product = () => {
       });
   };
 
-  const handleEditProduct = (product) => {
-    history.push({
-      pathname: "/productNew",
-      state: product,
-    });
-  };
-
   const handleDeleteProduct = (index) => {
     deleteProduto(index).then((response) => {
       // Remover o produto do array
@@ -158,7 +156,7 @@ const Product = () => {
       // Definir novo total de quantidade de produtos
       const newTotalProduct = totalProductInit - 1;
       setTotalProductInit(newTotalProduct);
-      setTotalProduct(newTotalProduct);
+      setTotalProductCurrent(newTotalProduct);
       dispatch({
         type: SET_MESSAGE,
         payload: response.message,
@@ -174,13 +172,23 @@ const Product = () => {
             <Card>
               <CardHeader>
                 <ModalView
-                  index={indexProdModal}
-                  title={titleModal}
-                  messageModal={messageModal}
-                  action={(index) => handleDeleteProduct(index)}
+                  title="Remover Produto"
                   modal={modal}
                   toggle={() => setModal(!modal)}
-                />
+                  idObjectSelected={idProdSelected}
+                  confirmed={(id) => handleDeleteProduct(id)}
+                >
+                  {productSelected && (
+                    <div className="text-center">
+                      <strong>Deseje realmente excluir o produto?</strong>
+                      <p>
+                        O produto <strong>{productSelected.name}</strong> será
+                        revomido.
+                      </p>
+                    </div>
+                  )}
+                </ModalView>
+
                 <CardTitle tag="h4">Meus Produtos </CardTitle>
                 <div className="contentButton">
                   <Dropdown
@@ -211,7 +219,7 @@ const Product = () => {
                     <i className="fa fa-bookmark" aria-hidden="true" /> Produto
                     em Promoção
                   </Button>
-                  <Button color="info" onClick={() => handleNewProduct()}>
+                  <Button color="info" onClick={() => goToAddNewProduct()}>
                     <i className="fa fa-plus-square" aria-hidden="true" /> Novo
                     Produto
                   </Button>
@@ -293,7 +301,7 @@ const Product = () => {
                               color="success"
                               outline
                               size="sm"
-                              onClick={() => handleEditProduct(item)}
+                              onClick={() => goToEditProduct(item)}
                             >
                               <i className="fa fa-edit" />
                             </Button>
@@ -306,7 +314,7 @@ const Product = () => {
               </CardBody>
               <CardFooter>
                 <span className="totalProduct">
-                  Total de produto: <strong>{totalProduct}</strong>{" "}
+                  Total de produto: <strong>{totalProductCurrent}</strong>{" "}
                 </span>
                 {!!totalPages && (
                   <Pagination

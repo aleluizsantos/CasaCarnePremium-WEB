@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { getProductGroupCategory } from "../../hooks";
-
 import {
   Card,
   CardHeader,
@@ -11,10 +9,18 @@ import {
   Col,
   Table,
   Button,
+  Form,
+  FormGroup,
+  Input,
 } from "reactstrap";
+
+import { getProductGroupCategory } from "../../hooks";
+import { ModalView } from "components";
 
 const ProductCategory = () => {
   const [categorys, setCategorys] = useState([]);
+  const [formState, setFormState] = useState({ isChange: false, values: {} });
+  const [isModalEditCategory, setIsModalEditCategory] = useState(false);
 
   useEffect(() => {
     (() => {
@@ -22,8 +28,52 @@ const ProductCategory = () => {
     })();
   }, []);
 
+  const handleSelectCategoy = (category) => {
+    setFormState({ ...formState, values: category });
+    setIsModalEditCategory(!isModalEditCategory);
+  };
+
+  const handleChange = (event) => {
+    event.persist();
+  };
+
+  console.log(formState);
+
+  // Editar e adicionar nova categoria
+  const handleEditorAddCategory = () => {
+    return;
+  };
+
   return (
     <div className="content">
+      <ModalView
+        size="lg"
+        title="Editar Categoria"
+        idObjectSelected={formState}
+        modal={isModalEditCategory}
+        toggle={() => setIsModalEditCategory(!isModalEditCategory)}
+        confirmed={() => {}}
+      >
+        <div>
+          <div className="text-center">
+            <img
+              style={{ height: "200px", borderRadius: "8px" }}
+              src={formState.values.image_url}
+              alt={formState.values.name}
+            />
+          </div>
+
+          <FormGroup>
+            <label>Nome</label>
+            <Input
+              placeholder="Nome da categoria"
+              type="text"
+              value={formState.values.name}
+              onChange={(event) => setFormState(event.target.value)}
+            />
+          </FormGroup>
+        </div>
+      </ModalView>
       <Row>
         <Col md="12">
           <Card>
@@ -68,7 +118,7 @@ const ProductCategory = () => {
                             color="success"
                             outline
                             size="sm"
-                            onClick={() => {}}
+                            onClick={() => handleSelectCategoy(item)}
                           >
                             <i className="fa fa-edit" />
                           </Button>
