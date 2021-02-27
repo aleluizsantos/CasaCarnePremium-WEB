@@ -5,7 +5,7 @@ export { default as ProductNew } from "./ProductNew";
 export { default as Map } from "./Map";
 export { default as Notifications } from "./Notifications";
 export { default as Login } from "./Login";
-export { default as Tables } from "./Tables";
+export { default as MyOrders } from "./MyOrders";
 export { default as Typography } from "./Typography";
 export { default as Upgrade } from "./Upgrade";
 export { default as Users } from "./Users";

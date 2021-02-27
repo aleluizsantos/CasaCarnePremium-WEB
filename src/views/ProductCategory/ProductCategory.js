@@ -36,10 +36,16 @@ const ProductCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalEditCategory, setIsModalEditCategory] = useState(false);
   const [isModalRemove, setIsModalRemove] = useState(false);
+  const [totalProduct, setTotalProduct] = useState(0);
 
   useEffect(() => {
     (() => {
-      getProductGroupCategory().then((response) => setCategorys(response));
+      getProductGroupCategory().then((response) => {
+        setCategorys(response);
+        setTotalProduct(
+          response.reduce((total, item) => total + Number(item.TotalProduct), 0)
+        );
+      });
     })();
   }, [isLoading]);
 
@@ -234,7 +240,12 @@ const ProductCategory = () => {
             </CardBody>
             <CardFooter>
               <p>
-                Quantidade de categorias: <strong>{categorys.length}</strong>
+                <span style={{ paddingRight: "25px" }}>
+                  Quantidade de categorias: <strong>{categorys.length}</strong>
+                </span>
+                <span>
+                  Total de produtos: <strong>{totalProduct}</strong>
+                </span>
               </p>
             </CardFooter>
           </Card>

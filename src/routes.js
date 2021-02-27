@@ -13,7 +13,7 @@ import {
   Product as ProductView,
   ProductNew as ProductNewView,
   ProductCategory as ProductCategoryViews,
-  Tables as TablesView,
+  MyOrders as MyOrdersView,
   Notifications as NotificationsView,
   Typography as TypographyView,
   Upgrade as UpgradeView,
@@ -34,9 +34,9 @@ const listRoutes = [
   {
     name: "Pedidos",
     icon: "nc-icon nc-tile-56",
-    component: TablesView,
+    component: MyOrdersView,
     layout: MainLayout,
-    path: "/tables",
+    path: "/myorders",
     security: true,
   },
   {
