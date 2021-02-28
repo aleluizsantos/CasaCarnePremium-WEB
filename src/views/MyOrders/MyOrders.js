@@ -11,6 +11,8 @@ import {
   Col,
 } from "reactstrap";
 
+import "./styles.css";
+import { formatDateTime } from "../../hooks/formatDate";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
 
 const MyOrders = () => {
@@ -37,55 +39,49 @@ const MyOrders = () => {
                 <Table responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th>Name</th>
-                      <th>Country</th>
-                      <th>City</th>
-                      <th className="text-right">Salary</th>
+                      <th>Data</th>
+                      <th>Cliente</th>
+                      <th>Status</th>
+                      <th className="text-right">Valor</th>
+                      <th>Telefone</th>
+                      <th>Cidade</th>
+                      <th>Tipo</th>
+                      <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Dakota Rice</td>
-                      <td>Niger</td>
-                      <td>Oud-Turnhout</td>
-                      <td className="text-right">$36,738</td>
-                    </tr>
-                    <tr>
-                      <td>Minerva Hooper</td>
-                      <td>Curaçao</td>
-                      <td>Sinaai-Waas</td>
-                      <td className="text-right">$23,789</td>
-                    </tr>
-                    <tr>
-                      <td>Sage Rodriguez</td>
-                      <td>Netherlands</td>
-                      <td>Baileux</td>
-                      <td className="text-right">$56,142</td>
-                    </tr>
-                    <tr>
-                      <td>Philip Chaney</td>
-                      <td>Korea, South</td>
-                      <td>Overland Park</td>
-                      <td className="text-right">$38,735</td>
-                    </tr>
-                    <tr>
-                      <td>Doris Greene</td>
-                      <td>Malawi</td>
-                      <td>Feldkirchen in Kärnten</td>
-                      <td className="text-right">$63,542</td>
-                    </tr>
-                    <tr>
-                      <td>Mason Porter</td>
-                      <td>Chile</td>
-                      <td>Gloucester</td>
-                      <td className="text-right">$78,615</td>
-                    </tr>
-                    <tr>
-                      <td>Jon Porter</td>
-                      <td>Portugal</td>
-                      <td>Gloucester</td>
-                      <td className="text-right">$98,615</td>
-                    </tr>
+                    {myOrders.map((item) => (
+                      <tr key={item.id}>
+                        <td>{formatDateTime(item.dateTimeOrder)}</td>
+                        <td>{item.name}</td>
+                        <td>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                            }}
+                            className="text-center"
+                          >
+                            <div
+                              className="statusMyOrders"
+                              style={{
+                                background: item.BGcolor,
+                                marginRight: "8px",
+                              }}
+                            />
+
+                            <span>{item.statusRequest}</span>
+                          </div>
+                        </td>
+                        <td className="text-right">{item.totalPurchase}</td>
+                        <td>{item.phone}</td>
+                        <td>
+                          {item.city}/{item.uf}
+                        </td>
+                        <td>{item.deliveryType}</td>
+                        <td> x x</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </CardBody>
