@@ -383,7 +383,9 @@ const ProductNew = (props) => {
                         </Button>{" "}
                         <Button disabled={isLoading} color="info" type="submit">
                           {isLoading && <Spinner size="sm" color="warning" />}{" "}
-                          Cadastrar
+                          {state === undefined
+                            ? "Cadastrar"
+                            : "Salvar Alterações"}
                         </Button>
                       </div>
                     </CardFooter>

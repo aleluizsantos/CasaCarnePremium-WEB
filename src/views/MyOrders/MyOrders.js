@@ -13,26 +13,29 @@ import {
 } from "reactstrap";
 
 import "./styles.css";
-import { formatDateTime } from "../../hooks/formatDate";
+import { formatDateTime } from "../../hooks/format";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
 
 const MyOrders = () => {
   const history = useHistory();
   const [myOrders, setMyOrders] = useState([]);
+  const [typeStatus, setTypeStatus] = useState(typeStatusMyOrders.GROUP);
 
   useEffect(() => {
     (() => {
-      getOrders(typeStatusMyOrders.GROUP).then((response) =>
-        setMyOrders(response)
-      );
+      getOrders(typeStatus).then((response) => setMyOrders(response));
     })();
-  }, []);
+  }, [typeStatus]);
 
   function goToDetailsMyOrders(order) {
     history.push({
       pathname: "DetailsMyOrder",
       state: order,
     });
+  }
+
+  function handleSelectStatus(value) {
+    setTypeStatus(value);
   }
 
   return (
@@ -42,7 +45,31 @@ const MyOrders = () => {
           <Col md="12">
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Meus Pedidos</CardTitle>
+                <div className="SelectStatus">
+                  <CardTitle tag="h5">Meus Pedidos</CardTitle>
+                  <select
+                    name="statusOrder"
+                    id="statusOrder"
+                    onChange={(event) => handleSelectStatus(event.target.value)}
+                  >
+                    <option value={typeStatusMyOrders.GROUP}>
+                      Em processo
+                    </option>
+                    <option value={typeStatusMyOrders.ALL}>Todos</option>
+                    <option value={typeStatusMyOrders.EM_PREPARACAO}>
+                      Em preparação
+                    </option>
+                    <option value={typeStatusMyOrders.RETIRAR_LOJA}>
+                      Retirar Loja
+                    </option>
+                    <option value={typeStatusMyOrders.ROTA_ENTREGA}>
+                      Rota de Entrega
+                    </option>
+                    <option value={typeStatusMyOrders.FINALIZADO}>
+                      Finalizado
+                    </option>
+                  </select>
+                </div>
               </CardHeader>
               <CardBody>
                 <Table responsive>

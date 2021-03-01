@@ -25,6 +25,7 @@
 }
 .idOrder {
     display: flex;
+    justify-content: space-between;
     align-items: baseline;
     margin-bottom: 20px;
 }
@@ -34,7 +35,7 @@
     margin-right: 15px;
 }
 .contentItemOrder {
-    margin-top: 30px;
+    margin-top: 50px;
     padding-top: 10px;
     border-top: 1px solid #c6c6c6;
 }
@@ -94,7 +95,9 @@
     z-index: 1;
     cursor: pointer;
 }
-
+.stateMyOrder .state:hover {
+    transform: scale(1.2);
+}
 .stateMyOrder .state span {
     position: absolute;
     white-space: nowrap; /* não quebra a linha */
@@ -105,7 +108,7 @@
     height: 5px;
     background: green;
     top: 15px;
-    transition: width 2s; 
+    transition: width 1s; 
 }
 .stateMyOrder .currentBarBG {
     position: absolute;
@@ -113,4 +116,51 @@
     border: 1px dashed green;
     top: 15px;
     transition: width 2s; 
+}
+.groupItem {
+    display: flex;
+    align-items: center;
+}
+.groupItem i {
+    margin-right: 10px;
+    padding: 5px;
+    cursor: pointer;
+    color: red;
+}
+.groupItem i:hover {
+    transform: scale(1.2)
+}
+.groupFooterButton button {
+    margin-right: 15px !important;
+}
+
+
+@media(max-width: 700px) {
+    .detailsClient {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+    .contentTotal {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .stateMyOrder .state {
+        width: 28px;
+        height: 28px;
+    }
+    .stateMyOrder .state:hover {
+        transform: scale(1.2);
+    }
+    .stateMyOrder .state span {
+        position: absolute;
+        font-size: 10px;
+        top: 35px;
+    }
+    .stateMyOrder .currentBar {
+        top: 12px;
+    }
+    .stateMyOrder .currentBarBG {
+        top: 12px;
+    }
 }

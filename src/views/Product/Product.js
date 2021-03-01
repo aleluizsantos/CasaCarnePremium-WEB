@@ -72,6 +72,9 @@ const Product = () => {
   };
 
   const handleSelectCategoy = (item) => {
+    // se não tive objetos na categoria botão desabilitado
+    if (categorys.length <= 0) return;
+
     // Remover da lista Category
     const newListCat = categorys.filter((category) => category.id !== item.id);
     setCategorys(newListCat);

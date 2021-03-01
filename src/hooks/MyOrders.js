@@ -1,6 +1,8 @@
 import api from "../services/api";
 import { authHeader } from "../services/authHeader";
 
+const { Authorization } = authHeader();
+
 export const typeStatusMyOrders = {
   EM_ANASILE: 1,
   EM_PREPARACAO: 2,
@@ -19,7 +21,6 @@ export const typeStatusMyOrders = {
  * 5: Agendado  | 6: Finalizado
  */
 export const getOrders = async (statusReq) => {
-  const { Authorization } = authHeader();
   return await api
     .get("request", {
       headers: {
@@ -30,4 +31,62 @@ export const getOrders = async (statusReq) => {
     .then((response) => {
       return response.data;
     });
+};
+
+/**
+ * RETORNAR UMA LISTA DE ITENS DE UM PEDIDO
+ * @param {Number} idMyOrder Recebe um id do pedido
+ */
+export const getItemsMyOrders = async (idMyOrder) => {
+  return await api
+    .get("request/items", {
+      headers: {
+        Authorization: Authorization,
+        request_id: idMyOrder,
+      },
+    })
+    .then((response) => response.data);
+};
+/**
+ * ALTERA O STATUS DO PEDIDO
+ * @param {Number} idMyOrder Recebe o id da Order para alterar o status do pedido
+ */
+export const upDateStateMyOrders = async (idMyOrder) => {
+  return await api
+    .put(
+      `request/${idMyOrder}`,
+      {},
+      {
+        headers: { Authorization: Authorization },
+      }
+    )
+    .then((response) => response.data);
+};
+
+/**
+ * REMOVER O PEDIDO INTEIRO
+ * @param {Number} idMyOrder Recebe o id do pedido para ser excluido
+ */
+export const deletePedido = async (idMyOrder) => {
+  return await api
+    .delete(`request/${idMyOrder}`, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};
+
+/**
+ * EXCLUSÃO DE ITEM DO PEDIDO
+ * @param {number} idMyOrder Recebe o id do pedido
+ * @param {number} idItem Recebe o id do item do pedido
+ */
+export const deleteItemPedido = async (idMyOrder, idItem) => {
+  return await api
+    .delete(`request/item/${idItem}`, {
+      headers: {
+        Authorization: Authorization,
+        request_id: idMyOrder,
+      },
+    })
+    .then((response) => response.data);
 };

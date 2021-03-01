@@ -62,6 +62,23 @@ export const getProduct = async (pageCurrent = 1) => {
       return response.data;
     });
 };
+
+/**
+ * Retorna um lista de produto basenado no parametro
+ * @param {String} search Recebe um nome do produto a ser localizado
+ */
+export const getProductSearch = async (search) => {
+  return await api
+    .get(`product/all/${search}`, {
+      headers: {
+        Authorization: Authorization,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
 /**
  * Retorna uma lista de produtos pela categorias selecionadas
  * @param {string} categorysId Recebe uma string de id das categorys separadas por
