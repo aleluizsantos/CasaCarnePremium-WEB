@@ -12,12 +12,13 @@ import {
   Login as LoginView,
   Product as ProductView,
   ProductNew as ProductNewView,
-  ProductCategory as ProductCategoryViews,
+  ProductCategory as ProductCategoryView,
   MyOrders as MyOrdersView,
+  DetailsMyOrder as DetailsMyOrderView,
   Notifications as NotificationsView,
   Typography as TypographyView,
   Upgrade as UpgradeView,
-  Users as UserViews,
+  Users as UserView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -50,7 +51,7 @@ const listRoutes = [
   {
     name: "Categoria Produtos",
     icon: "nc-icon nc-bullet-list-67",
-    component: ProductCategoryViews,
+    component: ProductCategoryView,
     layout: MainLayout,
     path: "/categoryProduct",
     security: true,
@@ -90,7 +91,7 @@ const listRoutes = [
   {
     name: "Users",
     icon: "nc-icon nc-single-02",
-    component: UserViews,
+    component: UserView,
     layout: MainLayout,
     path: "/users",
     security: true,
@@ -131,6 +132,12 @@ const Routes = () => {
         component={ProductNewView}
         layout={MainLayout}
         path={"/productNew"}
+        exact
+      />
+      <RouteWithLayout
+        component={DetailsMyOrderView}
+        layout={MainLayout}
+        path={"/detailsMyorder"}
         exact
       />
       <RouteWithLayout

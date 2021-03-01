@@ -8,7 +8,8 @@ export const typeStatusMyOrders = {
   RETIRAR_LOJA: 4,
   AGENDADO: 5,
   FINALIZADO: 6,
-  all: "1,2,3,4,5,6",
+  GROUP: "1,2,3,4,5",
+  ALL: "1,2,3,4,5,6",
 };
 
 /**

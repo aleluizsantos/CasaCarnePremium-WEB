@@ -6,6 +6,7 @@ export { default as Map } from "./Map";
 export { default as Notifications } from "./Notifications";
 export { default as Login } from "./Login";
 export { default as MyOrders } from "./MyOrders";
+export { default as DetailsMyOrder } from "./DetailsMyOrder";
 export { default as Typography } from "./Typography";
 export { default as Upgrade } from "./Upgrade";
 export { default as Users } from "./Users";

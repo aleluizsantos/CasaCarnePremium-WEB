@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { useHistory } from "react-router-dom";
 // reactstrap components
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   Table,
   Row,
   Col,
+  Button,
 } from "reactstrap";
 
 import "./styles.css";
@@ -16,15 +17,23 @@ import { formatDateTime } from "../../hooks/formatDate";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
 
 const MyOrders = () => {
+  const history = useHistory();
   const [myOrders, setMyOrders] = useState([]);
 
   useEffect(() => {
     (() => {
-      getOrders(typeStatusMyOrders.EM_ANASILE).then((response) =>
+      getOrders(typeStatusMyOrders.GROUP).then((response) =>
         setMyOrders(response)
       );
     })();
   }, []);
+
+  function goToDetailsMyOrders(order) {
+    history.push({
+      pathname: "DetailsMyOrder",
+      state: order,
+    });
+  }
 
   return (
     <>
@@ -79,7 +88,19 @@ const MyOrders = () => {
                           {item.city}/{item.uf}
                         </td>
                         <td>{item.deliveryType}</td>
-                        <td> x x</td>
+                        <td className="text-center">
+                          <div className="groupButton">
+                            <Button
+                              className="btn-round btn-icon"
+                              color="success"
+                              outline
+                              size="md"
+                              onClick={() => goToDetailsMyOrders(item)}
+                            >
+                              <i className="fa fa-eye" />
+                            </Button>
+                          </div>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

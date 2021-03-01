@@ -357,12 +357,12 @@ table.table tr td {
   padding: 12px 15px;
   vertical-align: middle;
 }
-table.table tr th:first-child {
-  width: 60px;
+/* table.table tr th:first-child {
+  width: 160px;
 }
 table.table tr th:last-child {
   width: 100px;
-}
+} */
 table.table-striped tbody tr:nth-of-type(odd) {
   background-color: #fcfcfc;
 }
@@ -409,15 +409,14 @@ table.table .avatar {
   display: flex;
   flex-direction: row;
 }
+
 .groupButton {
   width: 70px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.groupButton .buttonAction {
-  margin-left: 10px;
-}
+
 .status {
   font-size: 30px;
   margin: 2px 2px 0 0;
