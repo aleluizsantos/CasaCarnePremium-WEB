@@ -14,6 +14,7 @@ import {
   Button,
   Input,
   FormGroup,
+  Alert,
 } from "reactstrap";
 
 import "./styles.css";
@@ -26,6 +27,7 @@ import {
   deleteItemPedido,
 } from "../../hooks/MyOrders";
 import { getProduct, getProductSearch } from "../../hooks/Product";
+import { addItemOrder } from "../../hooks/MyOrders";
 import { SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
 
@@ -45,7 +47,7 @@ const DetailsMyOrder = (props) => {
   const [itemSelected, setItemSelected] = useState({});
   const [search, setSearch] = useState("");
   const [productSearch, setProductSearch] = useState([]);
-  const [formAddItem, setFormAddItem] = useState({ item: {}, amount: 0 });
+  const [formAddItem, setFormAddItem] = useState({ item: {}, amount: 1 });
 
   useEffect(() => {
     (() => {
@@ -120,6 +122,7 @@ const DetailsMyOrder = (props) => {
 
   function handleModalItemProduct() {
     products.length <= 0 && loadingProduct();
+    setFormAddItem({ item: {}, amount: 1 });
     setIsModalInsertItem(!isModalInsertItem);
   }
 
@@ -131,7 +134,35 @@ const DetailsMyOrder = (props) => {
     );
   }
 
-  function handleSelectAddItem() {}
+  function handleSelectAddItem(item) {
+    setFormAddItem({ ...formAddItem, item: item });
+  }
+
+  function handleChangesAmount(amount) {
+    setFormAddItem({ ...formAddItem, amount: amount });
+  }
+
+  function handleAddItem() {
+    const dataItem = {
+      amount: formAddItem.amount,
+      price: formAddItem.item.promotion
+        ? formAddItem.item.pricePromotion
+        : formAddItem.item.price,
+      product_id: formAddItem.item.id,
+      request_id: myOrder.id,
+    };
+    addItemOrder(dataItem).then((response) => {
+      setMyOrder(response.order);
+      setItemsMyOrders(response.items);
+      setIsModalInsertItem(false);
+      dispatch({
+        type: SET_MESSAGE,
+        payload: "foi adicionado um item no pedido",
+      });
+      setFormAddItem({ item: {}, amount: 1 });
+      setProductSearch([]);
+    });
+  }
 
   return (
     <div className="content">
@@ -191,9 +222,18 @@ const DetailsMyOrder = (props) => {
           idObjectSelected={""}
           modal={isModalInsertItem}
           toggle={() => setIsModalInsertItem(!isModalInsertItem)}
-          confirmed={() => {}}
+          confirmed={() => handleAddItem()}
         >
           <div className="text-justify">
+            <Row>
+              {formAddItem.item.name !== undefined && (
+                <Col md="12">
+                  <Alert color="info">
+                    <span>{formAddItem.item.name}</span>
+                  </Alert>
+                </Col>
+              )}
+            </Row>
             <Row>
               <Col className="pr-1" md="6">
                 <FormGroup>
@@ -210,7 +250,14 @@ const DetailsMyOrder = (props) => {
               <Col className="pl-1" md="6">
                 <FormGroup>
                   <label>Quantidade</label>
-                  <Input type="text" name="amount" />
+                  <Input
+                    type="text"
+                    name="amount"
+                    value={formAddItem.amount}
+                    onChange={(event) =>
+                      handleChangesAmount(event.target.value)
+                    }
+                  />
                 </FormGroup>
               </Col>
             </Row>
@@ -219,7 +266,7 @@ const DetailsMyOrder = (props) => {
               <Table responsive>
                 {productSearch.map((item, idx) => (
                   <tbody key={idx}>
-                    <tr onClick={() => {}}>
+                    <tr onClick={() => handleSelectAddItem(item)}>
                       <td>
                         <img
                           src={item.image_url}
@@ -412,24 +459,26 @@ const DetailsMyOrder = (props) => {
                 </div>
               </div>
             </CardBody>
-            <CardFooter>
-              <div className="groupFooterButton">
-                <Button
-                  color="danger"
-                  onClick={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
-                >
-                  <i className="fa fa-trash" aria-hidden="true" /> Excluir
-                  Pedido
-                </Button>
-                <Button
-                  color="success"
-                  onClick={() => handleModalItemProduct()}
-                >
-                  <i className="fa fa-trash" aria-hidden="true" /> Adicionar
-                  Item
-                </Button>
-              </div>
-            </CardFooter>
+            {myOrder.statusRequest_id !== 6 && (
+              <CardFooter>
+                <div className="groupFooterButton">
+                  <Button
+                    color="danger"
+                    onClick={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
+                  >
+                    <i className="fa fa-trash" aria-hidden="true" /> Excluir
+                    Pedido
+                  </Button>
+                  <Button
+                    color="success"
+                    onClick={() => handleModalItemProduct()}
+                  >
+                    <i className="fa fa-trash" aria-hidden="true" /> Adicionar
+                    Item
+                  </Button>
+                </div>
+              </CardFooter>
+            )}
           </Card>
         </Col>
       </Row>

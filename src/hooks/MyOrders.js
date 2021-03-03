@@ -90,3 +90,11 @@ export const deleteItemPedido = async (idMyOrder, idItem) => {
     })
     .then((response) => response.data);
 };
+
+export const addItemOrder = async (item) => {
+  return await api
+    .post("request/item", item, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};

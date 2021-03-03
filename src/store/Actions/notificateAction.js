@@ -6,6 +6,8 @@ import {
   // UPDATE,
 } from "./types";
 
+import { typeStatusMyOrders } from "../../hooks/MyOrders";
+
 import { getOpenClose, setOpenClose, getOrders } from "../../hooks";
 
 export const statusOpenClose = () => (dispatch) => {
@@ -55,7 +57,7 @@ export const upgradeOpenClose = () => (dispatch) => {
 };
 
 export const myOrders = () => (dispatch) => {
-  return getOrders("1,2,3,4,5").then(
+  return getOrders(typeStatusMyOrders.GROUP).then(
     (data) => {
       dispatch({
         type: NEW_ORDERS,

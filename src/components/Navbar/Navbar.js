@@ -32,6 +32,7 @@ const NavbarHeader = (props) => {
   const notificationAlert = createRef();
   const dispatch = useDispatch();
   const { message } = useSelector((state) => state.Message);
+  const { newOrders } = useSelector((state) => state.Notificate);
 
   useEffect(() => {
     const notify = (place) => {
@@ -138,15 +139,20 @@ const NavbarHeader = (props) => {
           </form>
           <Nav navbar>
             <NavItem>
-              <Link to="#" className="nav-link btn-magnify">
-                <i className="nc-icon nc-layout-11" />
+              {newOrders > 0 && (
+                <div className="badgeOrder">
+                  <span>{newOrders}</span>
+                </div>
+              )}
+              <Link to="/myorders" className="nav-link btn-magnify">
+                <i className="nc-icon nc-bell-55" />
                 <p>
-                  <span className="d-lg-none d-md-block">Status</span>
+                  <span className="d-lg-none d-md-block">Meus Pedidos</span>
                 </p>
               </Link>
             </NavItem>
 
-            <Dropdown
+            {/* <Dropdown
               nav
               isOpen={dropdownOpen}
               toggle={(e) => dropdownToggle(e)}
@@ -162,7 +168,7 @@ const NavbarHeader = (props) => {
                 <DropdownItem tag="a">Configurações</DropdownItem>
                 <DropdownItem tag="a">SAIR</DropdownItem>
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
             <NavItem>
               <Link to="#" className="nav-link btn-rotate">
                 <i className="nc-icon nc-settings-gear-65" />

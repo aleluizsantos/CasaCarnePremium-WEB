@@ -26,8 +26,8 @@ const App = () => {
           payload: response.open_close,
         });
       });
-      dispatch(statusOpenClose()); // Status do Estabelecimetno Aberto/Fechado
-      dispatch(myOrders()); // Notificar novos pedidos
+      // dispatch(statusOpenClose()); // Status do Estabelecimetno Aberto/Fechado
+      //  dispatch(myOrders()); // Notificar novos pedidos
     })();
   }, [dispatch]);
 
