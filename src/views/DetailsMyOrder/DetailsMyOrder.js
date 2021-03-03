@@ -13,9 +13,11 @@ import {
   Col,
   Button,
   Input,
+  FormGroup,
 } from "reactstrap";
 
 import "./styles.css";
+import { url } from "../../services/host";
 import { formatDateTime, formatCurrency } from "hooks/format";
 import {
   getItemsMyOrders,
@@ -32,7 +34,6 @@ const DetailsMyOrder = (props) => {
   const { state } = useLocation();
   const dispatch = useDispatch();
   const [currentPorcent, setCurrentPorcent] = useState(0);
-  const [statusCurrent, setStatusCurrent] = useState(0);
   const [descriptioStatus, setDescriptionStatus] = useState(null);
   const [itemsMyOrders, setItemsMyOrders] = useState([]);
   const [products, setProducts] = useState([]);
@@ -44,13 +45,13 @@ const DetailsMyOrder = (props) => {
   const [itemSelected, setItemSelected] = useState({});
   const [search, setSearch] = useState("");
   const [productSearch, setProductSearch] = useState([]);
+  const [formAddItem, setFormAddItem] = useState({ item: {}, amount: 0 });
 
   useEffect(() => {
     (() => {
       getItemsMyOrders(state.id).then((response) => setItemsMyOrders(response));
       setMyOrder(state);
       setDescriptionStatus(state.statusRequest);
-      setStatusCurrent(state.statusRequest_id);
       state.statusRequest_id <= 4
         ? setCurrentPorcent(state.statusRequest_id * 25)
         : setCurrentPorcent(100);
@@ -109,7 +110,7 @@ const DetailsMyOrder = (props) => {
       );
       setMyOrder(response);
       setItemsMyOrders(newItem);
-      setItemSelected();
+      setItemSelected({});
     });
   }
 
@@ -130,6 +131,8 @@ const DetailsMyOrder = (props) => {
     );
   }
 
+  function handleSelectAddItem() {}
+
   return (
     <div className="content">
       <Row>
@@ -142,7 +145,9 @@ const DetailsMyOrder = (props) => {
         >
           <div className="text-center">
             {myOrder.statusRequest_id === 1 && (
-              <span>Aprovar o pedido do cliente {myOrder.name}</span>
+              <span>
+                Aprovar o pedido do cliente <strong>{myOrder.name}</strong>
+              </span>
             )}
             {myOrder.statusRequest_id === 2 && (
               <span>Pedido está pronto para a entrega.</span>
@@ -163,7 +168,8 @@ const DetailsMyOrder = (props) => {
           confirmed={() => handleRemoverItem()}
         >
           <div className="text-center">
-            Tem certeza que deseja remover o item?
+            Tem certeza que deseja remover o item '
+            <strong>{itemSelected.name || ""}</strong>'?
           </div>
         </ModalView>
         <ModalView
@@ -188,28 +194,52 @@ const DetailsMyOrder = (props) => {
           confirmed={() => {}}
         >
           <div className="text-justify">
-            <Input
-              type="text"
-              value={search}
-              onChange={(event) => handleSearch(event)}
-            />
-            <Table responsive>
-              {productSearch.map((item) => (
-                <tr>
-                  <td>
-                    <img
-                      src={item.image_url}
-                      alt={item.name}
-                      className="avatar"
-                    />
-                  </td>
-                  <td>{item.name}</td>
-                  <td>{formatCurrency(item.price)}</td>
-                  <td>{item.promotion ? "Promoção" : ""}</td>
-                  <td>{formatCurrency(item.pricePromotion)}</td>
-                </tr>
-              ))}
-            </Table>
+            <Row>
+              <Col className="pr-1" md="6">
+                <FormGroup>
+                  <label>Produto</label>
+                  <Input
+                    type="text"
+                    name="product"
+                    id="product"
+                    value={search}
+                    onChange={(event) => handleSearch(event)}
+                  />
+                </FormGroup>
+              </Col>
+              <Col className="pl-1" md="6">
+                <FormGroup>
+                  <label>Quantidade</label>
+                  <Input type="text" name="amount" />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <div className="contentSearch">
+              <Table responsive>
+                {productSearch.map((item, idx) => (
+                  <tbody key={idx}>
+                    <tr onClick={() => {}}>
+                      <td>
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          className="avatar"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = `${url}/uploads/default.png`;
+                          }}
+                        />
+                      </td>
+                      <td>{item.name}</td>
+                      <td>{formatCurrency(item.price)}</td>
+                      <td>{item.promotion ? "Promoção" : ""}</td>
+                      <td>{formatCurrency(item.pricePromotion)}</td>
+                    </tr>
+                  </tbody>
+                ))}
+              </Table>
+            </div>
           </div>
         </ModalView>
 

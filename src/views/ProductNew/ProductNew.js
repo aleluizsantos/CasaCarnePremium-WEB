@@ -3,6 +3,7 @@ import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { SET_MESSAGE } from "../../store/Actions/types";
+import { url } from "../../services/host";
 import {
   getCategorys,
   getMeasureUnit,
@@ -350,7 +351,18 @@ const ProductNew = (props) => {
                         {previewImage.length > 0 ? (
                           previewImage.map((image, idx) => (
                             <div key={idx}>
-                              <img src={image} alt="carne" className="cover" />
+                              <object
+                                data={image}
+                                type="image/png"
+                                className="imageProduct"
+                              >
+                                <img
+                                  src={`${url}/uploads/default.png`}
+                                  alt="default"
+                                  className="avatar"
+                                />
+                              </object>
+                              {/* <img src={image} alt="carne" className="cover" /> */}
                               <i
                                 className="fa fa-times-circle close"
                                 aria-hidden="true"
