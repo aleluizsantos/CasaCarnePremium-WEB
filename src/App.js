@@ -6,9 +6,14 @@ import { createBrowserHistory } from "history";
 
 import { Routes } from "./routes";
 import { url } from "./services/host";
-import { OPEN_CLOSE } from "./store/Actions/types";
-import { statusOpenClose, myOrders } from "./store/Actions";
-
+import {
+  OPEN_CLOSE,
+  CLIENT_ONLINE,
+  UPDATE,
+  CLIENT_REGISTERED,
+  NEW_ORDERS,
+} from "./store/Actions/types";
+import { login } from "./hooks";
 const history = createBrowserHistory();
 
 const App = () => {
@@ -26,10 +31,40 @@ const App = () => {
           payload: response.open_close,
         });
       });
-      // dispatch(statusOpenClose()); // Status do Estabelecimetno Aberto/Fechado
-      //  dispatch(myOrders()); // Notificar novos pedidos
+      socket.on("onlineClients", (response) => {
+        dispatch({
+          type: CLIENT_ONLINE,
+          payload: response,
+        });
+      });
+      socket.on("update", (response) => {
+        dispatch({
+          type: UPDATE,
+          payload: response.update,
+        });
+      });
+      socket.on("CreateOrder", (response) => {
+        new Audio("/notification.mp3").play();
+        dispatch({
+          type: NEW_ORDERS,
+          payload: response.newOrder.countReq,
+        });
+      });
+      socket.on("ClientsRegistered", (response) => {
+        dispatch({
+          type: CLIENT_REGISTERED,
+          payload: response.countUser,
+        });
+      });
     })();
   }, [dispatch]);
+
+  useEffect(() => {
+    (() => {
+      const user = localStorage.getItem("_activeUserPremium");
+      user && console.log(user);
+    })();
+  }, []);
 
   return (
     <Router history={history}>

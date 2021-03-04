@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 // react plugin used to create charts
 import { Line, Pie } from "react-chartjs-2";
 // reactstrap components
@@ -19,6 +20,9 @@ import {
 } from "variables/charts.js";
 
 const Dashboard = (props) => {
+  const { clientsOnline, clientsRegistered, newOrders } = useSelector(
+    (state) => state.Notificate
+  );
   return (
     <>
       <div className="content">
@@ -35,7 +39,7 @@ const Dashboard = (props) => {
                   <Col md="9" xs="8">
                     <div className="numbers">
                       <p className="card-category">Cliente Inscritos</p>
-                      <CardTitle tag="p">12</CardTitle>
+                      <CardTitle tag="p">{clientsRegistered}</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -61,7 +65,7 @@ const Dashboard = (props) => {
                   <Col md="9" xs="8">
                     <div className="numbers">
                       <p className="card-category">Receita dia</p>
-                      <CardTitle tag="p">$ 1.345,00</CardTitle>
+                      <CardTitle tag="p">$ 0,00</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -87,7 +91,7 @@ const Dashboard = (props) => {
                   <Col md="10" xs="9">
                     <div className="numbers">
                       <p className="card-category">Pedidos Recebidos</p>
-                      <CardTitle tag="p">23</CardTitle>
+                      <CardTitle tag="p">{newOrders}</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -113,7 +117,7 @@ const Dashboard = (props) => {
                   <Col md="9" xs="8">
                     <div className="numbers">
                       <p className="card-category">Online</p>
-                      <CardTitle tag="p">100</CardTitle>
+                      <CardTitle tag="p">{clientsOnline}</CardTitle>
                       <p />
                     </div>
                   </Col>

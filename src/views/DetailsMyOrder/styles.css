@@ -146,7 +146,7 @@
     cursor: pointer;
 }
 
-table tbody tr:hover {
+.contentSearch table tbody tr:hover {
     background: #f1f1f1;
     font-weight: 600;
 }

@@ -5,7 +5,13 @@ export const login = async (email, password) => {
   return await api
     .post("/auth/authenticate", { email, password })
     .then((response) => {
-      const { user, token } = response.data;
+      const {
+        user,
+        token,
+        openClose,
+        totalPedidosProcess,
+        totalUsers,
+      } = response.data;
       localStorage.setItem("_accessAuthenticatedTokenPremium", token);
       localStorage.setItem("_activeUserPremium", JSON.stringify(user));
 
@@ -16,6 +22,9 @@ export const login = async (email, password) => {
 export const logout = () => {
   localStorage.removeItem("_accessAuthenticatedTokenPremium");
   localStorage.removeItem("_activeUserPremium");
+  localStorage.removeItem("_premiumOpenClose");
+  localStorage.removeItem("_premiumTotalOrderProcess");
+  localStorage.removeItem("_premiumtotalUsers");
 };
 
 export const register = () => {

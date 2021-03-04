@@ -14,6 +14,22 @@ const INITIAL_STATE = {
   update: {},
 };
 
+// const INITIAL_STATE = openClose
+//   ? {
+//       open_close: openClose,
+//       newOrders: totalOrderProcess,
+//       clientsOnline: 0,
+//       clientsRegistered: totalUsers,
+//       update: {},
+//     }
+//   : {
+//       open_close: false,
+//       newOrders: 0,
+//       clientsOnline: 0,
+//       clientsRegistered: 0,
+//       update: {},
+//     };
+
 export default function Notificate(state = INITIAL_STATE, action) {
   const { type, payload } = action;
   switch (type) {
