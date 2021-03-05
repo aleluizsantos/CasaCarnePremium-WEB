@@ -1,8 +1,6 @@
 import api from "../services/api";
 import { authHeader } from "../services/authHeader";
 
-const { Authorization } = authHeader();
-
 export const typeStatusMyOrders = {
   EM_ANASILE: 1,
   EM_PREPARACAO: 2,
@@ -21,6 +19,7 @@ export const typeStatusMyOrders = {
  * 5: Agendado  | 6: Finalizado
  */
 export const getOrders = async (statusReq) => {
+  const { Authorization } = authHeader();
   return await api
     .get("request", {
       headers: {
@@ -38,6 +37,7 @@ export const getOrders = async (statusReq) => {
  * @param {Number} idMyOrder Recebe um id do pedido
  */
 export const getItemsMyOrders = async (idMyOrder) => {
+  const { Authorization } = authHeader();
   return await api
     .get("request/items", {
       headers: {
@@ -52,6 +52,7 @@ export const getItemsMyOrders = async (idMyOrder) => {
  * @param {Number} idMyOrder Recebe o id da Order para alterar o status do pedido
  */
 export const upDateStateMyOrders = async (idMyOrder) => {
+  const { Authorization } = authHeader();
   return await api
     .put(
       `request/${idMyOrder}`,
@@ -68,6 +69,7 @@ export const upDateStateMyOrders = async (idMyOrder) => {
  * @param {Number} idMyOrder Recebe o id do pedido para ser excluido
  */
 export const deletePedido = async (idMyOrder) => {
+  const { Authorization } = authHeader();
   return await api
     .delete(`request/${idMyOrder}`, {
       headers: { Authorization: Authorization },
@@ -81,6 +83,7 @@ export const deletePedido = async (idMyOrder) => {
  * @param {number} idItem Recebe o id do item do pedido
  */
 export const deleteItemPedido = async (idMyOrder, idItem) => {
+  const { Authorization } = authHeader();
   return await api
     .delete(`request/item/${idItem}`, {
       headers: {
@@ -92,6 +95,7 @@ export const deleteItemPedido = async (idMyOrder, idItem) => {
 };
 
 export const addItemOrder = async (item) => {
+  const { Authorization } = authHeader();
   return await api
     .post("request/item", item, {
       headers: { Authorization: Authorization },

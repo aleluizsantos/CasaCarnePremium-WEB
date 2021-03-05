@@ -1,12 +1,11 @@
 import api from "../services/api";
 import { authHeader } from "../services/authHeader";
 
-const { Authorization } = authHeader();
-
 /**
  * Retorna uma lista com todas as Categorias
  */
 export const getCategorys = async () => {
+  const { Authorization } = authHeader();
   return await api
     .get("/category", {
       headers: { Authorization: Authorization },
@@ -19,6 +18,7 @@ export const getCategorys = async () => {
  * { isChange:false, nameOld:"", values:{}, image:[] }
  */
 export const updateCategory = async (category) => {
+  const { Authorization } = authHeader();
   // Caso não teve nenhuma alteração retorna nada
   if (!category.isChange) return;
 
@@ -46,6 +46,7 @@ export const updateCategory = async (category) => {
  * { isChange:false, nameOld:"", values:{}, image:[] }
  */
 export const deleteCategory = async (category) => {
+  const { Authorization } = authHeader();
   // Pegar o id da categoria para atualizar
   const cat = await getCategorys();
   const idCat = cat.find((item) => item.name === category.nameOld);

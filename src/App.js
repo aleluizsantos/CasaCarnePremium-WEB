@@ -13,7 +13,7 @@ import {
   CLIENT_REGISTERED,
   NEW_ORDERS,
 } from "./store/Actions/types";
-import { login } from "./hooks";
+
 const history = createBrowserHistory();
 
 const App = () => {

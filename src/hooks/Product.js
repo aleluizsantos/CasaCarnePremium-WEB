@@ -1,13 +1,12 @@
 import api from "../services/api";
 import { authHeader } from "../services/authHeader";
 
-const { Authorization } = authHeader();
-
 /**
  * Criar um produto novo
  * @param {FormData} dataForm envio do formData com os dados e imagem
  */
 export const createProduct = async (dataForm) => {
+  const { Authorization } = authHeader();
   return await api
     .post("/product/create", dataForm, {
       headers: { Authorization: Authorization },
@@ -20,6 +19,7 @@ export const createProduct = async (dataForm) => {
  * @param {FormData} dataForm envio do formData com os dados e imagem
  */
 export const updateProduct = async (id, dataForm) => {
+  const { Authorization } = authHeader();
   return await api
     .put(`product/${id}`, dataForm, {
       headers: { Authorization: Authorization },
@@ -31,6 +31,7 @@ export const updateProduct = async (id, dataForm) => {
  * @param {number} index passar o id do produto que irá Deletar
  */
 export const deleteProduto = async (index) => {
+  const { Authorization } = authHeader();
   return await api
     .delete(`product/${index}`, {
       headers: { Authorization: Authorization },
@@ -42,6 +43,7 @@ export const deleteProduto = async (index) => {
  * Retorna uma lista todas as unidade de medidas
  */
 export const getMeasureUnit = async () => {
+  const { Authorization } = authHeader();
   return await api
     .get("/measureunid", {
       headers: { Authorization: Authorization },
@@ -53,6 +55,7 @@ export const getMeasureUnit = async () => {
  * @param {number} pageCurrent passar a pagina current
  */
 export const getProduct = async (pageCurrent = 1) => {
+  const { Authorization } = authHeader();
   return await api
     .get("product/all", {
       headers: { Authorization: Authorization },
@@ -68,6 +71,7 @@ export const getProduct = async (pageCurrent = 1) => {
  * @param {String} search Recebe um nome do produto a ser localizado
  */
 export const getProductSearch = async (search) => {
+  const { Authorization } = authHeader();
   return await api
     .get(`product/all/${search}`, {
       headers: {
@@ -85,6 +89,7 @@ export const getProductSearch = async (search) => {
  * virgula por exemplo: 1,5,6
  */
 export const getCategoryProduct = async (categorysId) => {
+  const { Authorization } = authHeader();
   return await api
     .get("product", {
       headers: { Authorization: Authorization },
@@ -100,6 +105,7 @@ export const getCategoryProduct = async (categorysId) => {
  * Retorna a lista de produtos em promoção
  */
 export const getPromotionProduct = async () => {
+  const { Authorization } = authHeader();
   return await api
     .get("product/promotion", {
       headers: { Authorization: Authorization },
@@ -113,6 +119,7 @@ export const getPromotionProduct = async () => {
  * de cada produto por categoria
  */
 export const getProductGroupCategory = async () => {
+  const { Authorization } = authHeader();
   return await api
     .get("product/group", {
       headers: { Authorization: Authorization },

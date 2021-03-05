@@ -22,9 +22,6 @@ export const login = async (email, password) => {
 export const logout = () => {
   localStorage.removeItem("_accessAuthenticatedTokenPremium");
   localStorage.removeItem("_activeUserPremium");
-  localStorage.removeItem("_premiumOpenClose");
-  localStorage.removeItem("_premiumTotalOrderProcess");
-  localStorage.removeItem("_premiumtotalUsers");
 };
 
 export const register = () => {
