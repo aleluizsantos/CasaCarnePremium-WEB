@@ -9,16 +9,10 @@ const PaginationTable = (props) => {
   const [pages, setPages] = useState([]);
   const [limitPage, setLimitPage] = useState(10);
 
-  useEffect(() => {
-    (() => loadingPages(1, totalPage))();
-  }, [totalPage]);
+  // useEffect(() => {
 
-  useEffect(() => {
-    (() => {
-      pageCurrent > 1 ? setPageFirst(false) : setPageFirst(true);
-      limitPage <= totalPage ? setPageLast(false) : setPageLast(true);
-    })();
-  }, [pageCurrent, limitPage, totalPage]);
+  //   (() => loadingPages(1, totalPage))();
+  // }, [totalPage]);
 
   //Criar as pages da paginação
   const loadingPages = (start = 1, limit = 10) => {
@@ -37,6 +31,13 @@ const PaginationTable = (props) => {
       setPages(arrayPage);
     }
   };
+
+  useEffect(() => {
+    (() => {
+      pageCurrent > 1 ? setPageFirst(false) : setPageFirst(true);
+      limitPage <= totalPage ? setPageLast(false) : setPageLast(true);
+    })();
+  }, [pageCurrent, limitPage, totalPage]);
 
   // Page corrente
   const handlePageCurrent = (page, index) => {
