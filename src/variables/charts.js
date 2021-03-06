@@ -1,18 +1,7 @@
 const dashboard24HoursPerformanceChart = {
   data: (canvas) => {
     return {
-      labels: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-      ],
+      labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
       datasets: [
         {
           borderColor: "#6bd098",
@@ -20,23 +9,15 @@ const dashboard24HoursPerformanceChart = {
           pointRadius: 5,
           pointHoverRadius: 10,
           borderWidth: 1,
-          data: [300, 310, 316, 322, 330, 326, 333, 345, 338, 354],
+          data: [5000, 2500, 1030, 4800, 3300, 3260, 0],
         },
         {
-          borderColor: "#f17e5d",
-          backgroundColor: "#f17e5d",
+          borderColor: "	#836FFF",
+          backgroundColor: "	#836FFF",
           pointRadius: 5,
           pointHoverRadius: 10,
           borderWidth: 1,
-          data: [320, 340, 365, 360, 370, 385, 390, 384, 408, 420],
-        },
-        {
-          borderColor: "#fcc468",
-          backgroundColor: "#fcc468",
-          pointRadius: 5,
-          pointHoverRadius: 10,
-          borderWidth: 1,
-          data: [370, 394, 415, 409, 425, 445, 460, 450, 478, 484],
+          data: [1000, 3500, 4030, 2800, 5300, 4260, 0],
         },
       ],
     };
@@ -152,17 +133,17 @@ const dashboardNASDAQChart = {
   data: {
     labels: [
       "Jan",
-      "Feb",
+      "Fev",
       "Mar",
-      "Apr",
-      "May",
+      "Abr",
+      "Mai",
       "Jun",
       "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
+      "Ago",
+      "Set",
+      "Out",
       "Nov",
-      "Dec",
+      "Dez",
     ],
     datasets: [
       {

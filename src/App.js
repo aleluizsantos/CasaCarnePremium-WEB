@@ -25,6 +25,7 @@ const App = () => {
         transports: ["websocket"],
         jsonp: false,
       });
+
       socket.on("Operation", (response) => {
         dispatch({
           type: OPEN_CLOSE,
@@ -58,13 +59,6 @@ const App = () => {
       });
     })();
   }, [dispatch]);
-
-  useEffect(() => {
-    (() => {
-      const user = localStorage.getItem("_activeUserPremium");
-      user && console.log(user);
-    })();
-  }, []);
 
   return (
     <Router history={history}>

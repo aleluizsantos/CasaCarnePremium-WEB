@@ -10,10 +10,6 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Container,
   InputGroup,
   InputGroupText,
@@ -26,7 +22,7 @@ import { signOut } from "../../store/Actions";
 
 const NavbarHeader = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  // const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState("white");
   const sidebarToggle = createRef();
   const notificationAlert = createRef();
@@ -67,9 +63,9 @@ const NavbarHeader = (props) => {
     setIsOpen(!isOpen);
   };
 
-  const dropdownToggle = (e) => {
-    setDropdownOpen(!dropdownOpen);
-  };
+  // const dropdownToggle = (e) => {
+  //   setDropdownOpen(!dropdownOpen);
+  // };
 
   const getBrand = () => {
     let brandName = "Casa Carne Premium";

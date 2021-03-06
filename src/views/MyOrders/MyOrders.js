@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 // reactstrap components
 import {
@@ -15,17 +16,30 @@ import {
 import "./styles.css";
 import { formatDateTime } from "../../hooks/format";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
+import { NEW_ORDERS } from "../../store/Actions/types";
 
 const MyOrders = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
   const [myOrders, setMyOrders] = useState([]);
   const [typeStatus, setTypeStatus] = useState(typeStatusMyOrders.GROUP);
+  const { newOrders } = useSelector((state) => state.Notificate);
 
   useEffect(() => {
     (() => {
-      getOrders(typeStatus).then((response) => setMyOrders(response));
+      getOrders(typeStatus).then((response) => {
+        const amountProccess = response.filter(
+          (item) => item.statusRequest_id === typeStatusMyOrders.EM_ANASILE
+        ).length;
+
+        dispatch({
+          type: NEW_ORDERS,
+          payload: amountProccess,
+        });
+        setMyOrders(response);
+      });
     })();
-  }, [typeStatus]);
+  }, [typeStatus, newOrders, dispatch]);
 
   function goToDetailsMyOrders(order) {
     history.push({

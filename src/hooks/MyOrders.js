@@ -13,7 +13,7 @@ export const typeStatusMyOrders = {
 };
 
 /**
- * RETORNA UMA LISTA DE PEDIDOS, CONFORME SEU STATUS.
+ * RETORNA UMA LISTA DE PEDIDOS, CONFORME O STATUS PASSADO.
  * @param {String} statusReq Recebe uma string contendo os id dos status dos
  * pedidos. Ex: 1: Em analise | 2: Em Preparação | 3: Rota de entrega | 4: Retira na Loja |
  * 5: Agendado  | 6: Finalizado
@@ -50,6 +50,7 @@ export const getItemsMyOrders = async (idMyOrder) => {
 /**
  * ALTERA O STATUS DO PEDIDO
  * @param {Number} idMyOrder Recebe o id da Order para alterar o status do pedido
+ * @returns Object {success: boolean, nextState: number, descriptionNextActionRequest: String}
  */
 export const upDateStateMyOrders = async (idMyOrder) => {
   const { Authorization } = authHeader();
@@ -93,7 +94,12 @@ export const deleteItemPedido = async (idMyOrder, idItem) => {
     })
     .then((response) => response.data);
 };
-
+/**
+ * Retorna um object contendo o pedidos e outro objeto com os item do pedido
+ * Object return { order, items }
+ * @param {Object} item
+ * @returns { order, items }
+ */
 export const addItemOrder = async (item) => {
   const { Authorization } = authHeader();
   return await api

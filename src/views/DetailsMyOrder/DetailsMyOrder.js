@@ -28,7 +28,7 @@ import {
 } from "../../hooks/MyOrders";
 import { getProduct, getProductSearch } from "../../hooks/Product";
 import { addItemOrder } from "../../hooks/MyOrders";
-import { SET_MESSAGE } from "../../store/Actions/types";
+import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
 
 const DetailsMyOrder = (props) => {
@@ -140,6 +140,13 @@ const DetailsMyOrder = (props) => {
 
   function handleChangesAmount(amount) {
     setFormAddItem({ ...formAddItem, amount: amount });
+  }
+
+  function handleGoBack() {
+    dispatch({
+      type: CLEAR_MESSAGE,
+    });
+    history.goBack();
   }
 
   function handleAddItem() {
@@ -300,7 +307,7 @@ const DetailsMyOrder = (props) => {
                     color="default"
                     outline
                     size="sm"
-                    onClick={() => history.goBack()}
+                    onClick={() => handleGoBack()}
                   >
                     <i className="fa fa-arrow-left btn-round btn-icon" />
                   </Button>

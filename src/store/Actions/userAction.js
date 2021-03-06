@@ -41,8 +41,7 @@ export const signIn = (email, password) => (dispatch) => {
       return Promise.resolve();
     },
     (error) => {
-      const message =
-        error.response.data.error || error.message || error.toString();
+      const message = "Acesso negado, não tem permissão";
 
       dispatch({
         type: LOGIN_FAIL,

@@ -8,16 +8,12 @@ import { Main as MainLayout, Minimal as MinimalLayout } from "./layouts";
 
 import {
   Dashboard as DashboardView,
-  Icons as IconsView,
   Login as LoginView,
   Product as ProductView,
   ProductNew as ProductNewView,
   ProductCategory as ProductCategoryView,
   MyOrders as MyOrdersView,
   DetailsMyOrder as DetailsMyOrderView,
-  Notifications as NotificationsView,
-  Typography as TypographyView,
-  Upgrade as UpgradeView,
   Users as UserView,
 } from "./views";
 
@@ -54,38 +50,6 @@ const listRoutes = [
     component: ProductCategoryView,
     layout: MainLayout,
     path: "/categoryProduct",
-    security: true,
-  },
-  {
-    name: "Icones",
-    icon: "nc-icon nc-diamond",
-    component: IconsView,
-    layout: MainLayout,
-    path: "/icons",
-    security: true,
-  },
-  {
-    name: "Notification",
-    icon: "nc-icon nc-bell-55",
-    component: NotificationsView,
-    layout: MainLayout,
-    path: "/notification",
-    security: true,
-  },
-  {
-    name: "Typography",
-    icon: "nc-icon nc-caps-small",
-    component: TypographyView,
-    layout: MainLayout,
-    path: "/typography",
-    security: true,
-  },
-  {
-    name: "Upgrade",
-    icon: "nc-icon nc-spaceship",
-    component: UpgradeView,
-    layout: MainLayout,
-    path: "/upgrade",
     security: true,
   },
   {

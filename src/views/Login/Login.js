@@ -63,11 +63,15 @@ const Login = (props) => {
   // Efetuar login
   const handleLogin = async (event) => {
     event.preventDefault();
-    dispatch(signIn(formState.values.email, formState.values.password)).then(
-      () => {
-        history.push("/dashboard");
-      }
-    );
+    try {
+      dispatch(signIn(formState.values.email, formState.values.password)).then(
+        () => {
+          history.push("/dashboard");
+        }
+      );
+    } catch (error) {
+      alert("erro");
+    }
   };
 
   const handleChange = (event) => {

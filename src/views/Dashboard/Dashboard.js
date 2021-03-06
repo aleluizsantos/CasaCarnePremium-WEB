@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 // react plugin used to create charts
-import { Line, Pie } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 // reactstrap components
 import {
   Card,
@@ -15,9 +15,16 @@ import {
 // core components
 import {
   dashboard24HoursPerformanceChart,
-  dashboardEmailStatisticsChart,
   dashboardNASDAQChart,
 } from "variables/charts.js";
+
+const dataCurrent = () => {
+  var date = new Date(),
+    day = date.getDate().toString().padStart(2, "0"),
+    month = (date.getMonth() + 1).toString().padStart(2, "0"), //+1 pois no getMonth Janeiro começa com zero.
+    year = date.getFullYear();
+  return day + "/" + month + "/" + year;
+};
 
 const Dashboard = (props) => {
   const { clientsOnline, clientsRegistered, newOrders } = useSelector(
@@ -48,7 +55,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> 10/02/2021
+                  <i className="fas fa-sync-alt" /> {dataCurrent()}
                 </div>
               </CardFooter>
             </Card>
@@ -74,7 +81,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-calendar" /> 10/02/2021
+                  <i className="far fa-calendar" /> {dataCurrent()}
                 </div>
               </CardFooter>
             </Card>
@@ -157,33 +164,7 @@ const Dashboard = (props) => {
           </Col>
         </Row>
         <Row>
-          <Col md="4">
-            <Card>
-              <CardHeader>
-                <CardTitle tag="h5">Email Statistics</CardTitle>
-                <p className="card-category">Last Campaign Performance</p>
-              </CardHeader>
-              <CardBody>
-                <Pie
-                  data={dashboardEmailStatisticsChart.data}
-                  options={dashboardEmailStatisticsChart.options}
-                />
-              </CardBody>
-              <CardFooter>
-                <div className="legend">
-                  <i className="fa fa-circle text-primary" /> Opened{" "}
-                  <i className="fa fa-circle text-warning" /> Read{" "}
-                  <i className="fa fa-circle text-danger" /> Deleted{" "}
-                  <i className="fa fa-circle text-gray" /> Unopened
-                </div>
-                <hr />
-                <div className="stats">
-                  <i className="fa fa-calendar" /> Number of emails sent
-                </div>
-              </CardFooter>
-            </Card>
-          </Col>
-          <Col md="8">
+          <Col md="12">
             <Card className="card-chart">
               <CardHeader>
                 <CardTitle tag="h5">Vendas anuais</CardTitle>

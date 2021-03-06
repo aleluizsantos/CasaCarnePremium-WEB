@@ -5,16 +5,14 @@ export const login = async (email, password) => {
   return await api
     .post("/auth/authenticate", { email, password })
     .then((response) => {
-      const {
-        user,
-        token,
-        openClose,
-        totalPedidosProcess,
-        totalUsers,
-      } = response.data;
+      const { user, token } = response.data;
+
+      if (user.typeUser === "user") {
+        throw new Error("Usuário não tem permissão");
+      }
+
       localStorage.setItem("_accessAuthenticatedTokenPremium", token);
       localStorage.setItem("_activeUserPremium", JSON.stringify(user));
-
       return response.data;
     });
 };

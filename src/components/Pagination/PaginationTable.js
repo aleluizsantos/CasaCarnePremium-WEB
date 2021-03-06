@@ -11,7 +11,7 @@ const PaginationTable = (props) => {
 
   useEffect(() => {
     (() => loadingPages(1, totalPage))();
-  }, []);
+  }, [totalPage]);
 
   useEffect(() => {
     (() => {
