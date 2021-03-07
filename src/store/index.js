@@ -3,7 +3,9 @@ import thunk from "redux-thunk";
 
 import rootReduce from "./Reduces";
 
-const store = createStore(rootReduce, applyMiddleware(thunk));
+const middleware = [thunk];
+
+const store = createStore(rootReduce, applyMiddleware(...middleware));
 
 // const store = createStore(
 //   rootReduce,

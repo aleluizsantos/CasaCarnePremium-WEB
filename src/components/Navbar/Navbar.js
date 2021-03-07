@@ -51,9 +51,6 @@ const NavbarHeader = (props) => {
     })();
   }, [message, notificationAlert]);
 
-  // Total vez que redimencionar a janela
-  window.addEventListener("resize", () => updateColor());
-
   const toggle = () => {
     if (isOpen) {
       setColor("transparent");
@@ -83,14 +80,7 @@ const NavbarHeader = (props) => {
     document.documentElement.classList.toggle("nav-open");
     sidebarToggle.current.classList.toggle("toggled");
   };
-  // function that adds color dark/transparent to the navbar on resize (this is for the collapse)
-  const updateColor = (e) => {
-    if (window.innerWidth < 993 && isOpen) {
-      setColor("dark");
-    } else {
-      setColor("white");
-    }
-  };
+
   // Efetuar o logout
   const handleLogout = () => {
     dispatch(signOut());
