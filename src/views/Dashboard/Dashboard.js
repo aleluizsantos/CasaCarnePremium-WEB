@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 // react plugin used to create charts
 import { Line } from "react-chartjs-2";
@@ -13,23 +13,141 @@ import {
   Col,
 } from "reactstrap";
 // core components
-import {
-  dashboard24HoursPerformanceChart,
-  dashboardNASDAQChart,
-} from "variables/charts.js";
+
+import { formatCurrency } from "../../hooks/format";
+import { getSaleDay, getSaleWeek, getSaleYear } from "../../hooks/Reports";
 
 const dataCurrent = () => {
-  var date = new Date(),
-    day = date.getDate().toString().padStart(2, "0"),
-    month = (date.getMonth() + 1).toString().padStart(2, "0"), //+1 pois no getMonth Janeiro começa com zero.
-    year = date.getFullYear();
+  const date = new Date();
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0"); //+1 pois no getMonth Janeiro começa com zero.
+  const year = date.getFullYear();
   return day + "/" + month + "/" + year;
 };
 
+const time = () => {
+  const date = new Date();
+  const hour = date.getHours().toString().padStart(2, "0");
+  const min = date.getMinutes().toString().padStart(2, "0");
+  const sec = date.getSeconds().toString().padStart(2, "0");
+
+  return hour + ":" + min + ":" + sec;
+};
+
 const Dashboard = (props) => {
+  const [saleDay, setSaleDay] = useState("");
+  const [saleweek, setSaleWeek] = useState([]);
+  const [saleYear, setSaleYear] = useState([]);
   const { clientsOnline, clientsRegistered, newOrders } = useSelector(
     (state) => state.Notificate
   );
+
+  useEffect(() => {
+    (async () => {
+      getSaleDay().then((resposne) => setSaleDay(resposne.totalSaleDay));
+      getSaleWeek().then((resposne) => setSaleWeek(resposne));
+      getSaleYear().then((resposne) => setSaleYear(resposne));
+    })();
+  }, []);
+
+  const chartSaleWeek = {
+    data: (canvas) => {
+      return {
+        labels: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+        datasets: [
+          {
+            borderColor: "#00bf55",
+            backgroundColor: "#6bd098",
+            pointRadius: 5,
+            pointHoverRadius: 10,
+            borderWidth: 2,
+            data: saleweek,
+          },
+        ],
+      };
+    },
+    options: {
+      legend: {
+        display: false,
+      },
+
+      tooltips: {
+        enabled: true,
+      },
+
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              padding: 20,
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "#ccc",
+              color: "rgba(255,255,255,0.05)",
+            },
+          },
+        ],
+
+        xAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(255,255,255,0.1)",
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const chartSaleYear = {
+    data: {
+      labels: [
+        "Jan",
+        "Fev",
+        "Mar",
+        "Abr",
+        "Mai",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Set",
+        "Out",
+        "Nov",
+        "Dez",
+      ],
+      datasets: [
+        {
+          data: saleYear,
+          fill: false,
+          borderColor: "#fbc658",
+          backgroundColor: "transparent",
+          pointBorderColor: "#fbc658",
+          pointRadius: 4,
+          pointHoverRadius: 4,
+          pointBorderWidth: 8,
+        },
+      ],
+    },
+    options: {
+      legend: {
+        display: false,
+        position: "top",
+      },
+    },
+  };
+
   return (
     <>
       <div className="content">
@@ -72,7 +190,7 @@ const Dashboard = (props) => {
                   <Col md="9" xs="8">
                     <div className="numbers">
                       <p className="card-category">Receita dia</p>
-                      <CardTitle tag="p">$ 0,00</CardTitle>
+                      <CardTitle tag="p">{formatCurrency(saleDay)}</CardTitle>
                       <p />
                     </div>
                   </Col>
@@ -107,7 +225,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-clock" /> 12:34:00
+                  <i className="far fa-clock" /> {time()}
                 </div>
               </CardFooter>
             </Card>
@@ -133,7 +251,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> 10/02/2021 12:25:12
+                  <i className="fas fa-sync-alt" /> {dataCurrent()}
                 </div>
               </CardFooter>
             </Card>
@@ -148,8 +266,8 @@ const Dashboard = (props) => {
               </CardHeader>
               <CardBody>
                 <Line
-                  data={dashboard24HoursPerformanceChart.data}
-                  options={dashboard24HoursPerformanceChart.options}
+                  data={chartSaleWeek.data}
+                  options={chartSaleWeek.options}
                   width={400}
                   height={100}
                 />
@@ -157,7 +275,8 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fa fa-history" /> Updated 3 minutes ago
+                  <i className="fa fa-history" />
+                  {dataCurrent()}
                 </div>
               </CardFooter>
             </Card>
@@ -172,20 +291,20 @@ const Dashboard = (props) => {
               </CardHeader>
               <CardBody>
                 <Line
-                  data={dashboardNASDAQChart.data}
-                  options={dashboardNASDAQChart.options}
+                  data={chartSaleYear.data}
+                  options={chartSaleYear.options}
                   width={400}
                   height={100}
                 />
               </CardBody>
               <CardFooter>
                 <div className="chart-legend">
-                  <i className="fa fa-circle text-info" /> Tesla Model S{" "}
-                  <i className="fa fa-circle text-warning" /> BMW 5 Series
+                  <i className="fa fa-circle text-warning" />{" "}
+                  {1900 + new Date().getYear()}
                 </div>
                 <hr />
                 <div className="card-stats">
-                  <i className="fa fa-check" /> Data information certified
+                  <i className="fa fa-check" /> Dados atualizados
                 </div>
               </CardFooter>
             </Card>

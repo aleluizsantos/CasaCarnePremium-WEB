@@ -390,7 +390,12 @@ const ProductNew = (props) => {
                         <Button color="dark" onClick={() => history.goBack()}>
                           Voltar
                         </Button>{" "}
-                        <Button color="dark" onClick={() => {}}>
+                        <Button
+                          color="dark"
+                          onClick={() =>
+                            history.push({ pathname: "categoryProduct" })
+                          }
+                        >
                           Nova Categoria
                         </Button>{" "}
                         <Button disabled={isLoading} color="info" type="submit">

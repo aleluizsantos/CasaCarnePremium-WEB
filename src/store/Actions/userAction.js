@@ -63,3 +63,5 @@ export const signOut = () => (dispatch) => {
     type: LOGOUT,
   });
 };
+
+export const reload = () => (dispatch) => {};

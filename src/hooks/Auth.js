@@ -5,7 +5,13 @@ export const login = async (email, password) => {
   return await api
     .post("/auth/authenticate", { email, password })
     .then((response) => {
-      const { user, token } = response.data;
+      const {
+        user,
+        token,
+        openClose,
+        // totalPedidosProcess,
+        totalUsers,
+      } = response.data;
 
       if (user.typeUser === "user") {
         throw new Error("Usuário não tem permissão");
@@ -13,6 +19,9 @@ export const login = async (email, password) => {
 
       localStorage.setItem("_accessAuthenticatedTokenPremium", token);
       localStorage.setItem("_activeUserPremium", JSON.stringify(user));
+      localStorage.setItem("_openClosePremium", openClose);
+      localStorage.setItem("_totalUsersPremium", totalUsers);
+
       return response.data;
     });
 };
@@ -20,6 +29,8 @@ export const login = async (email, password) => {
 export const logout = () => {
   localStorage.removeItem("_accessAuthenticatedTokenPremium");
   localStorage.removeItem("_activeUserPremium");
+  localStorage.removeItem("_openClosePremium");
+  localStorage.removeItem("_totalUsersPremium");
 };
 
 export const register = () => {
@@ -40,3 +51,5 @@ export const isAuthenticated = () => {
   }
   return false;
 };
+
+export const getReload = () => {};

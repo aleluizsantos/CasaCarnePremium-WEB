@@ -6,29 +6,16 @@ import {
   UPDATE,
 } from "../Actions/types";
 
+const openClose = localStorage.getItem("_openClosePremium");
+const totalUsers = localStorage.getItem("_totalUsersPremium");
+
 const INITIAL_STATE = {
-  open_close: false,
+  open_close: openClose !== null ? openClose : false,
   newOrders: 0,
   clientsOnline: 0,
-  clientsRegistered: 0,
+  clientsRegistered: totalUsers !== null ? totalUsers : 0,
   update: {},
 };
-
-// const INITIAL_STATE = openClose
-//   ? {
-//       open_close: openClose,
-//       newOrders: totalOrderProcess,
-//       clientsOnline: 0,
-//       clientsRegistered: totalUsers,
-//       update: {},
-//     }
-//   : {
-//       open_close: false,
-//       newOrders: 0,
-//       clientsOnline: 0,
-//       clientsRegistered: 0,
-//       update: {},
-//     };
 
 export default function Notificate(state = INITIAL_STATE, action) {
   const { type, payload } = action;

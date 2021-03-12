@@ -1,12 +1,14 @@
 import React, { createRef, useEffect } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Nav, CustomInput } from "reactstrap";
+import { Nav } from "reactstrap";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "logo.svg";
 import { upgradeOpenClose } from "../../store/Actions";
+import { CLEAR_MESSAGE } from "../../store/Actions/types";
+import Swift from "../Switch";
 
 let ps;
 
@@ -39,7 +41,9 @@ const Sidebar = (props) => {
   };
   // Alterar status do estabelecimento
   const handleOpenClose = () => {
-    // setOpenClose(!openClose);
+    dispatch({
+      type: CLEAR_MESSAGE,
+    });
     dispatch(upgradeOpenClose());
   };
 
@@ -62,14 +66,7 @@ const Sidebar = (props) => {
 
         <div className="openClose">
           <h6>{open_close ? "Aberto" : "Fechado"}</h6>
-          <CustomInput
-            type="switch"
-            defaultChecked={open_close}
-            id="open_close"
-            valid={open_close}
-            name="open_close"
-            onClick={handleOpenClose}
-          />
+          <Swift value={open_close} onClick={handleOpenClose} />
         </div>
       </div>
 

@@ -105,7 +105,7 @@ const User = () => {
                         color="primary"
                         type="submit"
                       >
-                        Update Profile
+                        Atualizar
                       </Button>
                     </div>
                   </Row>

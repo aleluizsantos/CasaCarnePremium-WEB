@@ -18,6 +18,7 @@ import {
   Row,
   Col,
   Button,
+  Spinner,
 } from "reactstrap";
 
 import "./styles.css";
@@ -25,6 +26,7 @@ import { signIn } from "../../store/Actions";
 import { isAuthenticated } from "../../hooks";
 
 const Login = (props) => {
+  const [isloading, setIsloading] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -35,6 +37,7 @@ const Login = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { message } = useSelector((state) => state.Message);
+  const { fail_login } = useSelector((state) => state.Authenticate);
 
   // Validações do campos
   const schema = {
@@ -63,6 +66,7 @@ const Login = (props) => {
   // Efetuar login
   const handleLogin = async (event) => {
     event.preventDefault();
+    setIsloading(true);
     try {
       dispatch(signIn(formState.values.email, formState.values.password)).then(
         () => {
@@ -70,6 +74,7 @@ const Login = (props) => {
         }
       );
     } catch (error) {
+      setIsloading(false);
       alert("erro");
     }
   };
@@ -164,6 +169,9 @@ const Login = (props) => {
                     disabled={!formState.isValid}
                   >
                     LOGIN
+                    {isloading && !fail_login && (
+                      <Spinner size="sm" color="light" />
+                    )}
                   </Button>
                 </div>
               </Form>

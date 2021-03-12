@@ -1,7 +1,7 @@
-const dashboard24HoursPerformanceChart = {
+const chartSaleWeek = {
   data: (canvas) => {
     return {
-      labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
+      labels: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
       datasets: [
         {
           borderColor: "#6bd098",
@@ -9,15 +9,7 @@ const dashboard24HoursPerformanceChart = {
           pointRadius: 5,
           pointHoverRadius: 10,
           borderWidth: 1,
-          data: [5000, 2500, 1030, 4800, 3300, 3260, 0],
-        },
-        {
-          borderColor: "	#836FFF",
-          backgroundColor: "	#836FFF",
-          pointRadius: 5,
-          pointHoverRadius: 10,
-          borderWidth: 1,
-          data: [1000, 3500, 4030, 2800, 5300, 4260, 0],
+          data: [100, 200, 150, 0, 250, 630, 210],
         },
       ],
     };
@@ -38,7 +30,7 @@ const dashboard24HoursPerformanceChart = {
             fontColor: "#9f9f9f",
             beginAtZero: false,
             maxTicksLimit: 5,
-            //padding: 20
+            padding: 20,
           },
           gridLines: {
             drawBorder: false,
@@ -156,16 +148,6 @@ const dashboardNASDAQChart = {
         pointHoverRadius: 4,
         pointBorderWidth: 8,
       },
-      {
-        data: [0, 5, 10, 12, 20, 27, 30, 34, 42, 45, 55, 63],
-        fill: false,
-        borderColor: "#51CACF",
-        backgroundColor: "transparent",
-        pointBorderColor: "#51CACF",
-        pointRadius: 4,
-        pointHoverRadius: 4,
-        pointBorderWidth: 8,
-      },
     ],
   },
   options: {
@@ -177,7 +159,7 @@ const dashboardNASDAQChart = {
 };
 
 module.exports = {
-  dashboard24HoursPerformanceChart,
+  chartSaleWeek,
   dashboardEmailStatisticsChart,
   dashboardNASDAQChart,
 };

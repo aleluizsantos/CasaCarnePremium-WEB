@@ -12,29 +12,11 @@ const Footer = (props) => {
             <ul>
               <li>
                 <a
-                  href="https://www.creative-tim.com"
+                  href="https://www.facebook.com/premiumjales"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Creative Tim
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://blog.creative-tim.com"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://www.creative-tim.com/license"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  Licenses
+                  Casa Carne Premium
                 </a>
               </li>
             </ul>
