@@ -245,6 +245,7 @@ const ProductNew = (props) => {
                           <FormGroup>
                             <label>Preço*</label>
                             <Input
+                              style={{ fontWeight: 600, fontSize: 16 }}
                               placeholder="0,00"
                               type="text"
                               onChange={(event) =>
@@ -289,6 +290,7 @@ const ProductNew = (props) => {
                           <FormGroup>
                             <label>Preço Promocional</label>
                             <Input
+                              style={{ fontWeight: 600, fontSize: 16 }}
                               placeholder="0.0"
                               type="text"
                               value={pricePromotion}

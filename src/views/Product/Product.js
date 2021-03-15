@@ -28,6 +28,7 @@ import {
   DropdownToggle,
   DropdownItem,
   DropdownMenu,
+  Spinner,
 } from "reactstrap";
 
 const Product = () => {
@@ -45,9 +46,11 @@ const Product = () => {
   const [idProdSelected, setIdProdSelected] = useState("");
   const [selectCategory, setSelectCategory] = useState([]);
   const [productSelected, setProductSelected] = useState(null);
+  const [isloading, setIsloading] = useState(false);
 
   useEffect(() => {
     (() => {
+      setIsloading(true);
       getProduct(pageCurrent).then((response) => {
         // Calcular numero da paginas
         const { countProducts } = response;
@@ -56,6 +59,7 @@ const Product = () => {
         setTotalProductCurrent(countProducts);
         setTotalProductInit(countProducts);
         setTotalPages(numPage);
+        setIsloading(false);
       });
     })();
   }, [pageCurrent]);
@@ -314,6 +318,11 @@ const Product = () => {
                     ))}
                   </tbody>
                 </Table>
+                {isloading && (
+                  <div className="isloading">
+                    <Spinner color="#f1f1f1" size="md" />
+                  </div>
+                )}
               </CardBody>
               <CardFooter>
                 <span className="totalProduct">

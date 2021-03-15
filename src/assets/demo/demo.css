@@ -360,6 +360,7 @@ table.table tr td {
   border-color: #e9e9e9;
   padding: 12px 15px;
   vertical-align: middle;
+  white-space: nowrap; /*não quebrar a linha*/
 }
 /* table.table tr th:first-child {
   width: 160px;

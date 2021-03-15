@@ -9,6 +9,7 @@ const Switch = ({ value, onClick }) => {
       style={{
         justifyContent: toogle,
         background: value ? "#CDFFCE" : "#f1f1f1",
+        borderColor: value ? "#CDFFCE" : "#f1f1f1",
       }}
     >
       <div

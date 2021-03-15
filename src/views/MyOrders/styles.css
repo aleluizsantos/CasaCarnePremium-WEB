@@ -29,3 +29,12 @@
     padding-left: 17px;
     padding-top: 12px;
 }
+
+.imgTypeDelivery {
+    height: 35px;
+}
+.isloading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

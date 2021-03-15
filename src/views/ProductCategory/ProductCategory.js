@@ -12,6 +12,7 @@ import {
   Button,
   FormGroup,
   Input,
+  Spinner,
 } from "reactstrap";
 
 import {
@@ -40,12 +41,14 @@ const ProductCategory = () => {
 
   useEffect(() => {
     (() => {
+      setIsLoading(true);
       getProductGroupCategory().then((response) => {
         setCategorys(response);
         setTotalProduct(
           response.reduce((total, item) => total + Number(item.TotalProduct), 0)
         );
       });
+      setIsLoading(false);
     })();
   }, [isLoading]);
 
@@ -237,6 +240,11 @@ const ProductCategory = () => {
                   ))}
                 </tbody>
               </Table>
+              {isLoading && (
+                <div className="isloading">
+                  <Spinner color="#f1f1f1" size="md" />
+                </div>
+              )}
             </CardBody>
             <CardFooter>
               <p>

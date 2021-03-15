@@ -30,6 +30,8 @@ import { getProduct, getProductSearch } from "../../hooks/Product";
 import { addItemOrder } from "../../hooks/MyOrders";
 import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
+import imgDelivery from "../../assets/img/delivery.png";
+import imgStore from "../../assets/img/store.png";
 
 const DetailsMyOrder = (props) => {
   const history = useHistory();
@@ -303,20 +305,25 @@ const DetailsMyOrder = (props) => {
               <CardTitle tag="h4">
                 <div className="headerCard">
                   <Button
-                    className=" "
+                    className="btn-round"
                     color="default"
                     outline
                     size="sm"
                     onClick={() => handleGoBack()}
                   >
-                    <i className="fa fa-arrow-left btn-round btn-icon" />
+                    <i className="fa fa-arrow-left" />
                   </Button>
 
                   <div>
-                    <i className="fa fa-shopping-basket fa-2x" />
+                    {/* <i className="fa fa-shopping-basket" /> */}
                     <span>Detalhe do pedido</span>
                   </div>
                   <div>
+                    <img
+                      src={state.deliveryType_id === 1 ? imgDelivery : imgStore}
+                      alt={state.deliveryType}
+                      style={{ paddingRight: 10 }}
+                    />
                     <span>{state.deliveryType}</span>
                   </div>
                 </div>
@@ -438,7 +445,7 @@ const DetailsMyOrder = (props) => {
 
               <div className="contentTotal">
                 <div className="note">
-                  <p>{myOrder.note}</p>
+                  <p>{myOrder.note || "Sem observações"}</p>
                 </div>
                 <div className="subtTotals">
                   <div className="groupTotals">

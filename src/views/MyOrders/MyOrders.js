@@ -11,9 +11,12 @@ import {
   Row,
   Col,
   Button,
+  Spinner,
 } from "reactstrap";
 
 import "./styles.css";
+import imgDelivery from "../../assets/img/delivery.png";
+import imgStore from "../../assets/img/store.png";
 import { formatDateTime } from "../../hooks/format";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
 import { NEW_ORDERS } from "../../store/Actions/types";
@@ -22,11 +25,13 @@ const MyOrders = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [myOrders, setMyOrders] = useState([]);
+  const [isloading, setIsloading] = useState(false);
   const [typeStatus, setTypeStatus] = useState(typeStatusMyOrders.GROUP);
   const { newOrders } = useSelector((state) => state.Notificate);
 
   useEffect(() => {
     (() => {
+      setIsloading(true);
       getOrders(typeStatus).then((response) => {
         const amountProccess = response.filter(
           (item) => item.statusRequest_id === typeStatusMyOrders.EM_ANASILE
@@ -37,6 +42,7 @@ const MyOrders = () => {
           payload: amountProccess,
         });
         setMyOrders(response);
+        setIsloading(false);
       });
     })();
   }, [typeStatus, newOrders, dispatch]);
@@ -89,19 +95,31 @@ const MyOrders = () => {
                 <Table responsive>
                   <thead className="text-primary">
                     <tr>
+                      <th>Tipo</th>
                       <th>Data</th>
                       <th>Cliente</th>
                       <th>Status</th>
                       <th className="text-right">Valor</th>
                       <th>Telefone</th>
                       <th>Cidade</th>
-                      <th>Tipo</th>
                       <th>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {myOrders.map((item) => (
                       <tr key={item.id}>
+                        <td>
+                          <img
+                            src={
+                              item.deliveryType_id === 1
+                                ? imgDelivery
+                                : imgStore
+                            }
+                            alt={item.deliveryType}
+                            className="imgTypeDelivery"
+                          />
+                          {/* {item.deliveryType} */}
+                        </td>
                         <td>{formatDateTime(item.dateTimeOrder)}</td>
                         <td>{item.name}</td>
                         <td>
@@ -128,7 +146,6 @@ const MyOrders = () => {
                         <td>
                           {item.city}/{item.uf}
                         </td>
-                        <td>{item.deliveryType}</td>
                         <td className="text-center">
                           <div className="groupButton">
                             <Button
@@ -146,6 +163,11 @@ const MyOrders = () => {
                     ))}
                   </tbody>
                 </Table>
+                {isloading && (
+                  <div className="isloading">
+                    <Spinner color="#f1f1f1" size="md" />
+                  </div>
+                )}
               </CardBody>
             </Card>
           </Col>
