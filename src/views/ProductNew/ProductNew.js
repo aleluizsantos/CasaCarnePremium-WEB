@@ -2,16 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
-import { SET_MESSAGE } from "../../store/Actions/types";
-import { url } from "../../services/host";
-import {
-  getCategorys,
-  getMeasureUnit,
-  toCurrency,
-  createProduct,
-  updateProduct,
-} from "../../hooks";
-
 // reactstrap components
 import {
   Button,
@@ -27,6 +17,21 @@ import {
   Col,
   Spinner,
 } from "reactstrap";
+
+import "./styles.css";
+
+import { SET_MESSAGE } from "../../store/Actions/types";
+import { url } from "../../services/host";
+import {
+  getCategorys,
+  getMeasureUnit,
+  toCurrency,
+  createProduct,
+  updateProduct,
+} from "../../hooks";
+
+import imgMobile from "../../assets/img/mobile.png";
+import imgNoMobile from "../../assets/img/noMobile.png";
 
 const ProductNew = (props) => {
   const { state } = props.location;
@@ -47,6 +52,7 @@ const ProductNew = (props) => {
   const [stockQuantity, setStockQuantity] = useState(0);
   const [category_id, setCategory_id] = useState("");
   const [measureUnid_id, setMeasureUnid_id] = useState("");
+  const [visibleApp, setVisibleApp] = useState(false);
 
   useEffect(() => {
     (() => {
@@ -59,6 +65,7 @@ const ProductNew = (props) => {
         setPricePromotion(state.pricePromotion);
         setCategory_id(state.category_id);
         setMeasureUnid_id(state.measureUnid_id);
+        setVisibleApp(state.visibleApp ? 1 : 0);
       }
     })();
   }, [state]);
@@ -108,6 +115,7 @@ const ProductNew = (props) => {
     setDescription("");
     setPrice(0);
     setPromotion(false);
+    setVisibleApp(false);
     setPricePromotion(0);
     setCategory_id("");
     setMeasureUnid_id("");
@@ -174,11 +182,16 @@ const ProductNew = (props) => {
         <Row>
           <Col className="ml-auto mr-auto" md="12">
             <Card className="card-user">
-              {!hideMobile && (
-                <i className="fa fa-mobile fa-3x mobileDisplay" />
-              )}
               <CardHeader className="no-gutters">
-                <CardTitle tag="h5">Novo Produto</CardTitle>
+                <CardTitle tag="h5">
+                  <div className="imageVisibleMobile">
+                    <img
+                      src={visibleApp ? imgMobile : imgNoMobile}
+                      alt="mobile"
+                    />
+                    Novo Produto
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardBody>
                 <Form onSubmit={handlerSubmit}>
@@ -198,7 +211,7 @@ const ProductNew = (props) => {
                         </Col>
                       </Row>
                       <Row>
-                        <Col className="pr-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Categoria*</label>
                             <Input
@@ -220,7 +233,7 @@ const ProductNew = (props) => {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col className="px-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Unid. Medida*</label>
                             <Input
@@ -241,7 +254,7 @@ const ProductNew = (props) => {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col className="pl-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Preço*</label>
                             <Input
@@ -257,7 +270,7 @@ const ProductNew = (props) => {
                         </Col>
                       </Row>
                       <Row>
-                        <Col className="pr-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Em Estoque</label>
                             <Input
@@ -270,7 +283,7 @@ const ProductNew = (props) => {
                             />
                           </FormGroup>
                         </Col>
-                        <Col className="px-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Promoção</label>
                             <Input
@@ -286,7 +299,7 @@ const ProductNew = (props) => {
                             </Input>
                           </FormGroup>
                         </Col>
-                        <Col className="pl-1" md="4">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
                             <label>Preço Promocional</label>
                             <Input
@@ -302,28 +315,15 @@ const ProductNew = (props) => {
                         </Col>
                       </Row>
                       <Row>
-                        <Col className="pr-1" md="6">
+                        <Col className="pl-3" md="4">
                           <FormGroup>
-                            <label>Exibir Produto com quantidade ZERADA</label>
+                            <label>Exibir produto no App</label>
                             <Input
                               type="select"
                               name="select"
-                              id="AmountProduct"
-                            >
-                              <option value={0}>Não</option>
-                              <option value={1}>Sim</option>
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col className="pl-1" md="6">
-                          <FormGroup>
-                            <label>Ocultar produto do aplicativo</label>
-                            <Input
-                              type="select"
-                              name="select"
-                              value={hideMobile}
+                              value={visibleApp}
                               onChange={(event) => {
-                                setHideMobile(parseInt(event.target.value, 10));
+                                setVisibleApp(parseInt(event.target.value, 10));
                               }}
                             >
                               <option value={0}>Não</option>

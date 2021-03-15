@@ -12,6 +12,8 @@ import {
   getPromotionProduct,
 } from "../../hooks";
 import { Pagination, ModalView } from "../../components";
+import imgNoMobile from "../../assets/img/noMobile.png";
+import imgMobile from "../../assets/img/mobile.png";
 
 // reactstrap componentss
 import {
@@ -283,7 +285,14 @@ const Product = () => {
                             </object>
                           </div>
                         </td>
-                        <td className="title">{item.name}</td>
+                        <td className="title">
+                          <img
+                            style={{ height: 28, paddingRight: 10 }}
+                            src={item.visibleApp ? imgMobile : imgNoMobile}
+                            alt="mobile"
+                          />
+                          {item.name}
+                        </td>
                         <td>{item.description}</td>
                         <td>{item.measureUnid}</td>
                         <td className="text-right">{item.price}</td>
