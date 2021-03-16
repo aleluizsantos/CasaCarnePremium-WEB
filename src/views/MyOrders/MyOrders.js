@@ -17,6 +17,8 @@ import {
 import "./styles.css";
 import imgDelivery from "../../assets/img/delivery.png";
 import imgStore from "../../assets/img/store.png";
+import imgOrderEmpty from "../../assets/img/orderEmpty.png";
+
 import { formatDateTime } from "../../hooks/format";
 import { typeStatusMyOrders, getOrders } from "../../hooks/MyOrders";
 import { NEW_ORDERS } from "../../store/Actions/types";
@@ -163,6 +165,13 @@ const MyOrders = () => {
                     ))}
                   </tbody>
                 </Table>
+                {myOrders.length <= 0 && (
+                  <div className="imgOrderEmpty">
+                    <img src={imgOrderEmpty} alt="empty" />
+                    <h3>Aguardando novos pedidos</h3>
+                  </div>
+                )}
+
                 {isloading && (
                   <div className="isloading">
                     <Spinner color="#f1f1f1" size="md" />

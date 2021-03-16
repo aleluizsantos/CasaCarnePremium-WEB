@@ -41,7 +41,6 @@ const ProductNew = (props) => {
   const [categorys, setCategorys] = useState([]);
   const [measureUnit, setMeasureUnit] = useState([]);
   const [previewImage, setPreviewImage] = useState([]);
-  const [hideMobile, setHideMobile] = useState(false);
   const [isLoading, setIsloading] = useState(false);
 
   const [name, setName] = useState("");
@@ -52,6 +51,7 @@ const ProductNew = (props) => {
   const [stockQuantity, setStockQuantity] = useState(0);
   const [category_id, setCategory_id] = useState("");
   const [measureUnid_id, setMeasureUnid_id] = useState("");
+  const [measureDesc, setMeasureDesc] = useState("");
   const [visibleApp, setVisibleApp] = useState(false);
 
   useEffect(() => {
@@ -65,6 +65,8 @@ const ProductNew = (props) => {
         setPricePromotion(state.pricePromotion);
         setCategory_id(state.category_id);
         setMeasureUnid_id(state.measureUnid_id);
+        setMeasureDesc(state.measureUnid);
+        setStockQuantity(state.inventory);
         setVisibleApp(state.visibleApp ? 1 : 0);
       }
     })();
@@ -144,7 +146,8 @@ const ProductNew = (props) => {
     data.append("pricePromotion", parseFloat(pricePromotion));
     data.append("category_id", parseInt(category_id));
     data.append("measureUnid_id", parseInt(measureUnid_id));
-
+    data.append("visibleApp", !!visibleApp);
+    data.append("inventory", parseFloat(stockQuantity));
     // Incluir todas as imagens selecionadas
     image.forEach((img) => {
       data.append("image", img);
@@ -240,14 +243,23 @@ const ProductNew = (props) => {
                               type="select"
                               name="select"
                               id="selectMeasure"
-                              onChange={(event) =>
-                                setMeasureUnid_id(event.target.value)
-                              }
+                              onChange={(event) => {
+                                const index = event.target.selectedIndex;
+                                const el = event.target.childNodes[index];
+                                const unid = el.getAttribute("id");
+
+                                setMeasureUnid_id(event.target.value);
+                                setMeasureDesc(unid);
+                              }}
                               value={measureUnid_id}
                             >
                               <option value="0">Selecionar Unid. Medida</option>
                               {measureUnit.map((item) => (
-                                <option key={item.id} value={item.id}>
+                                <option
+                                  key={item.id}
+                                  value={item.id}
+                                  id={item.unid}
+                                >
                                   {item.description}
                                 </option>
                               ))}
@@ -271,6 +283,8 @@ const ProductNew = (props) => {
                       </Row>
                       <Row>
                         <Col className="pl-3" md="4">
+                          <span className="measureUnid">{measureDesc}</span>
+
                           <FormGroup>
                             <label>Em Estoque</label>
                             <Input
@@ -335,7 +349,7 @@ const ProductNew = (props) => {
                       <Row>
                         <Col md="12">
                           <FormGroup>
-                            <label>Descrição</label>
+                            <label>Descrição*</label>
                             <Input
                               type="textarea"
                               value={description}

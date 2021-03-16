@@ -38,3 +38,9 @@
     justify-content: center;
     align-items: center;
 }
+.imgOrderEmpty {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

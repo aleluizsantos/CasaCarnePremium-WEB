@@ -254,11 +254,11 @@ const Product = () => {
                       <th colSpan="2" className="text-center">
                         Produto
                       </th>
-                      <th>Descrição</th>
                       <th>Unidade</th>
                       <th className="text-right">Preço</th>
                       <th>Promoção</th>
                       <th className="text-right">P. Promoção</th>
+                      <th>Estoque</th>
                       <th>Categoria</th>
                       <th>Ações</th>
                     </tr>
@@ -293,13 +293,13 @@ const Product = () => {
                           />
                           {item.name}
                         </td>
-                        <td>{item.description}</td>
                         <td>{item.measureUnid}</td>
                         <td className="text-right">{item.price}</td>
                         <td className="text-center">
                           {BadgePromotion(item.promotion)}
                         </td>
                         <td className="text-right">{item.pricePromotion}</td>
+                        <td className="text-center">{item.inventory}</td>
                         <td className="text-center">{item.category}</td>
                         <td>
                           <div className="groupButton">
