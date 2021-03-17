@@ -34,9 +34,11 @@
     height: 35px;
 }
 .isloading {
+    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
+    left: 50%;
 }
 .imgOrderEmpty {
     width: 100%;

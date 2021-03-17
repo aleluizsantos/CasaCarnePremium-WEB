@@ -37,16 +37,17 @@ const Product = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
-  const [dataProductCategory, setDataProductCategory] = useState([]);
-  const [totalProductInit, setTotalProductInit] = useState(0);
-  const [totalProductCurrent, setTotalProductCurrent] = useState(0);
-  const [totalPages, setTotalPages] = useState(null);
+  const [
+    dataProductCategorySelected,
+    setDataProductCategorySelected,
+  ] = useState([]);
+  const [categorys, setCategorys] = useState([]);
+  const [selectCategory, setSelectCategory] = useState([]);
+  const [totalRecords, setTotalRecords] = useState(0);
   const [pageCurrent, setPageCurrent] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [categorys, setCategorys] = useState([]);
   const [modal, setModal] = useState(false);
   const [idProdSelected, setIdProdSelected] = useState("");
-  const [selectCategory, setSelectCategory] = useState([]);
   const [productSelected, setProductSelected] = useState(null);
   const [isloading, setIsloading] = useState(false);
 
@@ -54,22 +55,20 @@ const Product = () => {
     (() => {
       setIsloading(true);
       getProduct(pageCurrent).then((response) => {
-        // Calcular numero da paginas
         const { countProducts } = response;
-        const numPage = Math.ceil(countProducts / 10);
         setDataProduct(response.products);
-        setTotalProductCurrent(countProducts);
-        setTotalProductInit(countProducts);
-        setTotalPages(numPage);
+        setTotalRecords(countProducts);
         setIsloading(false);
       });
     })();
   }, [pageCurrent]);
 
+  //Button Categoria carrega todas as catgorias
   const dropdownToggle = (e) => {
     // Verificar se esta selecionado Produto em promoção
     const exist = selectCategory.findIndex((cat) => cat.id === -1);
     !!!exist && setSelectCategory([]);
+
     categorys.length <= 0 &&
       getCategorys().then((response) => {
         setCategorys(response);
@@ -77,6 +76,7 @@ const Product = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  // Selecionar a categoria escolhida no button
   const handleSelectCategoy = (item) => {
     // se não tive objetos na categoria botão desabilitado
     if (categorys.length <= 0) return;
@@ -85,40 +85,44 @@ const Product = () => {
     const newListCat = categorys.filter((category) => category.id !== item.id);
     setCategorys(newListCat);
     setSelectCategory([...selectCategory, item]);
+
+    // Converte o array com todas categorias em string "1,2,3"
     const categoryId = [...selectCategory, item]
       .map((item) => item.id)
       .toString();
+
+    // Realiza um consulta no banco passando a categoria escolhida
     getCategoryProduct(categoryId).then((response) => {
       const { countProducts } = response;
-      const numPage = Math.ceil(countProducts / 10);
-      setDataProductCategory(response.products);
-      setTotalPages(numPage);
-      setTotalProductCurrent(countProducts);
+      setDataProductCategorySelected(response.products);
+      setTotalRecords(countProducts);
     });
-    // }
   };
-
+  // Remove o item selecionado das categorias
   const handleRemoveSelectCategory = (item) => {
     const newSelectCat = selectCategory.filter((cat) => cat.id !== item.id);
-    const newDataProductCat = dataProductCategory.filter(
+    const newDataProductCat = dataProductCategorySelected.filter(
       (prod) => prod.category_id !== item.id
     );
-    setDataProductCategory(newDataProductCat);
+    const totalProducts = newDataProductCat.length;
+
+    setDataProductCategorySelected(newDataProductCat);
     setSelectCategory(newSelectCat);
 
     if (item.id === -1) {
-      setDataProductCategory([]);
+      //Todos os produtos em promoções
+      setDataProductCategorySelected([]);
     } else {
-      setCategorys([...categorys, item]); //Retornar a categoria no Dropbox
+      setCategorys([...categorys, item]); //Retornar a categoria no Dropdown
     }
 
     if (newSelectCat.length <= 0) {
-      const numPage = Math.ceil(totalProductInit / 10);
-      setTotalPages(numPage);
-      setTotalProductCurrent(totalProductInit);
+      setPageCurrent(1);
+    } else {
+      setTotalRecords(totalProducts);
     }
   };
-
+  // Badge retorna style de produto em promoção
   const BadgePromotion = (value) => {
     switch (value) {
       case true:
@@ -130,42 +134,43 @@ const Product = () => {
     }
     return <span>{value ? "Promotion" : "Normal"}</span>;
   };
-
+  //Redirecionar para a página de Cagastro de novo produto
   const goToAddNewProduct = () => {
     history.push({ pathname: "productNew" });
   };
-
+  //Redireciona para a pagina Produto para editar-lo
   const goToEditProduct = (product) => {
     history.push({
       pathname: "/productNew",
       state: product,
     });
   };
-
+  //Abre o modal
   const handleShowModal = (product) => {
     setIdProdSelected(product.id);
     setProductSelected(product);
     setModal(true);
   };
-
+  //Exibe todos os produto em promoção
   const handleProductPromotion = () => {
     const exist = selectCategory.findIndex((cat) => cat.id === -1);
     !!exist &&
       getPromotionProduct().then((response) => {
-        setDataProductCategory(response);
+        setDataProductCategorySelected(response);
         setSelectCategory([{ id: -1, name: "Produtos em Promoções" }]);
       });
   };
-
+  // Excluir um produto
   const handleDeleteProduct = (index) => {
     deleteProduto(index).then((response) => {
       // Remover o produto do array
       const newProduct = dataProduct.filter((item) => item.id !== index);
       setDataProduct(newProduct);
+
       // Definir novo total de quantidade de produtos
-      const newTotalProduct = totalProductInit - 1;
-      setTotalProductInit(newTotalProduct);
-      setTotalProductCurrent(newTotalProduct);
+      const newTotalProduct = newProduct.length;
+      setTotalRecords(newTotalProduct);
+
       dispatch({
         type: SET_MESSAGE,
         payload: response.message,
@@ -264,9 +269,9 @@ const Product = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(dataProductCategory.length > 0 ||
+                    {(dataProductCategorySelected.length > 0 ||
                     selectCategory.length > 0
-                      ? dataProductCategory
+                      ? dataProductCategorySelected
                       : dataProduct
                     ).map((item, idx) => (
                       <tr key={idx}>
@@ -327,20 +332,25 @@ const Product = () => {
                     ))}
                   </tbody>
                 </Table>
+              </CardBody>
+              <CardFooter>
+                <span className="totalProduct">
+                  Total de produto:
+                  <strong>{totalRecords}</strong>{" "}
+                </span>
+
                 {isloading && (
                   <div className="isloading">
                     <Spinner color="#f1f1f1" size="md" />
                   </div>
                 )}
-              </CardBody>
-              <CardFooter>
-                <span className="totalProduct">
-                  Total de produto: <strong>{totalProductCurrent}</strong>{" "}
-                </span>
-                {!!totalPages && (
+
+                {!!totalRecords && (
                   <Pagination
-                    totalPage={totalPages}
-                    onChange={setPageCurrent}
+                    totalRecords={Number(totalRecords)}
+                    pageLimit={10}
+                    pageNeighbours={1}
+                    onPageChanged={(data) => setPageCurrent(data)}
                   />
                 )}
               </CardFooter>

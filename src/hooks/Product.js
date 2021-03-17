@@ -56,10 +56,11 @@ export const getMeasureUnit = async () => {
  */
 export const getProduct = async (pageCurrent = 1) => {
   const { Authorization } = authHeader();
+  const { currentPage } = pageCurrent;
   return await api
     .get("product/all", {
       headers: { Authorization: Authorization },
-      params: { page: pageCurrent },
+      params: { page: currentPage },
     })
     .then((response) => {
       return response.data;
