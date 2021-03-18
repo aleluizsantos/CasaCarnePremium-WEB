@@ -7,3 +7,4 @@ export { default as MyOrders } from "./MyOrders";
 export { default as DetailsMyOrder } from "./DetailsMyOrder";
 export { default as Users } from "./Users";
 export { default as ProductCategory } from "./ProductCategory";
+export { default as EntryProductStock } from "./EntryProductStock";

@@ -1,0 +1,29 @@
+.imgProductCategory {
+    position: relative;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px dashed #c6c6c6;
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.imgProductCategory .buttonSelectedImg {
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 10px;
+    border-radius: 15px;
+    z-index: 1;
+}
+.imgProductCategory .buttonSelectedImg span {
+    font-weight: 500;
+    color: #484848;
+    font-size: 12px;
+}
+.imgProductCategory img {
+    transition: transform 2s;
+}
+.imgProductCategory img:hover {
+    transform: scale(1.1);
+}

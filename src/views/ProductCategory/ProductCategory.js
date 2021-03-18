@@ -15,11 +15,13 @@ import {
   Spinner,
 } from "reactstrap";
 
+import "./styles.css";
 import {
   getProductGroupCategory,
   updateCategory,
   deleteCategory,
 } from "../../hooks";
+
 import { SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
 
@@ -127,7 +129,10 @@ const ProductCategory = () => {
         confirmed={(category) => handleEditCategory(category)}
       >
         <div>
-          <div className="text-center">
+          <div className="text-center imgProductCategory">
+            <div className="buttonSelectedImg">
+              <span>Clique na imagem para alterar</span>
+            </div>
             <label htmlFor="input-file">
               <img
                 style={{

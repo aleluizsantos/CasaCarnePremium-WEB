@@ -15,6 +15,7 @@ import {
   MyOrders as MyOrdersView,
   DetailsMyOrder as DetailsMyOrderView,
   Users as UserView,
+  EntryProductStock as EntryProductStockView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -42,6 +43,14 @@ const listRoutes = [
     component: ProductView,
     layout: MainLayout,
     path: "/product",
+    security: true,
+  },
+  {
+    name: "Entrada Produto",
+    icon: "nc-icon nc-cart-simple",
+    component: EntryProductStockView,
+    layout: MainLayout,
+    path: "/entryProduct",
     security: true,
   },
   {

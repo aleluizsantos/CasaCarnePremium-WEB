@@ -198,7 +198,7 @@ const ProductNew = (props) => {
               </CardHeader>
               <CardBody>
                 <Form onSubmit={handlerSubmit}>
-                  <Row md="12">
+                  <Row>
                     <Col md="9">
                       <Row>
                         <Col md="12">
@@ -270,6 +270,7 @@ const ProductNew = (props) => {
                           <FormGroup>
                             <label>Preço*</label>
                             <Input
+                              valid={promotion ? false : true}
                               style={{ fontWeight: 600, fontSize: 16 }}
                               placeholder="0,00"
                               type="text"
@@ -317,6 +318,7 @@ const ProductNew = (props) => {
                           <FormGroup>
                             <label>Preço Promocional</label>
                             <Input
+                              valid={promotion ? true : false}
                               style={{ fontWeight: 600, fontSize: 16 }}
                               placeholder="0.0"
                               type="text"

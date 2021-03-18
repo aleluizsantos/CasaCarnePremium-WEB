@@ -21,29 +21,6 @@ const User = () => {
     <>
       <div className="content">
         <Row>
-          <Col md="4">
-            <Card className="card-user">
-              <div className="image">
-                <img alt="..." src={require("assets/img/background.jpg")} />
-              </div>
-              <CardBody>
-                <div className="author">
-                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                    <img
-                      alt="..."
-                      className="avatar border-gray"
-                      src={require("assets/img/default-avatar.png")}
-                    />
-                    <h5 className="title">{user.name}</h5>
-                  </a>
-                  <p className="description">@premiumjales·Açougue</p>
-                </div>
-                <p className="description text-center">
-                  Aqui o sabor é sempre de qualidade
-                </p>
-              </CardBody>
-            </Card>
-          </Col>
           <Col md="8">
             <Card className="card-user">
               <CardHeader>
@@ -110,6 +87,29 @@ const User = () => {
                     </div>
                   </Row>
                 </Form>
+              </CardBody>
+            </Card>
+          </Col>
+          <Col md="4">
+            <Card className="card-user">
+              <div className="image">
+                <img alt="..." src={require("assets/img/background.jpg")} />
+              </div>
+              <CardBody>
+                <div className="author">
+                  <a href="#pablo" onClick={(e) => e.preventDefault()}>
+                    <img
+                      alt="..."
+                      className="avatar border-gray"
+                      src={require("assets/img/default-avatar.png")}
+                    />
+                    <h5 className="title">{user.name}</h5>
+                  </a>
+                  <p className="description">@premiumjales·Açougue</p>
+                </div>
+                <p className="description text-center">
+                  Aqui o sabor é sempre de qualidade
+                </p>
               </CardBody>
             </Card>
           </Col>
