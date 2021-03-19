@@ -290,7 +290,11 @@ const Product = () => {
                             </object>
                           </div>
                         </td>
-                        <td className="title">
+                        <td
+                          style={{ cursor: "pointer" }}
+                          className="title"
+                          onClick={() => goToEditProduct(item)}
+                        >
                           <img
                             style={{ height: 28, paddingRight: 10 }}
                             src={item.visibleApp ? imgMobile : imgNoMobile}

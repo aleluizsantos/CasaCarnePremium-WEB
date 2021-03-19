@@ -67,6 +67,9 @@ const EntryProductStock = () => {
                   <option value="3">Acém</option>
                 </Input>
               </FormGroup>
+              <Button outline color="success" size="sm">
+                <i className="fa fa-plus" /> Adicionar
+              </Button>{" "}
             </Col>
             <Col md="3">
               <FormGroup>
@@ -118,6 +121,10 @@ const EntryProductStock = () => {
             </Table>
           </Row>
         </Form>
+        <div>
+          <span className="title">Valor da nota:</span>
+          <span style={{ paddingLeft: 20 }}>R$ 1.250,00:</span>
+        </div>
       </ModalView>
       <Card>
         <CardHeader>
