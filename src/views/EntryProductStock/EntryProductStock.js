@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // reactstrap componentss
 import {
@@ -21,8 +21,20 @@ import {
 import { ModalView } from "../../components";
 import imgEntryProduct from "../../assets/img/inventory.png";
 
+import { formatDateTime, formatCurrency } from "../../hooks/format";
+import { getEntryProducts } from "../../hooks/entryProductStock";
+
 const EntryProductStock = () => {
-  const [modalAddStock, setModalAddStock] = useState(true);
+  const [modalAddStock, setModalAddStock] = useState(false);
+  const [dataEntryProduct, setDataEntryProduct] = useState([]);
+
+  useEffect(() => {
+    (() => {
+      getEntryProducts().then((response) => {
+        setDataEntryProduct(response);
+      });
+    })();
+  }, []);
 
   return (
     <div className="content">
@@ -151,43 +163,25 @@ const EntryProductStock = () => {
                 <th>Produto</th>
                 <th>Quantidade</th>
                 <th className="text-right">Preço Unitário</th>
-                <th>Fornecedor</th>
                 <th className="text-right">P. Total</th>
+                <th>Fornecedor</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>teste</td>
-                <td>teste</td>
-                <td>teste</td>
-                <td>teste</td>
-                <td>teste</td>
-                <td>teste</td>
-
-                <td>
-                  <div className="groupButton">
-                    <Button
-                      className="btn-round btn-icon"
-                      color="danger"
-                      outline
-                      size="sm"
-                      onClick={() => {}}
-                    >
-                      <i className="fa fa-trash" />
-                    </Button>
-                    <Button
-                      className="btn-round btn-icon"
-                      color="success"
-                      outline
-                      size="sm"
-                      onClick={() => {}}
-                    >
-                      <i className="fa fa-edit" />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
+              {dataEntryProduct.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{formatDateTime(item.data_entry)}</td>
+                  <td>{item.name}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.price}</td>
+                  <td>
+                    {formatCurrency(Number(item.amount) * Number(item.price))}
+                  </td>
+                  <td>{item.nameProvider}</td>
+                  <td> + + </td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </CardBody>
