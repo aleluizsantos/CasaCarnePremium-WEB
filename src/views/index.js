@@ -8,3 +8,4 @@ export { default as DetailsMyOrder } from "./DetailsMyOrder";
 export { default as Users } from "./Users";
 export { default as ProductCategory } from "./ProductCategory";
 export { default as EntryProductStock } from "./EntryProductStock";
+export { default as Provider } from "./Provider";

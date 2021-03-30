@@ -206,6 +206,7 @@ const ProductNew = (props) => {
                             <label>Nome*</label>
                             <Input
                               placeholder="nome do produto"
+                              autoFocus={true}
                               type="text"
                               value={name}
                               onChange={(event) => setName(event.target.value)}
@@ -285,7 +286,6 @@ const ProductNew = (props) => {
                       <Row>
                         <Col className="pl-3" md="4">
                           <span className="measureUnid">{measureDesc}</span>
-
                           <FormGroup>
                             <label>Em Estoque</label>
                             <Input

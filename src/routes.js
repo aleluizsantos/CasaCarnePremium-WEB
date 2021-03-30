@@ -16,6 +16,7 @@ import {
   DetailsMyOrder as DetailsMyOrderView,
   Users as UserView,
   EntryProductStock as EntryProductStockView,
+  Provider as ProviderView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -51,6 +52,14 @@ const listRoutes = [
     component: EntryProductStockView,
     layout: MainLayout,
     path: "/entryProduct",
+    security: true,
+  },
+  {
+    name: "Fornecedores",
+    icon: "nc-icon nc-app",
+    component: ProviderView,
+    layout: MainLayout,
+    path: "/provider",
     security: true,
   },
   {

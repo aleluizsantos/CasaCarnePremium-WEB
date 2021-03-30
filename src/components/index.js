@@ -7,3 +7,4 @@ export { default as Sidebar } from "./Sidebar";
 export { default as Pagination } from "./Pagination";
 export { default as ModalView } from "./ModalView";
 export { default as Switch } from "./Switch";
+export { default as SelectDropdown } from "./SelectDropdown";

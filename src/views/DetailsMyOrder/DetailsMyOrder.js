@@ -178,10 +178,9 @@ const DetailsMyOrder = (props) => {
       <Row>
         <ModalView
           title="Alterar Status do pedido"
-          idObjectSelected={myOrder.id}
           modal={isModalStateMyOrder}
           toggle={() => setIsModalStateMyOrder(!isModalStateMyOrder)}
-          confirmed={() => nextStageMyOrder()}
+          confirmed={() => nextStageMyOrder(myOrder.id)}
         >
           <div className="text-center">
             {myOrder.statusRequest_id === 1 && (
@@ -202,10 +201,9 @@ const DetailsMyOrder = (props) => {
         </ModalView>
         <ModalView
           title="Remover Item"
-          idObjectSelected={itemSelected}
           modal={isModalRemoveItem}
           toggle={() => setIsModalRemoveItem(!isModalRemoveItem)}
-          confirmed={() => handleRemoverItem()}
+          confirmed={() => handleRemoverItem(itemSelected)}
         >
           <div className="text-center">
             Tem certeza que deseja remover o item '
@@ -214,7 +212,6 @@ const DetailsMyOrder = (props) => {
         </ModalView>
         <ModalView
           title="Exclução do pedido"
-          idObjectSelected={""}
           modal={isModalDeleteOrder}
           toggle={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
           confirmed={() => handleRemoverOrder()}
@@ -228,7 +225,6 @@ const DetailsMyOrder = (props) => {
         <ModalView
           title="Adicionar item"
           size="lg"
-          idObjectSelected={""}
           modal={isModalInsertItem}
           toggle={() => setIsModalInsertItem(!isModalInsertItem)}
           confirmed={() => handleAddItem()}

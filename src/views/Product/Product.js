@@ -189,8 +189,7 @@ const Product = () => {
                   title="Remover Produto"
                   modal={modal}
                   toggle={() => setModal(!modal)}
-                  idObjectSelected={idProdSelected}
-                  confirmed={(id) => handleDeleteProduct(id)}
+                  confirmed={() => handleDeleteProduct(idProdSelected)}
                 >
                   {productSelected && (
                     <div className="text-center">

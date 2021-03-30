@@ -3,21 +3,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import PropTypes from "prop-types";
 
 const ModalView = (props) => {
-  const {
-    title,
-    modal,
-    toggle,
-    children,
-    confirmed,
-    idObjectSelected,
-    size,
-  } = props;
+  const { title, modal, toggle, children, confirmed, size } = props;
   const [backdrop] = useState("static");
   const [keyboard] = useState(true);
 
   const handleConfirmed = () => {
-    toggle();
-    confirmed(idObjectSelected);
+    confirmed();
   };
 
   return (

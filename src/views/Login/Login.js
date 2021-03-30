@@ -98,6 +98,7 @@ const Login = (props) => {
     };
 
     const errors = validate(dataForm.values, schema);
+
     dataForm = {
       ...dataForm,
       isValid: errors ? false : true,

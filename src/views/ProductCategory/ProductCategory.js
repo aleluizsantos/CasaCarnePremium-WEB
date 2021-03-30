@@ -123,10 +123,9 @@ const ProductCategory = () => {
     <div className="content">
       <ModalView
         title="Editar Categoria"
-        idObjectSelected={formState}
         modal={isModalEditCategory}
         toggle={() => setIsModalEditCategory(!isModalEditCategory)}
-        confirmed={(category) => handleEditCategory(category)}
+        confirmed={() => handleEditCategory(formState)}
       >
         <div>
           <div className="text-center imgProductCategory">
@@ -171,10 +170,9 @@ const ProductCategory = () => {
       </ModalView>
       <ModalView
         title="Remover Categoria"
-        idObjectSelected={formState}
         modal={isModalRemove}
         toggle={() => setIsModalRemove(!isModalRemove)}
-        confirmed={(category) => handleDeleteCategory(category)}
+        confirmed={() => handleDeleteCategory(formState)}
       >
         <div className="text-center">
           <strong>Deseja realmente excluir a categoria?</strong>
