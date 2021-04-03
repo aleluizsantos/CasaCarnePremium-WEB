@@ -47,7 +47,7 @@ const NavbarHeader = (props) => {
       notificationAlert.current.notificationAlert(options);
     };
     (() => {
-      message !== "" && message !== undefined && notify("tr");
+      message !== "" && message !== undefined && notify("tc");
     })();
   }, [message, notificationAlert]);
 

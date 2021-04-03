@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import validate from "validate.js";
+import { useDispatch } from "react-redux";
 
 // reactstrap components
 import {
@@ -13,15 +15,63 @@ import {
   Label,
   Col,
   Table,
+  FormText,
 } from "reactstrap";
 
 import imgProvider from "../../assets/img/provider.png";
-import { getProvider } from "../../hooks/provider";
-import { ModalView, SelectDropdown, Pagination } from "../../components";
+import { getProvider, createProvider } from "../../hooks/provider";
+import { formatDateTime } from "../../hooks/format";
+import { ModalView } from "../../components";
+import { SET_MESSAGE } from "../../store/Actions/types";
 
 const Provider = () => {
+  const dispatch = useDispatch();
   const [dataProvider, setDataProvider] = useState([]);
   const [modalAddProvider, setModalAddProvider] = useState(false);
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: {},
+    touched: {},
+    errors: {},
+  });
+
+  // Validação dos campos
+  const schema = {
+    nameProvider: {
+      presence: { allowEmpty: false, message: "^Fonecedor é obrigatório" },
+    },
+    nameContact: {
+      presence: { allowEmpty: false, message: "^Contato é obrigatório" },
+    },
+    address: {
+      presence: { allowEmpty: false, message: "^Endereço é obrigatório" },
+    },
+    cep: {
+      presence: { allowEmpty: false, message: "^CEP é obrigatório" },
+    },
+    city: {
+      presence: { allowEmpty: false, message: "^Cidade é obrigatório" },
+    },
+    neighborhood: {
+      presence: { allowEmpty: false, message: "^Bairro é obrigatório" },
+    },
+    number: {
+      presence: { allowEmpty: false, message: "^Número é obrigatório" },
+      length: {
+        maximum: 6,
+      },
+    },
+    phone: {
+      presence: { allowEmpty: false, message: "^Telefone é obrigatório" },
+      length: {
+        maximum: 14,
+      },
+    },
+    uf: {
+      presence: { allowEmpty: false, message: "^UF é obrigatório" },
+      length: { is: 2, message: "^deve ter '2' caracteres" },
+    },
+  };
 
   useEffect(() => {
     (() => {
@@ -34,6 +84,71 @@ const Provider = () => {
     const provider = await getProvider(inputValue);
     return provider;
   };
+  // Atualização dos campos do formulários
+  const handleChange = (event) => {
+    event.persist();
+
+    let dataForm = {
+      ...formState,
+      values: {
+        ...formState.values,
+        [event.target.name]:
+          event.target.type === "checkbox"
+            ? event.target.checked
+            : event.target.value,
+      },
+      touched: {
+        ...formState.touched,
+        [event.target.name]: true,
+      },
+    };
+
+    const errors = validate(dataForm.values, schema);
+
+    dataForm = {
+      ...dataForm,
+      isValid: errors ? false : true,
+      errors: errors || {},
+    };
+
+    setFormState(dataForm);
+  };
+  // Analise de erro nos campos do formulário
+  const hasError = (field) =>
+    formState.touched[field] && formState.errors[field] ? true : false;
+
+  // SubmitForm
+  const submitProvider = async () => {
+    // Verificar a validação dos dados
+    const errors = validate(formState.values, schema);
+
+    let dataForm = {
+      ...formState,
+      isValid: errors ? false : true,
+      errors: errors || {},
+    };
+
+    !dataForm.isValid && setFormState(dataForm);
+
+    if (dataForm.isValid) {
+      try {
+        createProvider(formState.values).then(() => {
+          setModalAddProvider(false);
+          searchProvider("").then((response) => setDataProvider(response));
+          dispatch({
+            type: SET_MESSAGE,
+            payload: `Fornecedor '${formState.values.nameProvider}' foi adicionado com sucesso.`,
+          });
+        });
+      } catch (error) {
+        setModalAddProvider(false);
+        dispatch({
+          type: SET_MESSAGE,
+          payload: "Falha ao inserir o Fornecedor",
+        });
+      }
+    }
+  };
 
   return (
     <div className="content">
@@ -42,20 +157,24 @@ const Provider = () => {
         title="Fornecedor"
         modal={modalAddProvider}
         toggle={() => setModalAddProvider(!modalAddProvider)}
-        confirmed={() => {}}
+        confirmed={() => submitProvider()}
       >
-        <Form>
+        <Form onSubmit={submitProvider}>
           <FormGroup row>
-            <Label for="provider" sm={2}>
+            <Label for="nameProvider" sm={2}>
               Fornecedor
             </Label>
             <Col sm={10}>
               <Input
                 type="text"
-                name="provider"
-                id="provider"
+                name="nameProvider"
+                id="nameProvider"
                 placeholder="Nome do fornecedor"
+                value={formState.values.nameProvider || ""}
+                onChange={handleChange}
+                invalid={hasError("nameProvider")}
               />
+              <FormText>{formState.errors.nameProvider}</FormText>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -68,7 +187,11 @@ const Provider = () => {
                 name="nameContact"
                 id="contact"
                 placeholder="Nome do contato"
+                value={formState.values.nameContact || ""}
+                onChange={handleChange}
+                invalid={hasError("nameContact")}
               />
+              <FormText>{formState.errors.nameContact}</FormText>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -81,7 +204,11 @@ const Provider = () => {
                 name="phone"
                 id="phone"
                 placeholder="(00) 0000-0000"
+                value={formState.values.phone || ""}
+                onChange={handleChange}
+                invalid={hasError("phone")}
               />
+              <FormText>{formState.errors.phone}</FormText>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -89,7 +216,16 @@ const Provider = () => {
               CEP
             </Label>
             <Col sm={10}>
-              <Input type="text" name="CEP" id="CEP" placeholder="00000-000" />
+              <Input
+                type="text"
+                name="cep"
+                id="CEP"
+                placeholder="00000-000"
+                value={formState.values.cep || ""}
+                onChange={handleChange}
+                invalid={hasError("cep")}
+              />
+              <FormText>{formState.errors.cep}</FormText>
             </Col>
           </FormGroup>
           <FormGroup row>
@@ -102,7 +238,11 @@ const Provider = () => {
                 name="address"
                 id="address"
                 placeholder="Endereço"
+                value={formState.values.address || ""}
+                onChange={handleChange}
+                invalid={hasError("address")}
               />
+              <FormText>{formState.errors.address}</FormText>
             </Col>
           </FormGroup>
 
@@ -116,7 +256,11 @@ const Provider = () => {
                 name="number"
                 id="number"
                 placeholder="Número"
+                value={formState.values.number || ""}
+                onChange={handleChange}
+                invalid={hasError("number")}
               />
+              <FormText>{formState.errors.number}</FormText>
             </Col>
             <Label for="neighborhood" sm={1}>
               Bairro
@@ -127,7 +271,11 @@ const Provider = () => {
                 name="neighborhood"
                 id="neighborhood"
                 placeholder="Bairro"
+                value={formState.values.neighborhood || ""}
+                onChange={handleChange}
+                invalid={hasError("neighborhood")}
               />
+              <FormText>{formState.errors.neighborhood}</FormText>
             </Col>
           </FormGroup>
 
@@ -136,13 +284,33 @@ const Provider = () => {
               Cidade
             </Label>
             <Col sm={4}>
-              <Input type="text" name="city" id="city" placeholder="Cidade" />
+              <Input
+                type="text"
+                name="city"
+                id="city"
+                placeholder="Cidade"
+                value={formState.values.city || ""}
+                onChange={handleChange}
+                invalid={hasError("city")}
+              />
+              <FormText>{formState.errors.city}</FormText>
             </Col>
             <Label for="uf" sm={1}>
               UF
             </Label>
             <Col sm={5}>
-              <Input type="text" name="uf" id="uf" placeholder="UF" />
+              <Input
+                type="text"
+                name="uf"
+                id="uf"
+                placeholder="UF"
+                value={formState.values.uf || ""}
+                onChange={handleChange}
+                invalid={hasError("uf")}
+              />
+              <FormText style={{ color: "#e31914" }}>
+                {formState.errors.uf}
+              </FormText>
             </Col>
           </FormGroup>
         </Form>
@@ -178,17 +346,19 @@ const Provider = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Agropecuaria Roberto</td>
-                <td>Roberto da silva</td>
-                <td>(17) 98826-0129</td>
-                <td>Rua Sete</td>
-                <td>123</td>
-                <td>Jd America</td>
-                <td>Jales</td>
-                <td>SP</td>
-                <td>2021-03-19T20:17:02.544</td>
-              </tr>
+              {dataProvider.map((item, idx) => (
+                <tr key={idx}>
+                  <td>{item.nameProvider}</td>
+                  <td>{item.nameContact}</td>
+                  <td>{item.phone}</td>
+                  <td>{item.address}</td>
+                  <td>{item.number}</td>
+                  <td>{item.neighborhood}</td>
+                  <td>{item.city}</td>
+                  <td>{item.uf}</td>
+                  <td>{formatDateTime(item.created_at)}</td>
+                </tr>
+              ))}
             </tbody>
           </Table>
         </CardBody>

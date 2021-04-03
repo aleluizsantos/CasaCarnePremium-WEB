@@ -12,3 +12,12 @@ export const getProvider = async (search) => {
       return response.data;
     });
 };
+
+export const createProvider = async (dataForm) => {
+  const { Authorization } = authHeader();
+  return await api
+    .post("/provider/create", dataForm, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};
