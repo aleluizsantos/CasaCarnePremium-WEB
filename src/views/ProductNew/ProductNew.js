@@ -192,7 +192,7 @@ const ProductNew = (props) => {
                       src={visibleApp ? imgMobile : imgNoMobile}
                       alt="mobile"
                     />
-                    Novo Produto
+                    {state !== undefined ? "Editar Produto" : "Novo Produto"}
                   </div>
                 </CardTitle>
               </CardHeader>

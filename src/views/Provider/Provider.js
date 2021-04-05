@@ -19,7 +19,12 @@ import {
 } from "reactstrap";
 
 import imgProvider from "../../assets/img/provider.png";
-import { getProvider, createProvider } from "../../hooks/provider";
+import {
+  getProvider,
+  createProvider,
+  upgradeProvider,
+  deleteProvider,
+} from "../../hooks/provider";
 import { formatDateTime } from "../../hooks/format";
 import { ModalView } from "../../components";
 import { SET_MESSAGE } from "../../store/Actions/types";
@@ -28,12 +33,19 @@ const Provider = () => {
   const dispatch = useDispatch();
   const [dataProvider, setDataProvider] = useState([]);
   const [modalAddProvider, setModalAddProvider] = useState(false);
+  const [modalDelete, setmodalDelete] = useState(false);
   const [formState, setFormState] = useState({
     isValid: false,
+    isEdit: false,
     values: {},
     touched: {},
     errors: {},
   });
+
+  const typeAction = {
+    DELETE: "delete",
+    EDIT: "edit",
+  };
 
   // Validação dos campos
   const schema = {
@@ -128,35 +140,138 @@ const Provider = () => {
       errors: errors || {},
     };
 
-    !dataForm.isValid && setFormState(dataForm);
-
-    if (dataForm.isValid) {
-      try {
-        createProvider(formState.values).then(() => {
+    if (formState.isEdit) {
+      handleUpgradeProvider();
+    } else {
+      !dataForm.isValid && setFormState(dataForm);
+      if (dataForm.isValid) {
+        try {
+          createProvider(formState.values).then(() => {
+            setModalAddProvider(false);
+            searchProvider("").then((response) => setDataProvider(response));
+            dispatch({
+              type: SET_MESSAGE,
+              payload: `Fornecedor '${formState.values.nameProvider}' foi adicionado com sucesso.`,
+            });
+            setFormState({
+              isValid: false,
+              isEdit: false,
+              values: {},
+              touched: {},
+              errors: {},
+            });
+          });
+        } catch (error) {
           setModalAddProvider(false);
-          searchProvider("").then((response) => setDataProvider(response));
           dispatch({
             type: SET_MESSAGE,
-            payload: `Fornecedor '${formState.values.nameProvider}' foi adicionado com sucesso.`,
+            payload: "Falha ao inserir o Fornecedor",
           });
-        });
-      } catch (error) {
-        setModalAddProvider(false);
-        dispatch({
-          type: SET_MESSAGE,
-          payload: "Falha ao inserir o Fornecedor",
-        });
+        }
       }
     }
   };
 
+  const handleSelectProvider = async (item, action) => {
+    setFormState({
+      ...formState,
+      values: {
+        id: item.id,
+        nameProvider: item.nameProvider,
+        nameContact: item.nameContact,
+        address: item.address,
+        phone: item.phone,
+        cep: item.cep,
+        number: item.number,
+        neighborhood: item.neighborhood,
+        city: item.city,
+        uf: item.uf,
+      },
+      isEdit: action === typeAction.EDIT ? true : false,
+    });
+
+    switch (action) {
+      case typeAction.DELETE:
+        setmodalDelete(true);
+        break;
+      case typeAction.EDIT:
+        setModalAddProvider(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleCloseModalAddEdit = () => {
+    setModalAddProvider(false);
+    setFormState({
+      isValid: false,
+      isEdit: false,
+      values: {},
+      touched: {},
+      errors: {},
+    });
+  };
+
+  const handleDelete = () => {
+    deleteProvider(formState.values.id).then((response) => {
+      dispatch({
+        type: SET_MESSAGE,
+        payload: response.message || response.error,
+      });
+      setmodalDelete(false);
+      const newList = dataProvider.filter(
+        (item) => item.id !== Number(formState.values.id)
+      );
+      setDataProvider(newList);
+    });
+  };
+
+  // Atualizar o Fornecedor
+  const handleUpgradeProvider = () => {
+    upgradeProvider(formState.values).then((response) => {
+      for (var i in dataProvider) {
+        if (dataProvider[i].id === Number(response.id)) {
+          dataProvider[i] = response;
+          break; //finalizar o loop
+        }
+      }
+      setModalAddProvider(false);
+      setFormState({
+        isValid: false,
+        isEdit: false,
+        values: {},
+        touched: {},
+        errors: {},
+      });
+    });
+  };
+
   return (
     <div className="content">
+      {/* Modal Remover Fornecedor */}
+      <ModalView
+        title="Remover Fornecedor"
+        modal={modalDelete}
+        toggle={() => setmodalDelete(!modalDelete)}
+        confirmed={() => handleDelete()}
+      >
+        <div className="text-center">
+          <p>
+            <strong>Deseje realmente excluir o fornecedor?</strong>
+          </p>
+          <p>{formState.values.nameProvider}.</p>
+          <p>
+            {formState.values.city}/{formState.values.uf}.
+          </p>
+        </div>
+      </ModalView>
+      {/* Modal Adicionar e Editar Fornecedor */}
       <ModalView
         size="lg"
         title="Fornecedor"
         modal={modalAddProvider}
-        toggle={() => setModalAddProvider(!modalAddProvider)}
+        toggle={() => handleCloseModalAddEdit()}
         confirmed={() => submitProvider()}
       >
         <Form onSubmit={submitProvider}>
@@ -343,6 +458,7 @@ const Provider = () => {
                 <th>Cidade</th>
                 <th>UF</th>
                 <th>Dt Cadastro</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -357,6 +473,28 @@ const Provider = () => {
                   <td>{item.city}</td>
                   <td>{item.uf}</td>
                   <td>{formatDateTime(item.created_at)}</td>
+                  <td>
+                    <div className="groupButton">
+                      <Button
+                        className="btn-round btn-icon"
+                        color="danger"
+                        outline
+                        size="sm"
+                        onClick={() => handleSelectProvider(item, "delete")}
+                      >
+                        <i className="fa fa-trash" />
+                      </Button>
+                      <Button
+                        className="btn-round btn-icon"
+                        color="success"
+                        outline
+                        size="sm"
+                        onClick={() => handleSelectProvider(item, "edit")}
+                      >
+                        <i className="fa fa-edit" />
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -14,25 +14,8 @@ import {
 } from "reactstrap";
 // core components
 
-import { formatCurrency } from "../../hooks/format";
 import { getSaleDay, getSaleWeek, getSaleYear } from "../../hooks/Reports";
-
-const dataCurrent = () => {
-  const date = new Date();
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); //+1 pois no getMonth Janeiro começa com zero.
-  const year = date.getFullYear();
-  return day + "/" + month + "/" + year;
-};
-
-const time = () => {
-  const date = new Date();
-  const hour = date.getHours().toString().padStart(2, "0");
-  const min = date.getMinutes().toString().padStart(2, "0");
-  const sec = date.getSeconds().toString().padStart(2, "0");
-
-  return hour + ":" + min + ":" + sec;
-};
+import { formatTime, formatDate, formatCurrency } from "../../hooks/format";
 
 const Dashboard = (props) => {
   const [saleDay, setSaleDay] = useState("");
@@ -49,6 +32,8 @@ const Dashboard = (props) => {
       getSaleYear().then((resposne) => setSaleYear(resposne));
     })();
   }, []);
+
+  console.log(saleweek);
 
   const chartSaleWeek = {
     data: (canvas) => {
@@ -173,7 +158,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> {dataCurrent()}
+                  <i className="fas fa-sync-alt" /> {formatDate(new Date())}
                 </div>
               </CardFooter>
             </Card>
@@ -199,7 +184,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-calendar" /> {dataCurrent()}
+                  <i className="far fa-calendar" /> {formatDate(new Date())}
                 </div>
               </CardFooter>
             </Card>
@@ -225,7 +210,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="far fa-clock" /> {time()}
+                  <i className="far fa-clock" /> {formatTime(new Date())}
                 </div>
               </CardFooter>
             </Card>
@@ -251,7 +236,7 @@ const Dashboard = (props) => {
               <CardFooter>
                 <hr />
                 <div className="stats">
-                  <i className="fas fa-sync-alt" /> {dataCurrent()}
+                  <i className="fas fa-sync-alt" /> {formatDate(new Date())}
                 </div>
               </CardFooter>
             </Card>
@@ -276,7 +261,7 @@ const Dashboard = (props) => {
                 <hr />
                 <div className="stats">
                   <i className="fa fa-history" />
-                  {dataCurrent()}
+                  {formatDate(new Date())}
                 </div>
               </CardFooter>
             </Card>

@@ -53,12 +53,17 @@ const EntryProductStock = () => {
   });
 
   useEffect(() => {
-    loadingEntryProduct();
+    (() => {
+      getEntryProducts(pageCurrent).then((response) => {
+        setEntryProduct(response.productStock);
+        setTotalRecords(response.totalentryProduct);
+      });
+    })();
   }, [pageCurrent]);
 
   // Carregar os 10 ultimos lançamentos
-  const loadingEntryProduct = () => {
-    getEntryProducts(pageCurrent).then((response) => {
+  const loadingEntryProduct = async () => {
+    await getEntryProducts(pageCurrent).then((response) => {
       setEntryProduct(response.productStock);
       setTotalRecords(response.totalentryProduct);
     });
@@ -108,6 +113,7 @@ const EntryProductStock = () => {
         value: item.id,
         label: item.name,
         measureUnid: item.measureUnid,
+        inventory: item.inventory,
       };
       return dataItem;
     });
@@ -197,11 +203,13 @@ const EntryProductStock = () => {
       addEntryProduct(dataListAddEntryProduct);
       loadingEntryProduct();
       setModalAddStock(false);
+      setDataListAddEntryProduct([]);
     }
   };
 
   return (
     <div className="content">
+      {/* Modal Adiconar item */}
       <ModalView
         size="lg"
         title="Adicionar produto no estoque"
@@ -281,7 +289,19 @@ const EntryProductStock = () => {
               </FormGroup>
             </Col>
           </Row>
+
           <div className="buttonAdd">
+            <div>
+              <span>Saldo em Estoque: </span>
+              <span
+                style={{
+                  fontWeight: 700,
+                  color: product.inventory < 0 ? "red" : "black",
+                }}
+              >
+                {product.inventory} {product.measureUnid}
+              </span>
+            </div>
             <Button typ="submit" outline color="success" size="sm">
               <i className="fa fa-plus" /> Adicionar
             </Button>{" "}
@@ -341,7 +361,7 @@ const EntryProductStock = () => {
           </div>
         </div>
       </ModalView>
-
+      {/* Modal Remover item */}
       <ModalView
         title="Remover Item"
         modal={modalRemover}

@@ -21,3 +21,22 @@ export const createProvider = async (dataForm) => {
     })
     .then((response) => response.data);
 };
+
+export const upgradeProvider = async (dataForm) => {
+  const { Authorization } = authHeader();
+  return await api
+    .put(`/provider/${dataForm.id}`, dataForm, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};
+
+export const deleteProvider = async (idProvider) => {
+  const { Authorization } = authHeader();
+
+  return await api
+    .delete(`/provider/${idProvider}`, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};

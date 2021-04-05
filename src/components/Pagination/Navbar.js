@@ -40,7 +40,7 @@ const NavbarHeader = (props) => {
             <div>{message}</div>
           </div>
         ),
-        type: "success",
+        type: "info",
         icon: "nc-icon nc-bell-55",
         autoDismiss: 7,
       };
