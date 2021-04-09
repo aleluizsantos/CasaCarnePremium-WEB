@@ -150,6 +150,21 @@
     background: #f1f1f1;
     font-weight: 600;
 }
+.shapePayment {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-direction: row;
+    padding: 15px 0;
+    background: #f9f9f9;
+}
+.titleItemSelectedAddItem {
+    font-size: 35px;
+    font-weight: 700;
+}
+.priceItemSlectedAddItem {
+    font-size: 28px;
+}
 
 @media(max-width: 700px) {
     .detailsClient {
@@ -178,5 +193,13 @@
     }
     .stateMyOrder .currentBarBG {
         top: 12px;
+    }
+    .shapePayment {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        flex-direction: column;
+        padding: 15px 0;
+        background: #f9f9f9;
     }
 }

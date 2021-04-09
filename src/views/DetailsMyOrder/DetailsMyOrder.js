@@ -14,11 +14,10 @@ import {
   Button,
   Input,
   FormGroup,
-  Alert,
+  Label,
 } from "reactstrap";
 
 import "./styles.css";
-import { url } from "../../services/host";
 import { formatDateTime, formatCurrency } from "hooks/format";
 import {
   getItemsMyOrders,
@@ -26,38 +25,38 @@ import {
   deletePedido,
   deleteItemPedido,
 } from "../../hooks/MyOrders";
-import { getProduct, getProductSearch } from "../../hooks/Product";
+import { getProductSearch } from "../../hooks/Product";
 import { addItemOrder } from "../../hooks/MyOrders";
 import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
-import { ModalView } from "../../components";
+import { ModalView, SelectDropdown } from "../../components";
 import imgDelivery from "../../assets/img/delivery.png";
 import imgStore from "../../assets/img/store.png";
 
 const DetailsMyOrder = (props) => {
   const history = useHistory();
-  const { state } = useLocation();
   const dispatch = useDispatch();
+  const { state } = useLocation();
   const [currentPorcent, setCurrentPorcent] = useState(0);
   const [descriptioStatus, setDescriptionStatus] = useState(null);
   const [itemsMyOrders, setItemsMyOrders] = useState([]);
-  const [products, setProducts] = useState([]);
   const [myOrder, setMyOrder] = useState({});
   const [isModalStateMyOrder, setIsModalStateMyOrder] = useState(false);
   const [isModalRemoveItem, setIsModalRemoveItem] = useState(false);
   const [isModalDeleteOrder, setIsModalDeleteOrder] = useState(false);
   const [isModalInsertItem, setIsModalInsertItem] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
-  const [search, setSearch] = useState("");
-  const [productSearch, setProductSearch] = useState([]);
-  const [formAddItem, setFormAddItem] = useState({ item: {}, amount: 1 });
+  const [productSearch, setProductSearch] = useState("");
+  const [amountItemAdd, setamountItemAdd] = useState(1);
 
   useEffect(() => {
     (() => {
       getItemsMyOrders(state.id).then((response) => setItemsMyOrders(response));
       setMyOrder(state);
       setDescriptionStatus(state.statusRequest);
-      state.statusRequest_id <= 4
-        ? setCurrentPorcent(state.statusRequest_id * 25)
+      state.statusRequest_id < 4
+        ? setCurrentPorcent(
+            state.statusRequest_id === 5 ? 4 * 25 : state.statusRequest_id * 25
+          )
         : setCurrentPorcent(100);
     })();
   }, [state, state.id, state.statusRequest, state.statusRequest_id]);
@@ -82,10 +81,12 @@ const DetailsMyOrder = (props) => {
           statusRequest_id: response.nextState,
         });
         setDescriptionStatus(response.descriptionNextActionRequest);
+        setIsModalStateMyOrder(false);
         dispatch({
           type: SET_MESSAGE,
           payload: `Pedido ${response.descriptionNextActionRequest}`,
         });
+        response.nextState === 6 && history.goBack();
       });
       currentPorcent < 100 && setCurrentPorcent(currentPorcent + 25);
     }
@@ -115,33 +116,37 @@ const DetailsMyOrder = (props) => {
       setMyOrder(response);
       setItemsMyOrders(newItem);
       setItemSelected({});
+      setIsModalRemoveItem(false);
     });
   }
 
-  function loadingProduct(page = 1) {
-    getProduct(page).then((response) => setProducts(response.products));
-  }
-
   function handleModalItemProduct() {
-    products.length <= 0 && loadingProduct();
-    setFormAddItem({ item: {}, amount: 1 });
-    setIsModalInsertItem(!isModalInsertItem);
+    setamountItemAdd(1);
+    setProductSearch();
+    setIsModalInsertItem(true);
   }
 
-  function handleSearch(event) {
-    const productSearch = event.target.value;
-    setSearch(productSearch);
-    getProductSearch(productSearch).then((response) =>
-      setProductSearch(response.products)
-    );
-  }
-
-  function handleSelectAddItem(item) {
-    setFormAddItem({ ...formAddItem, item: item });
-  }
+  // Buscar lista de Produto conforme parameto passado
+  const searchProduct = async (inputValue) => {
+    const response = await getProductSearch(inputValue);
+    const dataProducts = response.products.map((item) => {
+      const dataItem = {
+        value: item.id,
+        label: item.name,
+        measureUnid: item.measureUnid,
+        inventory: item.inventory,
+        image_url: item.image_url,
+        price: item.price,
+        promotion: item.promotion,
+        pricePromotion: item.pricePromotion,
+      };
+      return dataItem;
+    });
+    return dataProducts;
+  };
 
   function handleChangesAmount(amount) {
-    setFormAddItem({ ...formAddItem, amount: amount });
+    setamountItemAdd(amount.replace(",", "."));
   }
 
   function handleGoBack() {
@@ -153,11 +158,11 @@ const DetailsMyOrder = (props) => {
 
   function handleAddItem() {
     const dataItem = {
-      amount: formAddItem.amount,
-      price: formAddItem.item.promotion
-        ? formAddItem.item.pricePromotion
-        : formAddItem.item.price,
-      product_id: formAddItem.item.id,
+      amount: amountItemAdd,
+      price: productSearch.promotion
+        ? productSearch.pricePromotion
+        : productSearch.price,
+      product_id: productSearch.value,
       request_id: myOrder.id,
     };
     addItemOrder(dataItem).then((response) => {
@@ -168,8 +173,7 @@ const DetailsMyOrder = (props) => {
         type: SET_MESSAGE,
         payload: "foi adicionado um item no pedido",
       });
-      setFormAddItem({ item: {}, amount: 1 });
-      setProductSearch([]);
+      setProductSearch("");
     });
   }
 
@@ -224,31 +228,22 @@ const DetailsMyOrder = (props) => {
         </ModalView>
         <ModalView
           title="Adicionar item"
-          size="lg"
+          size="xl"
           modal={isModalInsertItem}
           toggle={() => setIsModalInsertItem(!isModalInsertItem)}
           confirmed={() => handleAddItem()}
         >
           <div className="text-justify">
             <Row>
-              {formAddItem.item.name !== undefined && (
-                <Col md="12">
-                  <Alert color="info">
-                    <span>{formAddItem.item.name}</span>
-                  </Alert>
-                </Col>
-              )}
-            </Row>
-            <Row>
               <Col className="pr-1" md="6">
                 <FormGroup>
-                  <label>Produto</label>
-                  <Input
-                    type="text"
-                    name="product"
-                    id="product"
-                    value={search}
-                    onChange={(event) => handleSearch(event)}
+                  <Label>Produto</Label>
+                  <SelectDropdown
+                    placeholder="Informe o produto"
+                    options={searchProduct}
+                    isClearabl={true}
+                    setValue={productSearch}
+                    onChange={setProductSearch}
                   />
                 </FormGroup>
               </Col>
@@ -256,9 +251,10 @@ const DetailsMyOrder = (props) => {
                 <FormGroup>
                   <label>Quantidade</label>
                   <Input
+                    style={{ fontWeight: 700 }}
                     type="text"
                     name="amount"
-                    value={formAddItem.amount}
+                    value={amountItemAdd}
                     onChange={(event) =>
                       handleChangesAmount(event.target.value)
                     }
@@ -267,31 +263,32 @@ const DetailsMyOrder = (props) => {
               </Col>
             </Row>
 
-            <div className="contentSearch">
-              <Table responsive>
-                {productSearch.map((item, idx) => (
-                  <tbody key={idx}>
-                    <tr onClick={() => handleSelectAddItem(item)}>
-                      <td>
-                        <img
-                          src={item.image_url}
-                          alt={item.name}
-                          className="avatar"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `${url}/uploads/default.png`;
-                          }}
-                        />
-                      </td>
-                      <td>{item.name}</td>
-                      <td>{formatCurrency(item.price)}</td>
-                      <td>{item.promotion ? "Promoção" : ""}</td>
-                      <td>{formatCurrency(item.pricePromotion)}</td>
-                    </tr>
-                  </tbody>
-                ))}
-              </Table>
-            </div>
+            {productSearch && (
+              <Row>
+                <Col className="text-center" md="6">
+                  <img src={productSearch.image_url} alt={productSearch.name} />
+                </Col>
+
+                <Col md="6">
+                  <p className="titleItemSelectedAddItem">
+                    {productSearch.label}
+                  </p>
+                  <span>Preço: </span>
+                  <p className="priceItemSlectedAddItem">
+                    {productSearch.price} / {productSearch.measureUnid}
+                  </p>
+                  <span>Preço Promocional: </span>
+                  <p className="priceItemSlectedAddItem">
+                    <span
+                      style={{ color: productSearch.promotion ? "red" : "" }}
+                    >
+                      {productSearch.pricePromotion} /{" "}
+                      {productSearch.measureUnid}
+                    </span>
+                  </p>
+                </Col>
+              </Row>
+            )}
           </div>
         </ModalView>
 
@@ -358,8 +355,16 @@ const DetailsMyOrder = (props) => {
               </div>
 
               <div className="shapePayment">
-                <strong>Forma de Pagamento: </strong>
-                <span>{state.payment}</span>
+                <div>
+                  <strong>Forma de Pagamento: </strong>
+                  <span>{state.payment}</span>
+                </div>
+                {state.payment_id === 1 && (
+                  <div>
+                    <strong>Troco para: </strong>
+                    <span style={{ fontSize: 20 }}>R$ {state.cash}</span>
+                  </div>
+                )}
               </div>
 
               <div className="contentStatus">
@@ -390,7 +395,7 @@ const DetailsMyOrder = (props) => {
                         : "Retirar na Loja"}
                     </span>
                   </div>
-                  <div className="state">
+                  <div className="state" onClick={handleIsModal}>
                     {myOrder.statusRequest_id === 6 && (
                       <i className="fa fa-check" />
                     )}
@@ -419,12 +424,10 @@ const DetailsMyOrder = (props) => {
                       <tr key={item.id}>
                         <td>
                           <div className="groupItem">
-                            {myOrder.statusRequest_id < 2 && (
-                              <i
-                                className="fa fa-times"
-                                onClick={() => handleModalRemoveItem(item)}
-                              />
-                            )}
+                            <i
+                              className="fa fa-times"
+                              onClick={() => handleModalRemoveItem(item)}
+                            />
                             {item.name}
                           </div>
                         </td>
