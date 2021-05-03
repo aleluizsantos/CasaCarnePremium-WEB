@@ -19,6 +19,7 @@ import {
 } from "reactstrap";
 
 import imgProvider from "../../assets/img/provider.png";
+import imgAdd from "../../assets/img/icoAdd_64.png";
 import {
   getProvider,
   createProvider,
@@ -28,6 +29,7 @@ import {
 import { formatDateTime } from "../../hooks/format";
 import { ModalView } from "../../components";
 import { SET_MESSAGE } from "../../store/Actions/types";
+import icoTrash from "../../assets/img/icoTrash-64.gif";
 
 const Provider = () => {
   const dispatch = useDispatch();
@@ -251,7 +253,12 @@ const Provider = () => {
     <div className="content">
       {/* Modal Remover Fornecedor */}
       <ModalView
-        title="Remover Fornecedor"
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label> Remover fornecedor </Label>
+          </>
+        }
         modal={modalDelete}
         toggle={() => setmodalDelete(!modalDelete)}
         confirmed={() => handleDelete()}
@@ -269,7 +276,16 @@ const Provider = () => {
       {/* Modal Adicionar e Editar Fornecedor */}
       <ModalView
         size="lg"
-        title="Fornecedor"
+        title={
+          <>
+            <img src={imgAdd} alt="add" />{" "}
+            {formState.isEdit ? (
+              <Label> Editar Fornecedor</Label>
+            ) : (
+              <Label> Adicionar novo Fornecedor</Label>
+            )}
+          </>
+        }
         modal={modalAddProvider}
         toggle={() => handleCloseModalAddEdit()}
         confirmed={() => submitProvider()}

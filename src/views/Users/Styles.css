@@ -1,0 +1,9 @@
+.buttonUsers {
+    display: flex;
+    justify-content: space-between;
+    width: 100vw;
+    padding: 0 20px;
+}
+.buttonUsers button {
+    margin-right: 15px;
+}

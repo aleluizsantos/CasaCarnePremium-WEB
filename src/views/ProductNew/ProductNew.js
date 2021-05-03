@@ -390,7 +390,10 @@ const ProductNew = (props) => {
                           ))
                         ) : (
                           <label htmlFor="icon-button-file">
-                            <i className="fa fa-camera fa-2x" />
+                            <i
+                              className="fa fa-camera fa-2x"
+                              style={{ padding: 40 }}
+                            />
                           </label>
                         )}
                         <input

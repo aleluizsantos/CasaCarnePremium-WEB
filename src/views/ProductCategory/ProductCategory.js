@@ -13,6 +13,7 @@ import {
   FormGroup,
   Input,
   Spinner,
+  Label,
 } from "reactstrap";
 
 import "./styles.css";
@@ -24,6 +25,8 @@ import {
 
 import { SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
+import icoTrash from "../../assets/img/icoTrash-64.gif";
+import icoEdit from "../../assets/img/icoEdit_64.png";
 
 let FormStateProps = {
   isChange: false,
@@ -52,7 +55,7 @@ const ProductCategory = () => {
       });
       setIsLoading(false);
     })();
-  }, [isLoading]);
+  }, [isLoading, isModalEditCategory]);
 
   const handleSelectCategoy = (category, action) => {
     setFormState({
@@ -63,10 +66,10 @@ const ProductCategory = () => {
     });
     switch (action) {
       case "edit":
-        setIsModalEditCategory(!isModalEditCategory);
+        setIsModalEditCategory(true);
         break;
       case "delete":
-        setIsModalRemove(!isModalRemove);
+        setIsModalRemove(true);
         break;
       default:
         break;
@@ -96,15 +99,17 @@ const ProductCategory = () => {
   };
 
   // Editar e adicionar nova categoria
-  const handleEditCategory = (category) => {
+  const handleEditCategory = async (category) => {
     setIsLoading(true);
-    updateCategory(category).then(() => {
+
+    await updateCategory(category).then(() => {
       dispatch({
         type: SET_MESSAGE,
         payload: "Categoria atualizada com sucesso.",
       });
-      setIsLoading(false);
+      setIsModalEditCategory(false);
     });
+    setIsLoading(false);
   };
   // Deletar categoria
   const handleDeleteCategory = (category) => {
@@ -122,7 +127,11 @@ const ProductCategory = () => {
   return (
     <div className="content">
       <ModalView
-        title="Editar Categoria"
+        title={
+          <>
+            <img src={icoEdit} alt="trash" /> <Label> Editar categoria </Label>
+          </>
+        }
         modal={isModalEditCategory}
         toggle={() => setIsModalEditCategory(!isModalEditCategory)}
         confirmed={() => handleEditCategory(formState)}
@@ -169,7 +178,12 @@ const ProductCategory = () => {
         </div>
       </ModalView>
       <ModalView
-        title="Remover Categoria"
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label> Excluir Categoria </Label>
+          </>
+        }
         modal={isModalRemove}
         toggle={() => setIsModalRemove(!isModalRemove)}
         confirmed={() => handleDeleteCategory(formState)}

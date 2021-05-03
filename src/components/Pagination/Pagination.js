@@ -36,7 +36,9 @@ class Pagination extends Component {
 
     this.totalPages = Math.ceil(this.totalRecords / this.pageLimit);
 
-    this.state = { currentPage: 1 };
+    this.state = {
+      currentPage: 1,
+    };
   }
 
   componentDidMount() {

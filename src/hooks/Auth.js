@@ -1,5 +1,6 @@
 import decode from "jwt-decode";
 import api from "../services/api";
+import { authHeader } from "../services/authHeader";
 
 export const login = async (email, password) => {
   return await api
@@ -52,4 +53,32 @@ export const isAuthenticated = () => {
   return false;
 };
 
-export const getReload = () => {};
+export const upgradePassUser = async (dataUser) => {
+  const { Authorization } = authHeader();
+  const { userId, oldPassword, newPassword } = dataUser;
+  const data = {
+    oldPassword: oldPassword,
+    newPassword: newPassword,
+  };
+  return await api
+    .put(`auth/password/${userId}`, data, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};
+
+export const upgradeUser = async (user) => {
+  const { Authorization } = authHeader();
+  const { id, name, email, phone } = user;
+  const data = {
+    name,
+    email,
+    phone,
+  };
+
+  return await api
+    .put(`auth/users/${id}`, data, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};

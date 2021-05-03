@@ -21,6 +21,8 @@ import "./styles.css";
 
 import { ModalView, SelectDropdown, Pagination } from "../../components";
 import imgEntryProduct from "../../assets/img/inventory.png";
+import icoTrash from "../../assets/img/icoTrash-64.gif";
+import icoBuy from "../../assets/img/icoBuy-64.gif";
 
 import { formatCurrency, formatDate } from "../../hooks/format";
 import { toCurrency } from "../../hooks/currencyConversion";
@@ -126,8 +128,8 @@ const EntryProductStock = () => {
   };
 
   // Deletar o item
-  const deleteItem = (idProductEntry) => {
-    deletEntryProduct(idProductEntry);
+  const deleteItem = (itemselected) => {
+    deletEntryProduct(itemselected);
     setModalRemover(!modalRemover);
     loadingEntryProduct();
   };
@@ -212,7 +214,12 @@ const EntryProductStock = () => {
       {/* Modal Adiconar item */}
       <ModalView
         size="lg"
-        title="Adicionar produto no estoque"
+        title={
+          <>
+            <img src={icoBuy} alt="trash" style={{ height: 40 }} />{" "}
+            <Label>Adicionar produto no estoque</Label>
+          </>
+        }
         modal={modalAddStock}
         toggle={() => handleModalAddEntryProduct()}
         confirmed={handleSalveItensEntry}
@@ -363,10 +370,15 @@ const EntryProductStock = () => {
       </ModalView>
       {/* Modal Remover item */}
       <ModalView
-        title="Remover Item"
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label> Remover item </Label>
+          </>
+        }
         modal={modalRemover}
         toggle={() => setModalRemover(!modalRemover)}
-        confirmed={() => deleteItem(itemselected.id)}
+        confirmed={() => deleteItem(itemselected)}
       >
         {itemselected && (
           <div className="text-center">

@@ -53,14 +53,17 @@ export const getMeasureUnit = async () => {
 /**
  * Listar todos os produtos
  * @param {number} pageCurrent passar a pagina current
+ * @param {string} categoryId Passar categoria separada por "," Ex: 1,2,3
  */
-export const getProduct = async (pageCurrent = 1) => {
+export const getProduct = async (pageCurrent = 1, categoryId = "") => {
   const { Authorization } = authHeader();
-  const { currentPage } = pageCurrent;
   return await api
     .get("product/all", {
       headers: { Authorization: Authorization },
-      params: { page: currentPage },
+      params: {
+        page: pageCurrent,
+        category_id: categoryId,
+      },
     })
     .then((response) => {
       return response.data;
@@ -70,13 +73,15 @@ export const getProduct = async (pageCurrent = 1) => {
 /**
  * Retorna um lista de produto basenado no parametro
  * @param {String} search Recebe um nome do produto a ser localizado
+ * @param {number} pageCurrent passar a pagina current
  */
-export const getProductSearch = async (search) => {
+export const getProductSearch = async (search, pageCurrent = 1) => {
   const { Authorization } = authHeader();
   return await api
     .get(`product/all/${search}`, {
-      headers: {
-        Authorization: Authorization,
+      headers: { Authorization: Authorization },
+      params: {
+        page: pageCurrent,
       },
     })
     .then((response) => {

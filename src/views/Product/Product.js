@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-
-import { url } from "../../services/host";
-import { SET_MESSAGE } from "../../store/Actions/types";
-import {
-  getProduct,
-  getCategorys,
-  deleteProduto,
-  getCategoryProduct,
-  getPromotionProduct,
-} from "../../hooks";
-import { Pagination, ModalView } from "../../components";
-import imgNoMobile from "../../assets/img/noMobile.png";
-import imgMobile from "../../assets/img/mobile.png";
-
 // reactstrap componentss
 import {
   Card,
@@ -31,17 +17,32 @@ import {
   DropdownItem,
   DropdownMenu,
   Spinner,
+  Label,
 } from "reactstrap";
+
+import { url } from "../../services/host";
+import { SET_MESSAGE } from "../../store/Actions/types";
+import {
+  getProduct,
+  getCategorys,
+  deleteProduto,
+  getPromotionProduct,
+  getProductSearch,
+  debounceEvent,
+  updateProduct,
+} from "../../hooks";
+import { ModalView, PaginationNew, SearchBar } from "../../components";
+import imgNoMobile from "../../assets/img/noMobile.png";
+import imgMobile from "../../assets/img/mobile.png";
+import icoTrash from "../../assets/img/icoTrash-64.gif";
+
+const PRODUCT_PROMOTION = "-1";
 
 const Product = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [dataProduct, setDataProduct] = useState([]);
-  const [
-    dataProductCategorySelected,
-    setDataProductCategorySelected,
-  ] = useState([]);
-  const [categorys, setCategorys] = useState([]);
+  const [listAllCategorys, setListAllCategorys] = useState([]);
   const [selectCategory, setSelectCategory] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
   const [pageCurrent, setPageCurrent] = useState(1);
@@ -49,78 +50,80 @@ const Product = () => {
   const [modal, setModal] = useState(false);
   const [idProdSelected, setIdProdSelected] = useState("");
   const [productSelected, setProductSelected] = useState(null);
+  const [search, setSearch] = useState(null);
   const [isloading, setIsloading] = useState(false);
 
   useEffect(() => {
     (() => {
       setIsloading(true);
-      getProduct(pageCurrent).then((response) => {
-        const { countProducts } = response;
-        setDataProduct(response.products);
-        setTotalRecords(countProducts);
-        setIsloading(false);
-      });
+      const categoryId = selectCategory.map((item) => item.id).toString();
+
+      if (categoryId === PRODUCT_PROMOTION) {
+        getPromotionProduct().then((response) => {
+          setDataProduct(response);
+          setIsloading(false);
+        });
+        return;
+      }
+
+      if (search === null) {
+        getProduct(pageCurrent, categoryId).then((response) => {
+          const { countProducts, products } = response;
+          setDataProduct(products);
+          setTotalRecords(countProducts);
+          setIsloading(false);
+        });
+      } else {
+        getProductSearch(search, pageCurrent).then((response) => {
+          const { countProducts, products } = response;
+          setDataProduct(products);
+          setTotalRecords(countProducts);
+          setIsloading(false);
+        });
+      }
     })();
-  }, [pageCurrent]);
+  }, [pageCurrent, selectCategory, search]);
 
   //Button Categoria carrega todas as catgorias
   const dropdownToggle = (e) => {
-    // Verificar se esta selecionado Produto em promoção
-    const exist = selectCategory.findIndex((cat) => cat.id === -1);
+    e.preventDefault();
+    // Verificar se o usuário selecionado o botão de "PRODUTO EM PROMOÇÃO"
+    // Se estiver selecionado ao clicar no botão categoria limpar state
+    // selectCategory para um array vazio.
+    const exist = selectCategory.findIndex(
+      (cat) => cat.id === PRODUCT_PROMOTION
+    );
     !!!exist && setSelectCategory([]);
 
-    categorys.length <= 0 &&
+    listAllCategorys.length <= 0 &&
       getCategorys().then((response) => {
-        setCategorys(response);
+        setListAllCategorys(response);
       });
     setDropdownOpen(!dropdownOpen);
   };
-
   // Selecionar a categoria escolhida no button
   const handleSelectCategoy = (item) => {
     // se não tive objetos na categoria botão desabilitado
-    if (categorys.length <= 0) return;
+    if (listAllCategorys.length <= 0) return;
 
     // Remover da lista Category
-    const newListCat = categorys.filter((category) => category.id !== item.id);
-    setCategorys(newListCat);
+    const newListCat = listAllCategorys.filter(
+      (category) => category.id !== item.id
+    );
+    setListAllCategorys(newListCat);
     setSelectCategory([...selectCategory, item]);
-
-    // Converte o array com todas categorias em string "1,2,3"
-    const categoryId = [...selectCategory, item]
-      .map((item) => item.id)
-      .toString();
-
-    // Realiza um consulta no banco passando a categoria escolhida
-    getCategoryProduct(categoryId).then((response) => {
-      const { countProducts } = response;
-      setDataProductCategorySelected(response.products);
-      setTotalRecords(countProducts);
-    });
   };
   // Remove o item selecionado das categorias
   const handleRemoveSelectCategory = (item) => {
+    // Remover da lista do filtro de categorias selecionadas o item
     const newSelectCat = selectCategory.filter((cat) => cat.id !== item.id);
-    const newDataProductCat = dataProductCategorySelected.filter(
-      (prod) => prod.category_id !== item.id
-    );
-    const totalProducts = newDataProductCat.length;
-
-    setDataProductCategorySelected(newDataProductCat);
+    // Retornar para page 1
+    setPageCurrent(1);
+    // Setar a nova lista de categoria apos exclusão do item
     setSelectCategory(newSelectCat);
 
-    if (item.id === -1) {
-      //Todos os produtos em promoções
-      setDataProductCategorySelected([]);
-    } else {
-      setCategorys([...categorys, item]); //Retornar a categoria no Dropdown
-    }
-
-    if (newSelectCat.length <= 0) {
-      setPageCurrent(1);
-    } else {
-      setTotalRecords(totalProducts);
-    }
+    item.id !== PRODUCT_PROMOTION &&
+      setListAllCategorys([...listAllCategorys, item]); //Retornar a categoria no Dropdown
   };
   // Badge retorna style de produto em promoção
   const BadgePromotion = (value) => {
@@ -153,12 +156,16 @@ const Product = () => {
   };
   //Exibe todos os produto em promoção
   const handleProductPromotion = () => {
-    const exist = selectCategory.findIndex((cat) => cat.id === -1);
-    !!exist &&
-      getPromotionProduct().then((response) => {
-        setDataProductCategorySelected(response);
-        setSelectCategory([{ id: -1, name: "Produtos em Promoções" }]);
-      });
+    // Verificando se já esta selecionado os produto em promoção
+    // Casa não esteja retorna -1, senão 0 já esta selecionado prod. em promoção
+    const exist = selectCategory.findIndex(
+      (cat) => cat.id === PRODUCT_PROMOTION
+    );
+    // Converte em true ou false
+    Boolean(exist) &&
+      setSelectCategory([
+        { id: PRODUCT_PROMOTION, name: "Produtos em Promoções" },
+      ]);
   };
   // Excluir um produto
   const handleDeleteProduct = (index) => {
@@ -178,6 +185,38 @@ const Product = () => {
     });
   };
 
+  const handleSearch = (value) => {
+    const searchValue = value === "" ? null : value;
+    debounceEvent(() => setSearch(searchValue));
+  };
+
+  const handleChangeVisibleApp = (item) => {
+    const newDataProduct = dataProduct.map((product) => {
+      return product.id === item.id
+        ? { ...product, visibleApp: !product.visibleApp }
+        : product;
+    });
+    setDataProduct(newDataProduct);
+    upgradeProductVisibleApp(item);
+  };
+
+  // Atualizar o produto Visivel no aplicativo
+  const upgradeProductVisibleApp = async (product) => {
+    const data = new FormData();
+    data.append("name", product.name);
+    data.append("description", product.description);
+    data.append("price", parseFloat(product.price));
+    data.append("promotion", product.promotion);
+    data.append("pricePromotion", parseFloat(product.pricePromotion));
+    data.append("category_id", parseInt(product.category_id));
+    data.append("measureUnid_id", parseInt(product.measureUnid_id));
+    data.append("visibleApp", !product.visibleApp);
+    data.append("inventory", parseFloat(product.inventory));
+
+    // ATUALIZAR os dados do produto
+    await updateProduct(product.id, data);
+  };
+
   return (
     <>
       <div className="content">
@@ -186,7 +225,12 @@ const Product = () => {
             <Card>
               <CardHeader>
                 <ModalView
-                  title="Remover Produto"
+                  title={
+                    <>
+                      <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+                      <Label> Remover Produto </Label>
+                    </>
+                  }
                   modal={modal}
                   toggle={() => setModal(!modal)}
                   confirmed={() => handleDeleteProduct(idProdSelected)}
@@ -213,7 +257,7 @@ const Product = () => {
                       <span> Categoria</span>
                     </DropdownToggle>
                     <DropdownMenu>
-                      {categorys.map((item, idx) => (
+                      {listAllCategorys.map((item, idx) => (
                         <DropdownItem
                           key={idx}
                           id={item.id}
@@ -225,20 +269,21 @@ const Product = () => {
                       ))}
                     </DropdownMenu>
                   </Dropdown>
-                  <Button
-                    color="primary"
-                    onClick={() => handleProductPromotion()}
-                  >
+                  <Button color="primary" onClick={handleProductPromotion}>
                     <i className="fa fa-bookmark" aria-hidden="true" /> Produto
                     em Promoção
                   </Button>
-                  <Button color="info" onClick={() => goToAddNewProduct()}>
+                  <Button color="info" onClick={goToAddNewProduct}>
                     <i className="fa fa-plus-square" aria-hidden="true" /> Novo
                     Produto
                   </Button>
                 </div>
+                {selectCategory.length > 0 ? (
+                  <strong>Filtro:</strong>
+                ) : (
+                  <SearchBar onChange={(value) => handleSearch(value)} />
+                )}
                 <div className="selectCategory">
-                  {selectCategory.length > 0 && <strong>Filtro:</strong>}
                   {selectCategory.map((item) => (
                     <span key={item.id}>
                       <i
@@ -268,11 +313,7 @@ const Product = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {(dataProductCategorySelected.length > 0 ||
-                    selectCategory.length > 0
-                      ? dataProductCategorySelected
-                      : dataProduct
-                    ).map((item, idx) => (
+                    {dataProduct.map((item, idx) => (
                       <tr key={idx}>
                         <td>
                           <div className="contentImageName">
@@ -289,17 +330,23 @@ const Product = () => {
                             </object>
                           </div>
                         </td>
-                        <td
-                          style={{ cursor: "pointer" }}
-                          className="title"
-                          onClick={() => goToEditProduct(item)}
-                        >
+                        <td className="title">
                           <img
-                            style={{ height: 28, paddingRight: 10 }}
+                            style={{
+                              height: 28,
+                              paddingRight: 10,
+                              cursor: "pointer",
+                            }}
                             src={item.visibleApp ? imgMobile : imgNoMobile}
                             alt="mobile"
+                            onClick={() => handleChangeVisibleApp(item)}
                           />
-                          {item.name}
+                          <span
+                            style={{ cursor: "pointer" }}
+                            onClick={() => goToEditProduct(item)}
+                          >
+                            {item.name}
+                          </span>
                         </td>
                         <td>{item.measureUnid}</td>
                         <td className="text-right">{item.price}</td>
@@ -338,8 +385,7 @@ const Product = () => {
               </CardBody>
               <CardFooter>
                 <span className="totalProduct">
-                  Total de produto:
-                  <strong>{totalRecords}</strong>{" "}
+                  Total de produto: <strong>{totalRecords}</strong>
                 </span>
 
                 {isloading && (
@@ -348,14 +394,21 @@ const Product = () => {
                   </div>
                 )}
 
-                {!!totalRecords && (
+                <PaginationNew
+                  totalRecords={totalRecords}
+                  pageLimit={10}
+                  pageNeighbours={1}
+                  onPageChanged={(data) => setPageCurrent(data)}
+                />
+
+                {/* {!!totalRecords && (
                   <Pagination
                     totalRecords={Number(totalRecords)}
                     pageLimit={10}
                     pageNeighbours={1}
                     onPageChanged={(data) => setPageCurrent(data)}
                   />
-                )}
+                )} */}
               </CardFooter>
             </Card>
           </Col>

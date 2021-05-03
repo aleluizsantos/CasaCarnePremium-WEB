@@ -220,6 +220,7 @@
   align-items: center;
   justify-content: center;
   border: 1px dashed #c6c6c6;
+  border-radius: 10px;
   width: 200px;
   height: 200px;
   margin-top: 25px;
@@ -413,6 +414,7 @@ table.table .avatar {
 .contentButton {
   display: flex;
   flex-direction: row;
+  align-items: center;
 }
 
 .groupButton {

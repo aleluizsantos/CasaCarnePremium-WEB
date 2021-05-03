@@ -31,6 +31,10 @@ import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView, SelectDropdown } from "../../components";
 import imgDelivery from "../../assets/img/delivery.png";
 import imgStore from "../../assets/img/store.png";
+import imgWhatsapp from "../../assets/img/iconWhatsapp.svg";
+import icoTrash from "../../assets/img/icoTrash-64.gif";
+import icoBuy from "../../assets/img/icoBuy-64.gif";
+import icoStatus from "../../assets/img/icoStatus_64.png";
 
 const DetailsMyOrder = (props) => {
   const history = useHistory();
@@ -47,11 +51,13 @@ const DetailsMyOrder = (props) => {
   const [itemSelected, setItemSelected] = useState({});
   const [productSearch, setProductSearch] = useState("");
   const [amountItemAdd, setamountItemAdd] = useState(1);
+  const [phoneWhatsapp, setPhoneWhatsapp] = useState("");
 
   useEffect(() => {
     (() => {
       getItemsMyOrders(state.id).then((response) => setItemsMyOrders(response));
       setMyOrder(state);
+      setPhoneWhatsapp(state.phone.replace(/([^\d])+/gim, ""));
       setDescriptionStatus(state.statusRequest);
       state.statusRequest_id < 4
         ? setCurrentPorcent(
@@ -157,6 +163,16 @@ const DetailsMyOrder = (props) => {
   }
 
   function handleAddItem() {
+    if (handleAmountValidate()) {
+      alert("Verificar o campo em vermelho, valor não é uma quantidade válida");
+      return;
+    }
+
+    if (typeof productSearch === "undefined") {
+      alert("Selecione o produto");
+      return;
+    }
+
     const dataItem = {
       amount: amountItemAdd,
       price: productSearch.promotion
@@ -177,16 +193,33 @@ const DetailsMyOrder = (props) => {
     });
   }
 
+  function handleAmountValidate() {
+    const isNum = Number.isFinite(Number(amountItemAdd));
+    return !isNum;
+  }
+
+  function handleMessageWhatsapp(message) {
+    window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
+
+    // href={`https://wa.me/55${phoneWhatsapp}?text=Adorei%20seu%20artigo`}
+    // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=Adorei%20seu%20artigo`}
+  }
+
   return (
     <div className="content">
       <Row>
         <ModalView
-          title="Alterar Status do pedido"
+          title={
+            <>
+              <img src={icoStatus} alt="status" style={{ height: 40 }} />{" "}
+              <Label> Alterar status pedido </Label>
+            </>
+          }
           modal={isModalStateMyOrder}
           toggle={() => setIsModalStateMyOrder(!isModalStateMyOrder)}
           confirmed={() => nextStageMyOrder(myOrder.id)}
         >
-          <div className="text-center">
+          <div className="bodyModalStatus">
             {myOrder.statusRequest_id === 1 && (
               <span>
                 Aprovar o pedido do cliente <strong>{myOrder.name}</strong>
@@ -204,7 +237,12 @@ const DetailsMyOrder = (props) => {
           </div>
         </ModalView>
         <ModalView
-          title="Remover Item"
+          title={
+            <>
+              <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+              <Label> Remover item </Label>
+            </>
+          }
           modal={isModalRemoveItem}
           toggle={() => setIsModalRemoveItem(!isModalRemoveItem)}
           confirmed={() => handleRemoverItem(itemSelected)}
@@ -215,7 +253,12 @@ const DetailsMyOrder = (props) => {
           </div>
         </ModalView>
         <ModalView
-          title="Exclução do pedido"
+          title={
+            <>
+              <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+              <Label>Excluir pedido?</Label>
+            </>
+          }
           modal={isModalDeleteOrder}
           toggle={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
           confirmed={() => handleRemoverOrder()}
@@ -227,8 +270,13 @@ const DetailsMyOrder = (props) => {
           </div>
         </ModalView>
         <ModalView
-          title="Adicionar item"
-          size="xl"
+          title={
+            <>
+              <img src={icoBuy} alt="icoBuy" style={{ height: 50 }} />{" "}
+              <Label> Adicionar item </Label>
+            </>
+          }
+          size="lg"
           modal={isModalInsertItem}
           toggle={() => setIsModalInsertItem(!isModalInsertItem)}
           confirmed={() => handleAddItem()}
@@ -255,6 +303,7 @@ const DetailsMyOrder = (props) => {
                     type="text"
                     name="amount"
                     value={amountItemAdd}
+                    invalid={handleAmountValidate()}
                     onChange={(event) =>
                       handleChangesAmount(event.target.value)
                     }
@@ -265,7 +314,7 @@ const DetailsMyOrder = (props) => {
 
             {productSearch && (
               <Row>
-                <Col className="text-center" md="6">
+                <Col className="imgAddItem" md="6">
                   <img src={productSearch.image_url} alt={productSearch.name} />
                 </Col>
 
@@ -298,8 +347,7 @@ const DetailsMyOrder = (props) => {
               <CardTitle tag="h4">
                 <div className="headerCard">
                   <Button
-                    className="btn-round"
-                    color="default"
+                    className="btn"
                     outline
                     size="sm"
                     onClick={() => handleGoBack()}
@@ -336,9 +384,27 @@ const DetailsMyOrder = (props) => {
 
               <div className="detailsClient">
                 <div>
-                  <p className="title">{myOrder.name}</p>
+                  <p className="titleName">{myOrder.name}</p>
                   <p>{myOrder.email}</p>
-                  <p>{myOrder.phone}</p>
+                  <div>
+                    <Button
+                      color="default"
+                      outline
+                      size="sm"
+                      onClick={() =>
+                        handleMessageWhatsapp(
+                          `🍖 Olá ${myOrder.name} tudo bem. %0ASomos da Casa de Carne Premium.`
+                        )
+                      }
+                    >
+                      <img
+                        className="iconWhatsapp"
+                        src={imgWhatsapp}
+                        alt="Icone Whatsapp"
+                      />{" "}
+                      Entre em contato <span>{myOrder.phone}</span>
+                    </Button>
+                  </div>
                 </div>
 
                 <div>

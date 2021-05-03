@@ -68,6 +68,11 @@
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+.titleName {
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
 /* Barra de Progresso do status do pedido */
 .contentStatus {
     margin: 0 40px;
@@ -164,6 +169,23 @@
 }
 .priceItemSlectedAddItem {
     font-size: 28px;
+}
+.imgAddItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.imgAddItem img {
+    max-height: 20rem;
+}
+.iconWhatsapp {
+    height: 2rem;
+}
+.bodyModalStatus {
+    text-align: center;
+}
+.bodyModalStatus span {
+    font-size: 1.1rem;
 }
 
 @media(max-width: 700px) {

@@ -36,12 +36,17 @@ export const addEntryProduct = async (dataListEntry) => {
     .then((response) => response.data);
 };
 
-export const deletEntryProduct = async (idProductEntry) => {
+export const deletEntryProduct = async (itemselected) => {
   const { Authorization } = authHeader();
+  const { id, product_id, amount } = itemselected;
 
   return await api
-    .delete(`/entryStock/${idProductEntry}`, {
+    .delete(`/entryStock/${id}`, {
       headers: { Authorization: Authorization },
+      params: {
+        product_id: product_id,
+        amount: amount,
+      },
     })
     .then((response) => response.data);
 };

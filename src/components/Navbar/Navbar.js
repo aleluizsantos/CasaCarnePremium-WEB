@@ -11,17 +11,15 @@ import {
   Nav,
   NavItem,
   Container,
-  InputGroup,
-  InputGroupText,
-  InputGroupAddon,
-  Input,
 } from "reactstrap";
 
 import { listRoutes } from "../../routes";
 import { signOut } from "../../store/Actions";
+import Setting from "../Setting";
 
 const NavbarHeader = (props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [openSetting, setOpenSetting] = useState(false);
   // const [dropdownOpen, setDropdownOpen] = useState(false);
   const [color, setColor] = useState("white");
   const sidebarToggle = createRef();
@@ -89,6 +87,10 @@ const NavbarHeader = (props) => {
   return (
     // add or remove classes depending if we are on full-screen-maps page or not
     <Navbar color={color} expand="lg" className={"fixed-top navbar-absolute "}>
+      <Setting
+        open={openSetting}
+        onChange={() => setOpenSetting(!openSetting)}
+      />
       <Container fluid>
         <NotificationAlert ref={notificationAlert} />
         <div className="navbar-wrapper">
@@ -112,17 +114,6 @@ const NavbarHeader = (props) => {
           <span className="navbar-toggler-bar navbar-kebab" />
         </NavbarToggler>
         <Collapse isOpen={isOpen} navbar className="justify-content-end">
-          <form>
-            {/* Search  */}
-            <InputGroup className="no-border">
-              <Input placeholder="Pesquisar..." />
-              <InputGroupAddon addonType="append">
-                <InputGroupText>
-                  <i className="nc-icon nc-zoom-split" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </form>
           <Nav navbar>
             <NavItem>
               {newOrders > 0 && (
@@ -156,10 +147,14 @@ const NavbarHeader = (props) => {
               </DropdownMenu>
             </Dropdown> */}
             <NavItem>
-              <Link to="#" className="nav-link btn-rotate">
+              <Link
+                to="#"
+                onClick={() => setOpenSetting(!openSetting)}
+                className="nav-link btn-rotate"
+              >
                 <i className="nc-icon nc-settings-gear-65" />
                 <p>
-                  <span className="d-lg-none d-md-block">Account</span>
+                  <span className="d-lg-none d-md-block">Configurações</span>
                 </p>
               </Link>
             </NavItem>

@@ -5,3 +5,4 @@ export * from "./Product";
 export * from "./currencyConversion";
 export * from "./Categorys";
 export * from "./Reports";
+export * from "./DebounceEvent";
