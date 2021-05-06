@@ -36,6 +36,15 @@ import icoTrash from "../../assets/img/icoTrash-64.gif";
 import icoBuy from "../../assets/img/icoBuy-64.gif";
 import icoStatus from "../../assets/img/icoStatus_64.png";
 
+const typeDelivery = {
+  EM_ANALISE: 1,
+  EM_PREPARAÇÃO: 2,
+  ROTA_ENTREGA: 3,
+  RETIRAR_LOJA: 4,
+  AGENDADO: 5,
+  FINALIZADO: 6,
+};
+
 const DetailsMyOrder = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
@@ -52,6 +61,11 @@ const DetailsMyOrder = (props) => {
   const [productSearch, setProductSearch] = useState("");
   const [amountItemAdd, setamountItemAdd] = useState(1);
   const [phoneWhatsapp, setPhoneWhatsapp] = useState("");
+  const [changeAmount, setChangeAmount] = useState({
+    isEdit: false,
+    request_id: state.id,
+    itens: {},
+  });
 
   useEffect(() => {
     (() => {
@@ -59,7 +73,7 @@ const DetailsMyOrder = (props) => {
       setMyOrder(state);
       setPhoneWhatsapp(state.phone.replace(/([^\d])+/gim, ""));
       setDescriptionStatus(state.statusRequest);
-      state.statusRequest_id < 4
+      state.statusRequest_id < typeDelivery.RETIRAR_LOJA
         ? setCurrentPorcent(
             state.statusRequest_id === 5 ? 4 * 25 : state.statusRequest_id * 25
           )
@@ -163,7 +177,7 @@ const DetailsMyOrder = (props) => {
   }
 
   function handleAddItem() {
-    if (handleAmountValidate()) {
+    if (handleAmountValidate(amountItemAdd)) {
       alert("Verificar o campo em vermelho, valor não é uma quantidade válida");
       return;
     }
@@ -193,16 +207,42 @@ const DetailsMyOrder = (props) => {
     });
   }
 
-  function handleAmountValidate() {
-    const isNum = Number.isFinite(Number(amountItemAdd));
+  function handleAmountValidate(value) {
+    const isNum = Number.isFinite(Number(value));
     return !isNum;
   }
 
   function handleMessageWhatsapp(message) {
     window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
+    // href={`https://wa.me/55${phoneWhatsapp}?text=testando%20message%20whatsapp`}
+    // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=testando%20message%20whatsapp`}
+  }
 
-    // href={`https://wa.me/55${phoneWhatsapp}?text=Adorei%20seu%20artigo`}
-    // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=Adorei%20seu%20artigo`}
+  function calcChangeItem(item, amount) {
+    console.log(amount);
+    const newItens = itemsMyOrders.map((itemMyOrder) => {
+      if (itemMyOrder.id === Number(item))
+        itemMyOrder.amount = parseFloat(amount);
+      return itemMyOrder;
+    });
+    setItemsMyOrders(newItens);
+  }
+
+  function handleEditAmountItem(event) {
+    event.persist();
+
+    const dataChangeAmount = {
+      ...changeAmount,
+      itens: {
+        ...changeAmount.itens,
+        [event.target.name]: event.target.value.replace(",", "."),
+      },
+    };
+
+    // Calcular item
+    calcChangeItem(event.target.name, event.target.value);
+
+    setChangeAmount(dataChangeAmount);
   }
 
   return (
@@ -303,7 +343,11 @@ const DetailsMyOrder = (props) => {
                     type="text"
                     name="amount"
                     value={amountItemAdd}
-                    invalid={handleAmountValidate()}
+                    invalid={
+                      amountItemAdd === ""
+                        ? true
+                        : handleAmountValidate(amountItemAdd)
+                    }
                     onChange={(event) =>
                       handleChangesAmount(event.target.value)
                     }
@@ -486,7 +530,7 @@ const DetailsMyOrder = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemsMyOrders.map((item) => (
+                    {itemsMyOrders.map((item, idx) => (
                       <tr key={item.id}>
                         <td>
                           <div className="groupItem">
@@ -498,10 +542,33 @@ const DetailsMyOrder = (props) => {
                           </div>
                         </td>
                         <td>
-                          {item.amount} {item.measureUnid}
+                          <Input
+                            type="text"
+                            disabled={
+                              myOrder.statusRequest_id <=
+                              typeDelivery.EM_PREPARAÇÃO
+                                ? false
+                                : true
+                            }
+                            name={item.id}
+                            value={changeAmount.itens[item.id] || item.amount}
+                            invalid={
+                              (changeAmount.itens[item.id] || item.amount) ===
+                              ""
+                                ? true
+                                : handleAmountValidate(
+                                    changeAmount.itens[item.id] || item.amount
+                                  )
+                            }
+                            onChange={handleEditAmountItem}
+                          />
                         </td>
                         <td>{item.price}</td>
-                        <td>{formatCurrency(item.amount * item.price)}</td>
+                        <td>
+                          {formatCurrency(
+                            parseFloat(item.amount) * parseFloat(item.price)
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

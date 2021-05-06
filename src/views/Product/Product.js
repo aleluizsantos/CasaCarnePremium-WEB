@@ -94,6 +94,7 @@ const Product = () => {
       (cat) => cat.id === PRODUCT_PROMOTION
     );
     !!!exist && setSelectCategory([]);
+    setSearch(null);
 
     listAllCategorys.length <= 0 &&
       getCategorys().then((response) => {
