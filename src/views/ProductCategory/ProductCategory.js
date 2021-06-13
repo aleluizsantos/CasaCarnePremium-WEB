@@ -21,12 +21,15 @@ import {
   getProductGroupCategory,
   updateCategory,
   deleteCategory,
+  visibleAppCategory,
 } from "../../hooks";
 
 import { SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView } from "../../components";
 import icoTrash from "../../assets/img/icoTrash-64.gif";
 import icoEdit from "../../assets/img/icoEdit_64.png";
+import imgNoMobile from "../../assets/img/noMobile.png";
+import imgMobile from "../../assets/img/mobile.png";
 
 let FormStateProps = {
   isChange: false,
@@ -121,6 +124,22 @@ const ProductCategory = () => {
         payload: "O produto foi excluído.",
       });
       setIsLoading(false);
+    });
+  };
+  const handleChangeVisibleApp = (item) => {
+    visibleAppCategory(item).then((response) => {
+      if (response) {
+        const newCategory = categorys.map((cat) => {
+          if (cat.name === item.name) {
+            return {
+              ...cat,
+              categoryVisible: !item.categoryVisible,
+            };
+          }
+          return cat;
+        });
+        setCategorys(newCategory);
+      }
     });
   };
 
@@ -229,7 +248,24 @@ const ProductCategory = () => {
                           alt={item.name}
                         />
                       </td>
-                      <td>{item.name}</td>
+                      <td>
+                        <img
+                          style={{
+                            height: 28,
+                            paddingRight: 10,
+                            cursor: "pointer",
+                          }}
+                          src={item.categoryVisible ? imgMobile : imgNoMobile}
+                          alt="mobile"
+                          onClick={() => handleChangeVisibleApp(item)}
+                        />
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() => handleSelectCategoy(item, "edit")}
+                        >
+                          {item.name}
+                        </span>
+                      </td>
                       <td>{item.TotalProduct}</td>
                       <td>
                         <div className="groupButton">

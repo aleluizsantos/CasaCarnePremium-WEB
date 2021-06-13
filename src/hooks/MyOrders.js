@@ -108,3 +108,17 @@ export const addItemOrder = async (item) => {
     })
     .then((response) => response.data);
 };
+
+/**
+ * Atualiza o item do pedido
+ * @param {Object} itemChange
+ * @returns JSON
+ */
+export const changeItemMyOrder = async (itemChange) => {
+  const { Authorization } = authHeader();
+  return await api
+    .put("request/itemChanger", itemChange, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};

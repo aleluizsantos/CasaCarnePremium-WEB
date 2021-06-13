@@ -57,3 +57,21 @@ export const deleteCategory = async (category) => {
     })
     .then((respponse) => respponse.data);
 };
+/**
+ * Ativa e desativa categoria visible no app
+ * @param {Object} category
+ * @returns Object { success: true or false }
+ */
+export const visibleAppCategory = async (category) => {
+  const { Authorization } = authHeader();
+
+  return await api
+    .put(
+      `category/visible/${category.name}`,
+      {},
+      {
+        headers: { Authorization: Authorization },
+      }
+    )
+    .then((response) => response.data);
+};

@@ -15,6 +15,7 @@ import {
   Input,
   FormGroup,
   Label,
+  Alert,
 } from "reactstrap";
 
 import "./styles.css";
@@ -26,7 +27,7 @@ import {
   deleteItemPedido,
 } from "../../hooks/MyOrders";
 import { getProductSearch } from "../../hooks/Product";
-import { addItemOrder } from "../../hooks/MyOrders";
+import { addItemOrder, changeItemMyOrder } from "../../hooks/MyOrders";
 import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView, SelectDropdown } from "../../components";
 import imgDelivery from "../../assets/img/delivery.png";
@@ -52,6 +53,7 @@ const DetailsMyOrder = (props) => {
   const [currentPorcent, setCurrentPorcent] = useState(0);
   const [descriptioStatus, setDescriptionStatus] = useState(null);
   const [itemsMyOrders, setItemsMyOrders] = useState([]);
+  const [taxaDelivery, setTaxaDelivery] = useState({ taxa: 0, vMinTaxa: 0 });
   const [myOrder, setMyOrder] = useState({});
   const [isModalStateMyOrder, setIsModalStateMyOrder] = useState(false);
   const [isModalRemoveItem, setIsModalRemoveItem] = useState(false);
@@ -69,7 +71,22 @@ const DetailsMyOrder = (props) => {
 
   useEffect(() => {
     (() => {
-      getItemsMyOrders(state.id).then((response) => setItemsMyOrders(response));
+      getItemsMyOrders(state.id).then((response) => {
+        // Transformar o array em um objeto com apenas as quantidade dos itens
+        const jsonAmountItem = response.itemsRequest.reduce(
+          (obj, item) => ({
+            ...obj,
+            [item.id]: item.amount,
+          }),
+          {}
+        );
+        setChangeAmount({
+          ...changeAmount,
+          itens: jsonAmountItem,
+        });
+        setItemsMyOrders(response.itemsRequest);
+        setTaxaDelivery(response.taxaDelivery);
+      });
       setMyOrder(state);
       setPhoneWhatsapp(state.phone.replace(/([^\d])+/gim, ""));
       setDescriptionStatus(state.statusRequest);
@@ -79,6 +96,8 @@ const DetailsMyOrder = (props) => {
           )
         : setCurrentPorcent(100);
     })();
+
+    // eslint-disable-next-line
   }, [state, state.id, state.statusRequest, state.statusRequest_id]);
 
   function handleIsModal() {
@@ -94,7 +113,10 @@ const DetailsMyOrder = (props) => {
   }
 
   function nextStageMyOrder() {
-    if (myOrder.statusRequest_id < 5) {
+    if (myOrder.statusRequest_id < typeDelivery.AGENDADO) {
+      //Checar se foi alterado as quantidade dos item
+      if (changeAmount.isEdit) salveChangeItem();
+
       upDateStateMyOrders(myOrder.id).then((response) => {
         setMyOrder({
           ...myOrder,
@@ -129,6 +151,9 @@ const DetailsMyOrder = (props) => {
 
   function handleRemoverItem() {
     const { id, request_id } = itemSelected;
+    // // remover uma propriedade de um objeto
+    // delete changeAmount.itens[id];
+
     deleteItemPedido(request_id, id).then((response) => {
       const newItem = itemsMyOrders.filter(
         (item) => item.id !== itemSelected.id
@@ -176,7 +201,7 @@ const DetailsMyOrder = (props) => {
     history.goBack();
   }
 
-  function handleAddItem() {
+  async function handleAddItem() {
     if (handleAmountValidate(amountItemAdd)) {
       alert("Verificar o campo em vermelho, valor não é uma quantidade válida");
       return;
@@ -184,6 +209,20 @@ const DetailsMyOrder = (props) => {
 
     if (typeof productSearch === "undefined") {
       alert("Selecione o produto");
+      return;
+    }
+
+    // Verificar se o produto já esta nos itens
+    const existItem = itemsMyOrders.find(
+      (item) => item.product_id === productSearch.value
+    );
+    if (existItem) {
+      setIsModalInsertItem(false);
+      dispatch({
+        type: SET_MESSAGE,
+        payload: "Produto já existe na lista, altere a quantidade",
+      });
+      setProductSearch("");
       return;
     }
 
@@ -195,21 +234,27 @@ const DetailsMyOrder = (props) => {
       product_id: productSearch.value,
       request_id: myOrder.id,
     };
-    addItemOrder(dataItem).then((response) => {
+
+    await addItemOrder(dataItem).then(async (response) => {
+      const lastItem = await response.items.find(
+        (item) => item.product_id === productSearch.value
+      );
+      setChangeAmount({
+        ...changeAmount,
+        itens: {
+          ...changeAmount.itens,
+          [lastItem.id]: amountItemAdd,
+        },
+      });
       setMyOrder(response.order);
       setItemsMyOrders(response.items);
       setIsModalInsertItem(false);
       dispatch({
         type: SET_MESSAGE,
-        payload: "foi adicionado um item no pedido",
+        payload: "Foi adicionado um item no pedido",
       });
       setProductSearch("");
     });
-  }
-
-  function handleAmountValidate(value) {
-    const isNum = Number.isFinite(Number(value));
-    return !isNum;
   }
 
   function handleMessageWhatsapp(message) {
@@ -218,31 +263,93 @@ const DetailsMyOrder = (props) => {
     // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=testando%20message%20whatsapp`}
   }
 
-  function calcChangeItem(item, amount) {
-    console.log(amount);
+  function handleAmountValidate(value) {
+    const isNum = Number.isFinite(Number(value));
+    return !isNum;
+  }
+  // Calcular a alterar do quantidade no item do pedido
+  async function calcChangeItem(item, amount) {
+    const valueAmountOld = itemsMyOrders.find(
+      (itemOrder) => itemOrder.id === item
+    );
+    let valueAmount = amount;
+
+    if (valueAmount === "" || handleAmountValidate(valueAmount)) {
+      valueAmount = valueAmountOld.amount;
+      setChangeAmount({
+        ...changeAmount,
+        isEdit: true,
+        itens: {
+          ...changeAmount.itens,
+          [item]: valueAmount,
+        },
+      });
+    }
+
+    // Alterar os valor na lista e recalculando a soma do item
     const newItens = itemsMyOrders.map((itemMyOrder) => {
       if (itemMyOrder.id === Number(item))
-        itemMyOrder.amount = parseFloat(amount);
+        itemMyOrder.amount = parseFloat(valueAmount);
       return itemMyOrder;
     });
     setItemsMyOrders(newItens);
+
+    // Recalcular o Total Geral de todos os itens após alteração
+    const newtotalPurchase = await itemsMyOrders.reduce((total, item) => {
+      return total + parseFloat(item.amount) * parseFloat(item.price);
+    }, 0);
+
+    const taxa =
+      newtotalPurchase >= taxaDelivery.vMinTaxa
+        ? 0
+        : parseFloat(taxaDelivery.taxa);
+
+    // Setar o novo valor no State
+    setMyOrder({
+      ...myOrder,
+      vTaxaDelivery: taxa,
+      totalPurchase: newtotalPurchase + taxa,
+    });
   }
 
   function handleEditAmountItem(event) {
     event.persist();
 
+    const value = event.target.value.replace(",", ".");
     const dataChangeAmount = {
       ...changeAmount,
+      isEdit: true,
       itens: {
         ...changeAmount.itens,
-        [event.target.name]: event.target.value.replace(",", "."),
+        [event.target.name]: value,
       },
     };
-
-    // Calcular item
-    calcChangeItem(event.target.name, event.target.value);
-
     setChangeAmount(dataChangeAmount);
+  }
+
+  function salveChangeItem() {
+    const itemsChanger = {
+      user_id: myOrder.user_id,
+      request_id: myOrder.id,
+      totalPurchase: myOrder.totalPurchase,
+      taxaDelivery: myOrder.vTaxaDelivery,
+      items: itemsMyOrders,
+    };
+
+    // Gravar as alterações no banco de dados
+    changeItemMyOrder(itemsChanger).then((response) => {
+      if (!response) {
+        dispatch({
+          type: SET_MESSAGE,
+          payload: "Erro ao atualizar verifiques as quantidades.",
+        });
+      }
+    });
+    // Alterar o Status de isEdit = false;
+    setChangeAmount({
+      ...changeAmount,
+      isEdit: false,
+    });
   }
 
   return (
@@ -343,6 +450,7 @@ const DetailsMyOrder = (props) => {
                     type="text"
                     name="amount"
                     value={amountItemAdd}
+                    onFocus={(event) => event.target.select()}
                     invalid={
                       amountItemAdd === ""
                         ? true
@@ -544,22 +652,29 @@ const DetailsMyOrder = (props) => {
                         <td>
                           <Input
                             type="text"
+                            name={item.id}
                             disabled={
                               myOrder.statusRequest_id <=
                               typeDelivery.EM_PREPARAÇÃO
                                 ? false
                                 : true
                             }
-                            name={item.id}
-                            value={changeAmount.itens[item.id] || item.amount}
+                            onBlur={() =>
+                              calcChangeItem(
+                                item.id,
+                                changeAmount.itens[item.id]
+                              )
+                            }
                             invalid={
                               (changeAmount.itens[item.id] || item.amount) ===
                               ""
                                 ? true
                                 : handleAmountValidate(
-                                    changeAmount.itens[item.id] || item.amount
+                                    changeAmount.itens[item.id]
                                   )
                             }
+                            onFocus={(event) => event.target.select()}
+                            value={changeAmount.itens[item.id] || ""}
                             onChange={handleEditAmountItem}
                           />
                         </td>
@@ -573,6 +688,21 @@ const DetailsMyOrder = (props) => {
                     ))}
                   </tbody>
                 </Table>
+                {changeAmount.isEdit && (
+                  <div>
+                    <Alert color="success" fade={true}>
+                      <div className="alertChangeItems">
+                        <span>QUANTIDADE ALTERADAO NO PEDIDO</span>
+                        <Button
+                          onClick={() => salveChangeItem()}
+                          color="success"
+                        >
+                          Salvar
+                        </Button>
+                      </div>
+                    </Alert>
+                  </div>
+                )}
               </div>
 
               <div className="contentTotal">
@@ -592,7 +722,11 @@ const DetailsMyOrder = (props) => {
                   </div>
                   <div className="groupTotals">
                     <strong>Taxa de entrega:</strong>
-                    <span>{formatCurrency(myOrder.vTaxaDelivery)}</span>
+                    <span
+                      style={myOrder.vTaxaDelivery > 0 ? { color: "red" } : {}}
+                    >
+                      {formatCurrency(myOrder.vTaxaDelivery)}
+                    </span>
                   </div>
                   <div className="groupTotals">
                     <strong>Desconto:</strong>

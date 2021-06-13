@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row } from "reactstrap";
+
 // used for making the prop types of this component
 import PropTypes from "prop-types";
 
@@ -24,6 +25,7 @@ const Footer = (props) => {
           <div className="credits ml-auto">
             <div className="copyright">
               &copy; {1900 + new Date().getYear()}, desenvolvido por lesoftware
+              - version 1.2.3
             </div>
           </div>
         </Row>
