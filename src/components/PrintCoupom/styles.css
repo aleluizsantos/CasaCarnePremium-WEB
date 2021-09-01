@@ -1,0 +1,57 @@
+.container-print {
+    width: 430px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #FBFBCA;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 20px 12px;
+}
+.container-print .wraper-print {
+    display: grid;
+
+    grid-template-columns: 0.6fr 5fr 2fr 1fr;
+    grid-template-rows: auto;
+}
+.container-print .wraper-print .title {
+    font-weight: 700;
+}
+.content-note {
+    padding: 0 20px 0 22px;
+}
+.content-additional {
+    padding: 0 80px 0 22px;
+}
+.additional {
+    display: flex;
+    justify-content: space-between;
+}
+.container-print .line-dashed {
+    border-bottom: 1px dashed;
+    margin: 5px 0;
+}
+.container-print .header-print {
+    text-align: center;
+}
+.container-print .header-print span {
+    letter-spacing: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 15px;
+}
+.container-print .header-print p {
+    font-size: 14px;
+    font-weight: 600;
+}
+.container-print .fieldGroup {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+}
+.container-print p {
+    padding: 0;
+    margin: 0 ;
+}
+.container-print .total {
+    padding-top: 10px;
+}

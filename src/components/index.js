@@ -11,3 +11,4 @@ export { default as Switch } from "./Switch";
 export { default as SelectDropdown } from "./SelectDropdown";
 export { default as SearchBar } from "./SearchBar";
 export { default as Setting } from "./Setting";
+export { default as PrintCoupom } from "./PrintCoupom";

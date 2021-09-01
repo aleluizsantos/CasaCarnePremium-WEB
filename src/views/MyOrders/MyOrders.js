@@ -123,7 +123,12 @@ const MyOrders = () => {
                           {/* {item.deliveryType} */}
                         </td>
                         <td>{formatDateTime(item.dateTimeOrder)}</td>
-                        <td>{item.name}</td>
+                        <td
+                          style={{ cursor: "pointer", fontWeight: "bold" }}
+                          onClick={() => goToDetailsMyOrders(item)}
+                        >
+                          {item.name}
+                        </td>
                         <td>
                           <div
                             style={{

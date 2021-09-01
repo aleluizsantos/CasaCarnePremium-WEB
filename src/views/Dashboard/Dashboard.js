@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { addDays, subDays, format } from "date-fns";
 // react plugin used to create charts
 import { Line } from "react-chartjs-2";
 // reactstrap components
@@ -14,12 +16,15 @@ import {
 } from "reactstrap";
 // core components
 
+import "./styles.css";
+
 import { getSaleDay, getSaleWeek, getSaleYear } from "../../hooks/Reports";
 import { formatTime, formatDate, formatCurrency } from "../../hooks/format";
 
 const Dashboard = (props) => {
+  const history = useHistory();
   const [saleDay, setSaleDay] = useState("");
-  const [saleweek, setSaleWeek] = useState([]);
+  const [saleweek, setSaleWeek] = useState({});
   const [saleYear, setSaleYear] = useState([]);
   const { clientsOnline, clientsRegistered, newOrders } = useSelector(
     (state) => state.Notificate
@@ -27,18 +32,20 @@ const Dashboard = (props) => {
 
   useEffect(() => {
     (async () => {
-      getSaleDay().then((resposne) => setSaleDay(resposne.totalSaleDay));
-      getSaleWeek().then((resposne) => setSaleWeek(resposne));
-      getSaleYear().then((resposne) => setSaleYear(resposne));
+      getSaleDay().then((resposne) => {
+        setSaleDay(resposne.totalSaleDay);
+        getSaleWeek().then((resposne) => {
+          setSaleWeek(resposne);
+          getSaleYear().then((resposne) => setSaleYear(resposne));
+        });
+      });
     })();
   }, []);
-
-  console.log(saleweek);
 
   const chartSaleWeek = {
     data: (canvas) => {
       return {
-        labels: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+        labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
         datasets: [
           {
             borderColor: "#00bf55",
@@ -46,7 +53,7 @@ const Dashboard = (props) => {
             pointRadius: 5,
             pointHoverRadius: 10,
             borderWidth: 2,
-            data: saleweek,
+            data: saleweek.data,
           },
         ],
       };
@@ -133,6 +140,33 @@ const Dashboard = (props) => {
     },
   };
 
+  // Lista as venda Semana ATUAL
+  const currentWeek = () => {
+    getSaleWeek().then((response) => {
+      setSaleWeek(response);
+    });
+  };
+  // Lista as venda de semanas posteriores
+  const incrementWeek = () => {
+    const currentWeek = new Date(saleweek.interval?.from);
+    const lastWeek = addDays(currentWeek, 7);
+    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
+
+    getSaleWeek(lastWeekFormated).then((response) => {
+      setSaleWeek(response);
+    });
+  };
+  // Lista as venda de semanas anteriores
+  const decrementWeek = async () => {
+    const currentWeek = new Date(saleweek.interval?.from);
+    const lastWeek = subDays(currentWeek, 7);
+    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
+
+    getSaleWeek(lastWeekFormated).then((response) => {
+      setSaleWeek(response);
+    });
+  };
+
   return (
     <>
       <div className="content">
@@ -147,7 +181,11 @@ const Dashboard = (props) => {
                     </div>
                   </Col>
                   <Col md="9" xs="8">
-                    <div className="numbers">
+                    <div
+                      style={{ cursor: "pointer" }}
+                      className="numbers"
+                      onClick={() => history.push("userClient")}
+                    >
                       <p className="card-category">Cliente Inscritos</p>
                       <CardTitle tag="p">{clientsRegistered}</CardTitle>
                       <p />
@@ -245,9 +283,28 @@ const Dashboard = (props) => {
         <Row>
           <Col md="12">
             <Card>
-              <CardHeader>
-                <CardTitle tag="h5">Vendas Semanal</CardTitle>
-                <p className="card-category">De segunda-feira a Domingo</p>
+              <CardHeader className="headerWeek">
+                <CardTitle tag="h5">
+                  Vendas Semanal
+                  {saleweek.interval && (
+                    <p className="card-category">
+                      Período: {formatDate(saleweek.interval?.from)} à{" "}
+                      {formatDate(saleweek.interval?.to)}
+                    </p>
+                  )}
+                </CardTitle>
+
+                <div className="action">
+                  <i
+                    className=" nc-icon nc-minimal-left"
+                    onClick={decrementWeek}
+                  />
+                  <i className="fa fa-ellipsis-h" onClick={currentWeek} />
+                  <i
+                    className=" nc-icon nc-minimal-right"
+                    onClick={incrementWeek}
+                  />
+                </div>
               </CardHeader>
               <CardBody>
                 <Line

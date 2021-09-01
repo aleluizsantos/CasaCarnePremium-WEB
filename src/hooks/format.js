@@ -51,14 +51,31 @@ export const formatTime = (value) => {
   }
 };
 
-export const formatCurrency = (value) => {
+/**
+ * Formata o número conforme o style passado
+ * @param {Number} value Número que deseja converter
+ * @param {String} style Type de formato => currency | decimal | percent
+ * @returns Number formatado
+ */
+export const formatCurrency = (value, style = "currency") => {
   try {
     return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
+      style: style,
       currency: "BRL",
       minimumFractionDigits: 2,
     }).format(value);
   } catch (error) {
     return;
   }
+};
+
+export const addZeros = (num, len) => {
+  let numberWithZeroes = String(num);
+  let counter = numberWithZeroes.length;
+
+  while (counter < len) {
+    numberWithZeroes = "0" + numberWithZeroes;
+    counter++;
+  }
+  return numberWithZeroes;
 };

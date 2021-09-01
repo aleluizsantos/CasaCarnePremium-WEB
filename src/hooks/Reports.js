@@ -14,12 +14,15 @@ export const getSaleDay = async () => {
     });
 };
 
-export const getSaleWeek = async () => {
+export const getSaleWeek = async (dateCurrent = new Date()) => {
   const { Authorization } = authHeader();
   return await api
     .get("report/saleweek", {
       headers: {
         Authorization: Authorization,
+      },
+      params: {
+        dateCurrent: dateCurrent,
       },
     })
     .then((response) => {

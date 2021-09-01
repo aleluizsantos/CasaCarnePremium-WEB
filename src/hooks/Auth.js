@@ -82,3 +82,28 @@ export const upgradeUser = async (user) => {
     })
     .then((response) => response.data);
 };
+
+export const getUserClient = async () => {
+  const { Authorization } = authHeader();
+  return await api
+    .get("/auth/users", {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => response.data);
+};
+
+export const blockedUser = async (user) => {
+  const { Authorization } = authHeader();
+  const { id } = user;
+  return await api
+    .get(`/auth/blocked/${id}`, {
+      headers: { Authorization: Authorization },
+    })
+    .then((response) => {
+      const dataUser = {
+        ...user,
+        blocked: response.data,
+      };
+      return dataUser;
+    });
+};

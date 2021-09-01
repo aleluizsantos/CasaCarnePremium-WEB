@@ -13,6 +13,7 @@ import {
   CLIENT_REGISTERED,
   NEW_ORDERS,
 } from "./store/Actions/types";
+import { statusOpenClose } from "./store/Actions";
 
 const history = createBrowserHistory();
 
@@ -21,11 +22,11 @@ const App = () => {
 
   useEffect(() => {
     (async () => {
+      dispatch(statusOpenClose());
       const socket = io(url, {
         transports: ["websocket"],
         jsonp: false,
       });
-
       socket.on("Operation", (response) => {
         dispatch({
           type: OPEN_CLOSE,

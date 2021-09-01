@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
+import ReactToPrint from "react-to-print";
 // reactstrap components
 import {
   Card,
@@ -19,7 +20,7 @@ import {
 } from "reactstrap";
 
 import "./styles.css";
-import { formatDateTime, formatCurrency } from "hooks/format";
+import { formatDateTime, formatCurrency, addZeros } from "../../hooks";
 import {
   getItemsMyOrders,
   upDateStateMyOrders,
@@ -29,7 +30,7 @@ import {
 import { getProductSearch } from "../../hooks/Product";
 import { addItemOrder, changeItemMyOrder } from "../../hooks/MyOrders";
 import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
-import { ModalView, SelectDropdown } from "../../components";
+import { ModalView, SelectDropdown, PrintCoupom } from "../../components";
 import imgDelivery from "../../assets/img/delivery.png";
 import imgStore from "../../assets/img/store.png";
 import imgWhatsapp from "../../assets/img/iconWhatsapp.svg";
@@ -47,6 +48,7 @@ const typeDelivery = {
 };
 
 const DetailsMyOrder = (props) => {
+  const componetRef = useRef();
   const history = useHistory();
   const dispatch = useDispatch();
   const { state } = useLocation();
@@ -258,9 +260,8 @@ const DetailsMyOrder = (props) => {
   }
 
   function handleMessageWhatsapp(message) {
-    window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
-    // href={`https://wa.me/55${phoneWhatsapp}?text=testando%20message%20whatsapp`}
-    // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=testando%20message%20whatsapp`}
+    // window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
+    window.location.href = `https://wa.me/55${phoneWhatsapp}?text=${message}`;
   }
 
   function handleAmountValidate(value) {
@@ -352,147 +353,40 @@ const DetailsMyOrder = (props) => {
     });
   }
 
+  const pageStyle = `
+  @page { 
+    size: 80mm auto;
+    margin: 0mm;
+  } 
+  @media all {
+      .pagebreak {
+        display: none;
+      }
+    }
+  @media print {
+      .pagebreak {
+        page-break-before: always;
+      }
+    }
+  @media print { 
+    body { 
+      padding: 10px !important; 
+    } 
+  }
+`;
+
   return (
     <div className="content">
+      {myOrder.id && itemsMyOrders.length > 0 && (
+        <div className="hidden">
+          <PrintCoupom
+            myOrder={myOrder}
+            items={itemsMyOrders}
+            ref={componetRef}
+          />
+        </div>
+      )}
       <Row>
-        <ModalView
-          title={
-            <>
-              <img src={icoStatus} alt="status" style={{ height: 40 }} />{" "}
-              <Label> Alterar status pedido </Label>
-            </>
-          }
-          modal={isModalStateMyOrder}
-          toggle={() => setIsModalStateMyOrder(!isModalStateMyOrder)}
-          confirmed={() => nextStageMyOrder(myOrder.id)}
-        >
-          <div className="bodyModalStatus">
-            {myOrder.statusRequest_id === 1 && (
-              <span>
-                Aprovar o pedido do cliente <strong>{myOrder.name}</strong>
-              </span>
-            )}
-            {myOrder.statusRequest_id === 2 && (
-              <span>Pedido está pronto para a entrega.</span>
-            )}
-            {myOrder.statusRequest_id === 3 && (
-              <span>Produto foi entregue, finalizar o pedido.</span>
-            )}
-            {myOrder.statusRequest_id === 4 && (
-              <span>Produto foi retirado na loja, finalizar o pedido.</span>
-            )}
-          </div>
-        </ModalView>
-        <ModalView
-          title={
-            <>
-              <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
-              <Label> Remover item </Label>
-            </>
-          }
-          modal={isModalRemoveItem}
-          toggle={() => setIsModalRemoveItem(!isModalRemoveItem)}
-          confirmed={() => handleRemoverItem(itemSelected)}
-        >
-          <div className="text-center">
-            Tem certeza que deseja remover o item '
-            <strong>{itemSelected.name || ""}</strong>'?
-          </div>
-        </ModalView>
-        <ModalView
-          title={
-            <>
-              <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
-              <Label>Excluir pedido?</Label>
-            </>
-          }
-          modal={isModalDeleteOrder}
-          toggle={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
-          confirmed={() => handleRemoverOrder()}
-        >
-          <div className="text-center">
-            <span>
-              Deseja realmente excluir o pedido, operação irreversível .
-            </span>
-          </div>
-        </ModalView>
-        <ModalView
-          title={
-            <>
-              <img src={icoBuy} alt="icoBuy" style={{ height: 50 }} />{" "}
-              <Label> Adicionar item </Label>
-            </>
-          }
-          size="lg"
-          modal={isModalInsertItem}
-          toggle={() => setIsModalInsertItem(!isModalInsertItem)}
-          confirmed={() => handleAddItem()}
-        >
-          <div className="text-justify">
-            <Row>
-              <Col className="pr-1" md="6">
-                <FormGroup>
-                  <Label>Produto</Label>
-                  <SelectDropdown
-                    placeholder="Informe o produto"
-                    options={searchProduct}
-                    isClearabl={true}
-                    setValue={productSearch}
-                    onChange={setProductSearch}
-                  />
-                </FormGroup>
-              </Col>
-              <Col className="pl-1" md="6">
-                <FormGroup>
-                  <label>Quantidade</label>
-                  <Input
-                    style={{ fontWeight: 700 }}
-                    type="text"
-                    name="amount"
-                    value={amountItemAdd}
-                    onFocus={(event) => event.target.select()}
-                    invalid={
-                      amountItemAdd === ""
-                        ? true
-                        : handleAmountValidate(amountItemAdd)
-                    }
-                    onChange={(event) =>
-                      handleChangesAmount(event.target.value)
-                    }
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-
-            {productSearch && (
-              <Row>
-                <Col className="imgAddItem" md="6">
-                  <img src={productSearch.image_url} alt={productSearch.name} />
-                </Col>
-
-                <Col md="6">
-                  <p className="titleItemSelectedAddItem">
-                    {productSearch.label}
-                  </p>
-                  <span>Preço: </span>
-                  <p className="priceItemSlectedAddItem">
-                    {productSearch.price} / {productSearch.measureUnid}
-                  </p>
-                  <span>Preço Promocional: </span>
-                  <p className="priceItemSlectedAddItem">
-                    <span
-                      style={{ color: productSearch.promotion ? "red" : "" }}
-                    >
-                      {productSearch.pricePromotion} /{" "}
-                      {productSearch.measureUnid}
-                    </span>
-                  </p>
-                </Col>
-              </Row>
-            )}
-          </div>
-        </ModalView>
-
         <Col md="12">
           <Card>
             <CardHeader>
@@ -525,7 +419,7 @@ const DetailsMyOrder = (props) => {
             <CardBody>
               <div className="idOrder">
                 <div>
-                  <span>#{myOrder.id}</span>
+                  <span>#{addZeros(myOrder.id, 8)}</span>
                   <span>{formatDateTime(myOrder.dateTimeOrder)}</span>
                 </div>
 
@@ -756,12 +650,149 @@ const DetailsMyOrder = (props) => {
                     <i className="fa fa-trash" aria-hidden="true" /> Adicionar
                     Item
                   </Button>
+                  <ReactToPrint
+                    trigger={() => <Button>Imprimir</Button>}
+                    content={() => componetRef.current}
+                    pageStyle={pageStyle}
+                  />
                 </div>
               </CardFooter>
             )}
           </Card>
         </Col>
       </Row>
+      <ModalView
+        title={
+          <>
+            <img src={icoStatus} alt="status" style={{ height: 40 }} />{" "}
+            <Label> Alterar status pedido </Label>
+          </>
+        }
+        modal={isModalStateMyOrder}
+        toggle={() => setIsModalStateMyOrder(!isModalStateMyOrder)}
+        confirmed={() => nextStageMyOrder(myOrder.id)}
+      >
+        <div className="bodyModalStatus">
+          {myOrder.statusRequest_id === 1 && (
+            <span>
+              Aprovar o pedido do cliente <strong>{myOrder.name}</strong>
+            </span>
+          )}
+          {myOrder.statusRequest_id === 2 && (
+            <span>Pedido está pronto para a entrega.</span>
+          )}
+          {myOrder.statusRequest_id === 3 && (
+            <span>Produto foi entregue, finalizar o pedido.</span>
+          )}
+          {myOrder.statusRequest_id === 4 && (
+            <span>Produto foi retirado na loja, finalizar o pedido.</span>
+          )}
+        </div>
+      </ModalView>
+      <ModalView
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label> Remover item </Label>
+          </>
+        }
+        modal={isModalRemoveItem}
+        toggle={() => setIsModalRemoveItem(!isModalRemoveItem)}
+        confirmed={() => handleRemoverItem(itemSelected)}
+      >
+        <div className="text-center">
+          Tem certeza que deseja remover o item '
+          <strong>{itemSelected.name || ""}</strong>'?
+        </div>
+      </ModalView>
+      <ModalView
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label>Excluir pedido?</Label>
+          </>
+        }
+        modal={isModalDeleteOrder}
+        toggle={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
+        confirmed={() => handleRemoverOrder()}
+      >
+        <div className="text-center">
+          <span>
+            Deseja realmente excluir o pedido, operação irreversível .
+          </span>
+        </div>
+      </ModalView>
+      <ModalView
+        title={
+          <>
+            <img src={icoBuy} alt="icoBuy" style={{ height: 50 }} />{" "}
+            <Label> Adicionar item </Label>
+          </>
+        }
+        size="lg"
+        modal={isModalInsertItem}
+        toggle={() => setIsModalInsertItem(!isModalInsertItem)}
+        confirmed={() => handleAddItem()}
+      >
+        <div className="text-justify">
+          <Row>
+            <Col className="pr-1" md="6">
+              <FormGroup>
+                <Label>Produto</Label>
+                <SelectDropdown
+                  placeholder="Informe o produto"
+                  options={searchProduct}
+                  isClearabl={true}
+                  setValue={productSearch}
+                  onChange={setProductSearch}
+                />
+              </FormGroup>
+            </Col>
+            <Col className="pl-1" md="6">
+              <FormGroup>
+                <label>Quantidade</label>
+                <Input
+                  style={{ fontWeight: 700 }}
+                  type="text"
+                  name="amount"
+                  value={amountItemAdd}
+                  onFocus={(event) => event.target.select()}
+                  invalid={
+                    amountItemAdd === ""
+                      ? true
+                      : handleAmountValidate(amountItemAdd)
+                  }
+                  onChange={(event) => handleChangesAmount(event.target.value)}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+
+          {productSearch && (
+            <Row>
+              <Col className="imgAddItem" md="6">
+                <img src={productSearch.image_url} alt={productSearch.name} />
+              </Col>
+
+              <Col md="6">
+                <p className="titleItemSelectedAddItem">
+                  {productSearch.label}
+                </p>
+                <span>Preço: </span>
+                <p className="priceItemSlectedAddItem">
+                  {productSearch.price} / {productSearch.measureUnid}
+                </p>
+                <span>Preço Promocional: </span>
+                <p className="priceItemSlectedAddItem">
+                  <span style={{ color: productSearch.promotion ? "red" : "" }}>
+                    {productSearch.pricePromotion} / {productSearch.measureUnid}
+                  </span>
+                </p>
+              </Col>
+            </Row>
+          )}
+        </div>
+      </ModalView>
     </div>
   );
 };

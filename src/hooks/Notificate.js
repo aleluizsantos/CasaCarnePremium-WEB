@@ -16,3 +16,13 @@ export const setOpenClose = async () => {
       return response.data;
     });
 };
+
+export const sendPushNotification = async (dataUser) => {
+  return await api
+    .post("pushNotification/send", dataUser, {
+      headers: authHeader(),
+    })
+    .then((response) => {
+      return "Notificação enviada";
+    });
+};

@@ -3,7 +3,6 @@ import {
   SET_MESSAGE,
   // CLIENT_REGISTERED,
   NEW_ORDERS,
-  // UPDATE,
 } from "./types";
 
 import { typeStatusMyOrders } from "../../hooks/MyOrders";

@@ -9,3 +9,4 @@ export { default as Users } from "./Users";
 export { default as ProductCategory } from "./ProductCategory";
 export { default as EntryProductStock } from "./EntryProductStock";
 export { default as Provider } from "./Provider";
+export { default as UserClient } from "./UserClient";

@@ -17,6 +17,7 @@ import {
   Users as UserView,
   EntryProductStock as EntryProductStockView,
   Provider as ProviderView,
+  UserClient as UserClientView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -76,6 +77,14 @@ const listRoutes = [
     component: UserView,
     layout: MainLayout,
     path: "/users",
+    security: true,
+  },
+  {
+    name: "Clientes",
+    icon: "nc-icon nc-badge",
+    component: UserClientView,
+    layout: MainLayout,
+    path: "/userClient",
     security: true,
   },
 ];
