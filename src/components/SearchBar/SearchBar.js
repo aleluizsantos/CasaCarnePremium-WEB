@@ -3,13 +3,18 @@ import React from "react";
 import { InputGroup, InputGroupText, InputGroupAddon, Input } from "reactstrap";
 
 const SearchBar = ({ onChange }) => {
+  const handleSearch = (event) => {
+    event.preventDefault();
+    onChange(event.target.value);
+  };
+
   return (
-    <form>
+    <>
       {/* Search  */}
       <InputGroup className="no-border">
         <Input
           placeholder="Pesquisar..."
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => handleSearch(event)}
         />
         <InputGroupAddon addonType="append">
           <InputGroupText>
@@ -17,7 +22,7 @@ const SearchBar = ({ onChange }) => {
           </InputGroupText>
         </InputGroupAddon>
       </InputGroup>
-    </form>
+    </>
   );
 };
 

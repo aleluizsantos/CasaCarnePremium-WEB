@@ -8,7 +8,7 @@ import PerfectScrollbar from "perfect-scrollbar";
 import logo from "logo.svg";
 import { upgradeOpenClose } from "../../store/Actions";
 import { CLEAR_MESSAGE } from "../../store/Actions/types";
-import Swift from "../Switch";
+import { CustomInput, FormGroup } from "reactstrap";
 
 let ps;
 
@@ -56,7 +56,7 @@ const Sidebar = (props) => {
       <div className="logo">
         <div className="sidebar-logo">
           <Link to="/admin/dashboard">
-            <img src={logo} alt="react-logo" />
+            <img src={logo} alt="react-logo" style={{ width: 200 }} />
           </Link>
         </div>
         <div className="user">
@@ -65,8 +65,17 @@ const Sidebar = (props) => {
         </div>
 
         <div className="openClose">
-          <h6>{open_close ? "Aberto" : "Fechado"}</h6>
-          <Swift value={open_close} onClick={handleOpenClose} />
+          <FormGroup>
+            <CustomInput
+              className="cutomInput"
+              type="switch"
+              id="openClose"
+              name="openClose"
+              label={Boolean(open_close) ? "Aberto" : "Fechado"}
+              checked={Boolean(open_close) || false}
+              onChange={handleOpenClose}
+            />
+          </FormGroup>
         </div>
       </div>
 

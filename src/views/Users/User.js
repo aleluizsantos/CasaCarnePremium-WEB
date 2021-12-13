@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import validate from "validate.js";
 
@@ -8,6 +8,7 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
   CardTitle,
   FormGroup,
   FormText,
@@ -16,6 +17,7 @@ import {
   Input,
   Row,
   Col,
+  CustomInput,
 } from "reactstrap";
 
 import "./Styles.css";
@@ -27,6 +29,8 @@ import {
   getAddressStore,
   getCep,
   updateAddressStore,
+  getOpeningHours,
+  updateOpenigHours,
 } from "../../hooks";
 import { ModalView } from "../../components";
 import iconKey from "../../assets/img/icoKey_64.png";
@@ -51,15 +55,25 @@ const User = () => {
   const [modalPassword, setModalPassword] = useState(false);
   const [formAddressStore, setFormAddressStore] = useState(typeForm);
   const [formStatePass, setFormStatePass] = useState(typeForm);
+  const [openingHours, setOpeningHours] = useState([]);
+  const [changeTempOpenHours, setChangerTempOpenHours] = useState({
+    openModal: false,
+    values: [],
+  });
 
-  useEffect(() => {
+  const loadingData = useCallback(() => {
     getAddressStore().then((response) => {
       setFormAddressStore({
         ...formAddressStore,
-        values: response[0],
+        values: response,
       });
+      getOpeningHours().then((response) => setOpeningHours(response));
     });
-    // eslint-disable-next-line
+  }, [formAddressStore]);
+
+  useEffect(() => {
+    loadingData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Criado as regras de validação de password
@@ -201,7 +215,10 @@ const User = () => {
       return;
     }
 
-    localStorage.setItem("_activeUserBeerTruckClub", JSON.stringify(data.user));
+    localStorage.setItem(
+      "_activeUserCasaCarnePremium",
+      JSON.stringify(data.user)
+    );
     dispatch({
       type: LOGIN_SUCCESS,
       payload: data,
@@ -250,7 +267,7 @@ const User = () => {
       errors: {},
     });
   };
-  //Salvar Alterações do Endereço do Estabelecimeto
+  // Salvar Alterações do Endereço do Estabelecimeto
   const handleUpdateAddressStore = async () => {
     await updateAddressStore(formAddressStore.values).then((response) => {
       dispatch({
@@ -293,6 +310,64 @@ const User = () => {
       }
     });
   };
+  // Alterar dados do formuário sendo armazenado em uma variavel temporária 'changeTempOpenHours'
+  const handleChangeOpeningHours = (id, event) => {
+    let nameField = event.target.name;
+    // Remover todos os número da string e espaços
+    nameField = nameField.replace(/[0-9]/g, "").trim();
+    const changeOpening = changeTempOpenHours.values.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            isChanger: true,
+            [nameField]:
+              event.target.type === "checkbox"
+                ? event.target.checked
+                : event.target.value,
+          }
+        : item
+    );
+    //
+    setChangerTempOpenHours({
+      ...changeTempOpenHours,
+      values: changeOpening,
+    });
+  };
+  // Carregar dados de funcionamentos no Modal
+  const handleLoadDateOpeningHours = () => {
+    setChangerTempOpenHours({
+      openModal: !changeTempOpenHours.openModal,
+      values: [...openingHours],
+    });
+  };
+  // Efetivar a atualização do formulário Horário de funcionamento
+  const handleSubmitOpeningHours = async () => {
+    // Capturar apenas os horáro que foram alterados
+    const dataChangeOpeninHours = changeTempOpenHours.values.filter((item) => {
+      if (item.isChanger) {
+        delete item.isChanger;
+        return item;
+      }
+      return null;
+    });
+    // Enviar atualização para backenc
+    const resp = await updateOpenigHours(dataChangeOpeninHours);
+    // Caso a atualização ocorra com sucesso
+    if (resp.success) {
+      // Atualizar o frontend com os dados novos e remover isChanger
+      const changerOpeningHours = changeTempOpenHours.values.map((hours) => {
+        delete hours.isChanger;
+        return hours;
+      });
+      // Atualizar variavel do front
+      setOpeningHours(changerOpeningHours);
+      // Fechar o modal de horário
+      setChangerTempOpenHours({
+        openModal: false,
+        values: [],
+      });
+    }
+  };
 
   return (
     <>
@@ -313,10 +388,10 @@ const User = () => {
                     />
                     <h5 className="title">{user.name}</h5>
                   </a>
-                  <p className="description">@premiumjales · Açougue</p>
+                  <p className="description">@premiumjales·Açougue</p>
                 </div>
                 <p className="description text-center">
-                  Aqui o sabor é sempre d e qualidade
+                  Aqui o sabor é sempre de qualidade
                 </p>
               </CardBody>
             </Card>
@@ -398,15 +473,15 @@ const User = () => {
         </Row>
 
         <Row>
-          <Col>
+          <Col md="8">
             <Card>
               <CardHeader>
-                <CardTitle tag="h5">Endereço do Estabelecimento</CardTitle>
+                <CardTitle tag="h6">Endereço do Estabelecimento</CardTitle>
               </CardHeader>
               <CardBody>
                 <Form>
                   <Row>
-                    <Col md="2">
+                    <Col md="3">
                       <FormGroup>
                         <Label>CEP</Label>
                         <Input
@@ -425,7 +500,7 @@ const User = () => {
                           })}
                       </FormGroup>
                     </Col>
-                    <Col md="8">
+                    <Col md="7">
                       <FormGroup>
                         <Label>Endereço</Label>
                         <Input
@@ -537,8 +612,34 @@ const User = () => {
               </CardBody>
             </Card>
           </Col>
+          <Col md="4">
+            <Card>
+              <CardHeader>
+                <CardTitle tag="h6">Horário de funcionamento</CardTitle>
+              </CardHeader>
+              <CardBody>
+                {openingHours.map((item, idx) => (
+                  <div key={idx} className="contentOpeningHours border-bottom">
+                    <div>{item.week}</div>
+                    <div>
+                      {item.open ? `${item.start} às  ${item.end}` : "Fechado"}
+                    </div>
+                  </div>
+                ))}
+              </CardBody>
+              <CardFooter>
+                <div className="contentFooter">
+                  <i
+                    onClick={handleLoadDateOpeningHours}
+                    className="fas fa-pen"
+                  ></i>
+                </div>
+              </CardFooter>
+            </Card>
+          </Col>
         </Row>
       </div>
+
       {/* MODAL DE ALTERAR SENHA */}
       <ModalView
         title={
@@ -597,6 +698,75 @@ const User = () => {
               })}
           </FormGroup>
         </div>
+      </ModalView>
+
+      {/* MODAL EDITA HORÁRIO FUNCIONAMENTO */}
+      <ModalView
+        title={
+          <>
+            <i className="fa fa-clock" />{" "}
+            <Label> Editar horário de funcionamento</Label>
+          </>
+        }
+        size="lg"
+        modal={changeTempOpenHours.openModal}
+        toggle={() =>
+          setChangerTempOpenHours({
+            ...changeTempOpenHours,
+            openModal: !changeTempOpenHours.openModal,
+          })
+        }
+        confirmed={() => handleSubmitOpeningHours()}
+      >
+        {changeTempOpenHours.values.map((item, idx) => (
+          <Row key={idx} className="lineOpeningHours">
+            <Col md="3">
+              <FormGroup>
+                <span>{item.week}</span>
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              <FormGroup>
+                <CustomInput
+                  type="switch"
+                  id={`open ${idx}`}
+                  name={`open ${idx}`}
+                  label={item.open ? "Aberto" : "Fecahdo"}
+                  checked={item.open || false}
+                  onChange={(event) => handleChangeOpeningHours(item.id, event)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="3">
+              {item.open && (
+                <FormGroup>
+                  <Input
+                    name="start"
+                    value={item.start || ""}
+                    type="time"
+                    onChange={(event) =>
+                      handleChangeOpeningHours(item.id, event)
+                    }
+                  />
+                </FormGroup>
+              )}
+            </Col>
+            <Col md="3">
+              {item.open && (
+                <FormGroup>
+                  <Input
+                    name="end"
+                    value={item.end || ""}
+                    type="time"
+                    onChange={(event) =>
+                      handleChangeOpeningHours(item.id, event)
+                    }
+                  />
+                </FormGroup>
+              )}
+            </Col>
+          </Row>
+        ))}
       </ModalView>
     </>
   );

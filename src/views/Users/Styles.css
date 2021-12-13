@@ -7,3 +7,38 @@
 .buttonUsers button {
     margin-right: 15px;
 }
+.contentOpeningHours {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;   
+}
+.contentFooter {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 5px 0;
+}
+.contentFooter span {
+    color: #797979;
+    font-size: 12px;
+}
+.contentFooter i {
+    padding: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    user-select: none;
+    color: #c6c6c6;
+    transition: all 0.5s;
+}
+.contentFooter i:hover {
+    color: #242424;
+}
+.lineOpeningHours {
+    display: flex;
+    align-items: center;
+    min-height: 55px;
+}
+.lineOpeningHours span {
+    font-weight: bold;
+}

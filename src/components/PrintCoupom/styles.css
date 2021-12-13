@@ -1,5 +1,5 @@
 .container-print {
-    width: 430px; 
+    width: 80mm; 
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -13,13 +13,21 @@
     grid-template-columns: 0.6fr 5fr 2fr 1fr;
     grid-template-rows: auto;
 }
-.container-print .wraper-print .title {
-    font-weight: 700;
+.container-print .wraper-print span {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 25px;
 }
 .content-note {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 25px;
     padding: 0 20px 0 22px;
 }
 .content-additional {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 25px;
     padding: 0 80px 0 22px;
 }
 .additional {
@@ -27,7 +35,7 @@
     justify-content: space-between;
 }
 .container-print .line-dashed {
-    border-bottom: 1px dashed;
+    border-bottom: 1.9px dashed;
     margin: 5px 0;
 }
 .container-print .header-print {
@@ -35,23 +43,29 @@
 }
 .container-print .header-print span {
     letter-spacing: 5px;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: bold;
     padding: 15px;
 }
 .container-print .header-print p {
+    letter-spacing: 2px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: bold;
 }
 .container-print .fieldGroup {
     display: flex;
     justify-content: space-between;
-    font-size: 16px;
+}
+.container-print .fieldGroup span {
+    /* letter-spacing: 1px; */
+    font-size: 14px;
+    font-weight: bold;
+}
+.container-print .fieldGroup .field {
+    font-size: 14px;
+    font-weight: bold;
 }
 .container-print p {
     padding: 0;
     margin: 0 ;
-}
-.container-print .total {
-    padding-top: 10px;
 }

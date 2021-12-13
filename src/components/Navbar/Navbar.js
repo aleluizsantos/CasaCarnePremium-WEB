@@ -28,6 +28,7 @@ const NavbarHeader = (props) => {
   const { message } = useSelector((state) => state.Message);
   const { newOrders } = useSelector((state) => state.Notificate);
 
+  // Analisando toda alteração que ocorrer na message notificar na tela
   useEffect(() => {
     const notify = (place) => {
       let options = {};
@@ -45,16 +46,12 @@ const NavbarHeader = (props) => {
       notificationAlert.current.notificationAlert(options);
     };
     (() => {
-      message !== "" && message !== undefined && notify("tc");
+      message !== "" && message !== undefined && notify("br");
     })();
   }, [message, notificationAlert]);
 
   const toggle = () => {
-    if (isOpen) {
-      setColor("transparent");
-    } else {
-      setColor("dark");
-    }
+    isOpen ? setColor("transparent") : setColor("dark");
     setIsOpen(!isOpen);
   };
 
@@ -63,10 +60,9 @@ const NavbarHeader = (props) => {
   // };
 
   const getBrand = () => {
-    let brandName = "Casa Carne Premium";
+    let brandName = "Casa de Carne Premium";
     listRoutes.map((prop, key) => {
-      // Verifica se o url selecionada e pega o Name da Page
-      //http://localhost/dashboard
+      // URL selecionada e pegaR o Name da Page
       if (window.location.href.indexOf(prop.path) !== -1) {
         brandName = prop.name;
       }

@@ -6,8 +6,8 @@ import {
   UPDATE,
 } from "../Actions/types";
 
-const openClose = localStorage.getItem("_openClosePremium");
-const totalUsers = localStorage.getItem("_totalUsersPremium");
+const openClose = localStorage.getItem("_openCloseCasaCarnePremium");
+const totalUsers = localStorage.getItem("_totalUsersCasaCarnePremium");
 
 const INITIAL_STATE = {
   open_close: openClose !== null ? openClose : false,

@@ -6,8 +6,8 @@ import {
   LOGOUT,
 } from "../Actions/types";
 
-const token = localStorage.getItem("_accessAuthenticatedTokenPremium");
-const user = JSON.parse(localStorage.getItem("_activeUserPremium"));
+const token = localStorage.getItem("_accessAuthenticatedTokenCasaCarnePremium");
+const user = JSON.parse(localStorage.getItem("_activeUserCasaCarnePremium"));
 
 const INITIAL_STATE = user
   ? {

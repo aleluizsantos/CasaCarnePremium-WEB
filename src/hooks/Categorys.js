@@ -3,6 +3,7 @@ import { authHeader } from "../services/authHeader";
 
 /**
  * Retorna uma lista com todas as Categorias
+ * @returns {Array<object>} Retorna uma lista de Categorias
  */
 export const getCategorys = async () => {
   const { Authorization } = authHeader();
@@ -14,53 +15,46 @@ export const getCategorys = async () => {
 };
 /**
  * Atualizar uma categoria
- * @param {Object} category Recebe um objeto Category com os valores:
+ * @param {object} category Recebe um objeto Category com os valores:
  * { isChange:false, nameOld:"", values:{}, image:[] }
  */
 export const updateCategory = async (category) => {
   const { Authorization } = authHeader();
-  // Caso não teve nenhuma alteração retorna nada
-  if (!category.isChange) return;
 
-  // Pegar o id da categoria para atualizar
-  const cat = await getCategorys();
-  const idCat = cat.find((item) => item.name === category.nameOld);
-
-  const data = new FormData();
-  data.append("name", category.values.name);
-  data.append("nameImageCurrent", category.values.image);
-
-  category.image.forEach((img) => {
-    data.append("image", img);
-  });
-
-  return await api
-    .put(`category/${idCat.id}`, data, {
-      headers: { Authorization: Authorization },
-    })
-    .then((respponse) => respponse.data);
+  if (category.isEdit && category.isValid) {
+    //Montar o formulário FormData
+    const data = new FormData();
+    data.append("name", category.values.name);
+    data.append("nameImageCurrent", category.values.image);
+    // Nova imagem
+    category.image.forEach((img) => {
+      data.append("image", img);
+    });
+    return await api
+      .put(`category/${category.values.categoryId}`, data, {
+        headers: { Authorization: Authorization },
+      })
+      .then((respponse) => respponse.data);
+  }
 };
 /**
  * Deletar uma categoria
- * @param {Object} category Recebe um objeto Category com os valores:
- * { isChange:false, nameOld:"", values:{}, image:[] }
+ * @param {object} category Recebe um objeto Category com os valores:
+ * @returns {object} { isChange:false, nameOld:"", values:{}, image:[] }
  */
 export const deleteCategory = async (category) => {
   const { Authorization } = authHeader();
-  // Pegar o id da categoria para atualizar
-  const cat = await getCategorys();
-  const idCat = cat.find((item) => item.name === category.nameOld);
 
   return await api
-    .delete(`category/${idCat.id}`, {
+    .delete(`category/${category.values.categoryId}`, {
       headers: { Authorization: Authorization },
     })
     .then((respponse) => respponse.data);
 };
 /**
  * Ativa e desativa categoria visible no app
- * @param {Object} category
- * @returns Object { success: true or false }
+ * @param {object} category
+ * @returns {object} { success: true or false }
  */
 export const visibleAppCategory = async (category) => {
   const { Authorization } = authHeader();
@@ -74,4 +68,28 @@ export const visibleAppCategory = async (category) => {
       }
     )
     .then((response) => response.data);
+};
+/**
+ * Cria uma nova categoria
+ * @param {object} category
+ * @returns {object} { message: "", categoryData: {}}
+ */
+export const createCategory = async (category) => {
+  const { Authorization } = authHeader();
+
+  if (category.isValid) {
+    // Montar o formulário FormData
+    const data = new FormData();
+    data.append("name", category.values.name);
+    // Anexar imagem
+    category.image.forEach((img) => {
+      data.append("image", img);
+    });
+
+    return await api
+      .post("/category/create", data, {
+        headers: { Authorization: Authorization },
+      })
+      .then((response) => response.data);
+  }
 };

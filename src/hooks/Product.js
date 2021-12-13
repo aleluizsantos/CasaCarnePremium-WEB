@@ -3,7 +3,7 @@ import { authHeader } from "../services/authHeader";
 
 /**
  * Criar um produto novo
- * @param {FormData} dataForm envio do formData com os dados e imagem
+ * @param {FormData} dataForm Envio do formData com os dados e imagem
  */
 export const createProduct = async (dataForm) => {
   const { Authorization } = authHeader();
@@ -13,27 +13,34 @@ export const createProduct = async (dataForm) => {
     })
     .then((response) => response.data);
 };
+
 /**
  * Atualizar o produto
- * @param {number} id informar o id do produto para atualizar
- * @param {FormData} dataForm envio do formData com os dados e imagem
+ * @param {number} id Identificação do produto para ser atualizado
+ * @param {FormData} dataForm Conjunto de dados do produto
+ * @param {boolean} changeImage True: imagem alterada | false: Sem alteração
+ * @returns {object} Será retornar { sucess: boolean, message: string }
  */
-export const updateProduct = async (id, dataForm) => {
+export const updateProduct = async (id, dataForm, changeImage) => {
   const { Authorization } = authHeader();
   return await api
     .put(`product/${id}`, dataForm, {
-      headers: { Authorization: Authorization },
+      headers: {
+        Authorization: Authorization,
+        changeImage: changeImage || "false",
+      },
     })
     .then((response) => response.data);
 };
+
 /**
  * Excluir um produto
- * @param {number} index passar o id do produto que irá Deletar
+ * @param {number} id Passar o id do produto que irá Deletar
  */
-export const deleteProduto = async (index) => {
+export const deleteProduto = async (id) => {
   const { Authorization } = authHeader();
   return await api
-    .delete(`product/${index}`, {
+    .delete(`product/${id}`, {
       headers: { Authorization: Authorization },
     })
     .then((response) => response.data);
@@ -50,6 +57,7 @@ export const getMeasureUnit = async () => {
     })
     .then((response) => response.data);
 };
+
 /**
  * Listar todos os produtos
  * @param {number} pageCurrent passar a pagina current
@@ -107,6 +115,7 @@ export const getCategoryProduct = async (categorysId) => {
       return response.data;
     });
 };
+
 /**
  * Retorna a lista de produtos em promoção
  */
@@ -120,6 +129,7 @@ export const getPromotionProduct = async () => {
       return response.data;
     });
 };
+
 /**
  * Retorna um listagem agrupado por categorias, informando a quantidade
  * de cada produto por categoria

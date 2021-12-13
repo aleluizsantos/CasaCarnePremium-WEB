@@ -152,9 +152,9 @@
 
     .logo{
         position: relative;
-        padding: 7px $padding-base-horizontal;
+        padding: 20px $padding-base-horizontal;
         z-index: 4;
-
+        
         a.logo-mini,
         a.logo-normal{
             @extend .animation-transition-general;
@@ -181,7 +181,7 @@
             position: absolute;
             bottom: 0;
             right: 15px;
-            height: 1px;
+            height: 1.5px;
             width: calc(100% - 30px);
             background-color: $opacity-5;
 

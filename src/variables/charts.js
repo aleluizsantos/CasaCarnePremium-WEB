@@ -1,7 +1,7 @@
 const chartSaleWeek = {
   data: (canvas) => {
     return {
-      labels: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"],
+      labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
       datasets: [
         {
           borderColor: "#6bd098",

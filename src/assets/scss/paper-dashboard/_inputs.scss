@@ -16,8 +16,8 @@
 
 
     &:focus{
-        border: 1px solid $warning-color;
-        @include box-shadow(0 0 0.4em $warning-color);
+        border: 1px solid $bg-warning;
+        @include box-shadow(0 0 0.6em $bg-warning);
         outline: 0 !important;
         color: $default-color;
 
@@ -321,9 +321,11 @@
 .input-group-btn:last-child > .btn{
     margin-left: 0;
 }
+
 textarea.form-control{
     max-width: 100%;
-    max-height: 80px;
+    max-height: 300px;
+    height: 150px;
     padding: 10px 10px 0 0;
     resize: none;
     border: none;

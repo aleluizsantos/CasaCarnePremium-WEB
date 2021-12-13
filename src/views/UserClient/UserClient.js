@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import validate from "validate.js";
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardHeader,
@@ -23,6 +24,7 @@ import {
   blockedUser,
   sendPushNotification,
 } from "../../hooks";
+import { CLIENT_REGISTERED } from "../../store/Actions/types";
 import { SearchBar, ModalView } from "../../components";
 import icoUsers from "../../assets/img/icoUsers.svg";
 import icoWhatsapp from "../../assets/img/iconWhatsapp.svg";
@@ -46,6 +48,7 @@ const schemaFormPush = {
 };
 
 const UserClient = () => {
+  const dispatch = useDispatch();
   const [dataUserClient, setDataUserClient] = useState([]);
   const [filterUserClient, setFilterUserClient] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -59,8 +62,12 @@ const UserClient = () => {
     getUserClient().then((response) => {
       setIsloading(false);
       setDataUserClient(response);
+      dispatch({
+        type: CLIENT_REGISTERED,
+        payload: response.length,
+      });
     });
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const filterUserClient = dataUserClient.filter((element) => {
@@ -86,31 +93,40 @@ const UserClient = () => {
   // Abrir whatsapp para iniciar uma conversa
   const showWhatsapp = (user) => {
     const phone = user.phone.replace(/([^\d])+/gim, "");
-    const message = `🍔 Olá ${user.name}!!`;
+    const message = `🍖 Olá ${user.name} somos da Casa de Carne Premium!!`;
     // window.location.href = `whatsapp://send/?phone=55${phone}&text=${message}&app_absent=0`;
-    window.location.href = `https://wa.me/55${phone}?text=${message}`;
+    window.location.href = `https://api.whatsapp.com/send?phone=55${phone}&text=${message}`;
   };
   // Check o cliente um a um
   const onCheckboxBtnClick = (selected) => {
-    const index = selectedUsers.indexOf(selected);
-    if (index < 0) {
-      selectedUsers.push(selected);
+    // Checar se o elemento já esta selecionado
+    const isExist = elementSelected(selected);
+    if (isExist) {
+      // remover o item da lista
+      const newList = selectedUsers.filter((item) => item.id !== selected.id);
+      setSelectedUsers(newList);
     } else {
-      selectedUsers.splice(index, 1);
+      // Adicionar item selecionado na lista
+      setSelectedUsers([...selectedUsers, selected]);
     }
-    setSelectedUsers([...selectedUsers]);
+  };
+  // Pesquisar no estado se o elemento foi selecionado pelo usuário
+  const elementSelected = (selected) => {
+    // Checar se o elemento já esta selecionado
+    return selectedUsers.some((el) => el.id === selected.id);
   };
   // Selecionar TODOS checbox da lista
   const onCheckboxAllBtnClick = () => {
-    if (
+    // Checar se a quantidade selecinada é a mesma quantidade de usuarios
+    const databaseSearch =
       selectedUsers.length ===
-      (valueSearch === "" ? dataUserClient : filterUserClient).length
-    ) {
+      (valueSearch === "" ? dataUserClient : filterUserClient).length;
+
+    if (databaseSearch) {
+      // Caso seja igual, todos os usuários estão selecionado, desmarcar todos
       setSelectedUsers([]);
     } else {
-      const allUser = (
-        valueSearch === "" ? dataUserClient : filterUserClient
-      ).map((item) => item.tokenPushNotification);
+      const allUser = valueSearch === "" ? dataUserClient : filterUserClient;
       setSelectedUsers(allUser);
     }
   };
@@ -153,10 +169,13 @@ const UserClient = () => {
   };
   // Enviar a mensagem
   const handleSubmitPushNotification = () => {
+    // Separar todos os tokenPush dos usuário em um array
+    const token = selectedUsers.map((item) => item.tokenPushNotification);
+
     // Checar validação do Form
     if (formState.isValid) {
       const dataUser = {
-        tokenPush: selectedUsers,
+        tokenPush: token,
         title: formState.values.title,
         message: formState.values.message,
       };
@@ -236,19 +255,15 @@ const UserClient = () => {
                         <td>
                           <input
                             type="checkbox"
-                            checked={selectedUsers.includes(
-                              item.tokenPushNotification
-                            )}
-                            onChange={() =>
-                              onCheckboxBtnClick(item.tokenPushNotification)
-                            }
+                            checked={elementSelected(item)}
+                            onChange={() => onCheckboxBtnClick(item)}
                           />
                         </td>
                         <td>{item.name}</td>
                         <td>{item.email}</td>
                         <td>
                           <Button
-                            onClick={() => showWhatsapp(item.id)}
+                            onClick={() => showWhatsapp(item)}
                             color="link"
                           >
                             <img
@@ -260,7 +275,7 @@ const UserClient = () => {
                           {item.phone}
                         </td>
                         <td align="center">
-                          {Boolean(item.blocked) ? (
+                          {item.blocked ? (
                             <Badge
                               style={{ cursor: "pointer" }}
                               onClick={() => handleBlockedUser(item)}
@@ -354,13 +369,6 @@ const UserClient = () => {
           </Row>
         </div>
       </ModalView>
-
-      {/* {iconSystem.map((icon, idx) => (
-        <div key={idx}>
-          <i className={`nc-icon ${icon.name}`} />
-          <span>{icon.name}</span>
-        </div>
-      ))} */}
     </div>
   );
 };

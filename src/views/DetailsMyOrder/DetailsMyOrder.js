@@ -20,7 +20,7 @@ import {
 } from "reactstrap";
 
 import "./styles.css";
-import { formatDateTime, formatCurrency, addZeros } from "../../hooks";
+import { formatDateTime, formatCurrency, addZeros } from "hooks/format";
 import {
   getItemsMyOrders,
   upDateStateMyOrders,
@@ -31,6 +31,7 @@ import { getProductSearch } from "../../hooks/Product";
 import { addItemOrder, changeItemMyOrder } from "../../hooks/MyOrders";
 import { CLEAR_MESSAGE, SET_MESSAGE } from "../../store/Actions/types";
 import { ModalView, SelectDropdown, PrintCoupom } from "../../components";
+
 import imgDelivery from "../../assets/img/delivery.png";
 import imgStore from "../../assets/img/store.png";
 import imgWhatsapp from "../../assets/img/iconWhatsapp.svg";
@@ -50,13 +51,13 @@ const typeDelivery = {
 const DetailsMyOrder = (props) => {
   const componetRef = useRef();
   const history = useHistory();
-  const dispatch = useDispatch();
   const { state } = useLocation();
+  const dispatch = useDispatch();
   const [currentPorcent, setCurrentPorcent] = useState(0);
   const [descriptioStatus, setDescriptionStatus] = useState(null);
   const [itemsMyOrders, setItemsMyOrders] = useState([]);
   const [taxaDelivery, setTaxaDelivery] = useState({ taxa: 0, vMinTaxa: 0 });
-  const [myOrder, setMyOrder] = useState({});
+  const [myOrder, setMyOrder] = useState({}); // armazena o dados do pedido.
   const [isModalStateMyOrder, setIsModalStateMyOrder] = useState(false);
   const [isModalRemoveItem, setIsModalRemoveItem] = useState(false);
   const [isModalDeleteOrder, setIsModalDeleteOrder] = useState(false);
@@ -74,7 +75,8 @@ const DetailsMyOrder = (props) => {
   useEffect(() => {
     (() => {
       getItemsMyOrders(state.id).then((response) => {
-        // Transformar o array em um objeto com apenas as quantidade dos itens
+        // Transformar o array em um objeto com apenas as quantidade
+        // dos itens
         const jsonAmountItem = response.itemsRequest.reduce(
           (obj, item) => ({
             ...obj,
@@ -82,6 +84,7 @@ const DetailsMyOrder = (props) => {
           }),
           {}
         );
+
         setChangeAmount({
           ...changeAmount,
           itens: jsonAmountItem,
@@ -113,7 +116,15 @@ const DetailsMyOrder = (props) => {
         setIsModalStateMyOrder(!isModalStateMyOrder);
     }
   }
-
+  function handleModalRemoveItem(item) {
+    setItemSelected(item);
+    setIsModalRemoveItem(!isModalRemoveItem);
+  }
+  function handleModalItemProduct() {
+    setamountItemAdd(1);
+    setProductSearch();
+    setIsModalInsertItem(true);
+  }
   function nextStageMyOrder() {
     if (myOrder.statusRequest_id < typeDelivery.AGENDADO) {
       //Checar se foi alterado as quantidade dos item
@@ -135,44 +146,35 @@ const DetailsMyOrder = (props) => {
       currentPorcent < 100 && setCurrentPorcent(currentPorcent + 25);
     }
   }
-
+  //Deletar o pedido
   function handleRemoverOrder() {
-    deletePedido(myOrder.id).then(() => {
+    if (myOrder.statusRequest_id <= typeDelivery.EM_PREPARAÇÃO) {
+      deletePedido(myOrder.id).then(() => {
+        dispatch({
+          type: SET_MESSAGE,
+          payload: `O pedido '#${myOrder.id}' foi excluido.`,
+        });
+        history.goBack();
+      });
+    } else {
       dispatch({
         type: SET_MESSAGE,
-        payload: `O pedido '#${myOrder.id}' foi excluido.`,
+        payload: "O pedido não pode ser cancelado!",
       });
-      history.goBack();
-    });
+    }
   }
-
-  function handleModalRemoveItem(item) {
-    setItemSelected(item);
-    setIsModalRemoveItem(!isModalRemoveItem);
-  }
-
+  // Remover item do pedido
   function handleRemoverItem() {
     const { id, request_id } = itemSelected;
-    // // remover uma propriedade de um objeto
-    // delete changeAmount.itens[id];
 
-    deleteItemPedido(request_id, id).then((response) => {
-      const newItem = itemsMyOrders.filter(
-        (item) => item.id !== itemSelected.id
-      );
-      setMyOrder(response);
-      setItemsMyOrders(newItem);
-      setItemSelected({});
-      setIsModalRemoveItem(false);
-    });
+    myOrder.statusRequest_id <= typeDelivery.EM_PREPARAÇÃO &&
+      deleteItemPedido(request_id, id).then((response) => {
+        setMyOrder(response.dataOrder);
+        setItemsMyOrders(response.items);
+        setItemSelected({});
+        setIsModalRemoveItem(false);
+      });
   }
-
-  function handleModalItemProduct() {
-    setamountItemAdd(1);
-    setProductSearch();
-    setIsModalInsertItem(true);
-  }
-
   // Buscar lista de Produto conforme parameto passado
   const searchProduct = async (inputValue) => {
     const response = await getProductSearch(inputValue);
@@ -181,7 +183,6 @@ const DetailsMyOrder = (props) => {
         value: item.id,
         label: item.name,
         measureUnid: item.measureUnid,
-        inventory: item.inventory,
         image_url: item.image_url,
         price: item.price,
         promotion: item.promotion,
@@ -191,32 +192,27 @@ const DetailsMyOrder = (props) => {
     });
     return dataProducts;
   };
-
   function handleChangesAmount(amount) {
     setamountItemAdd(amount.replace(",", "."));
   }
-
   function handleGoBack() {
     dispatch({
       type: CLEAR_MESSAGE,
     });
     history.goBack();
   }
-
   async function handleAddItem() {
-    if (handleAmountValidate(amountItemAdd)) {
+    //Produto a ser adicionado
+    const amount = amountItemAdd;
+    const productSelected = productSearch;
+
+    if (!validateNumber(amount) || productSelected === undefined) {
       alert("Verificar o campo em vermelho, valor não é uma quantidade válida");
       return;
     }
-
-    if (typeof productSearch === "undefined") {
-      alert("Selecione o produto");
-      return;
-    }
-
-    // Verificar se o produto já esta nos itens
+    // Checar se o produto já esta nos itens
     const existItem = itemsMyOrders.find(
-      (item) => item.product_id === productSearch.value
+      (item) => item.product_id === productSelected.value
     );
     if (existItem) {
       setIsModalInsertItem(false);
@@ -229,90 +225,44 @@ const DetailsMyOrder = (props) => {
     }
 
     const dataItem = {
-      amount: amountItemAdd,
-      price: productSearch.promotion
-        ? productSearch.pricePromotion
-        : productSearch.price,
-      product_id: productSearch.value,
+      amount: amount,
+      price: productSelected.promotion
+        ? productSelected.pricePromotion
+        : productSelected.price,
+      product_id: productSelected.value,
       request_id: myOrder.id,
     };
 
     await addItemOrder(dataItem).then(async (response) => {
-      const lastItem = await response.items.find(
-        (item) => item.product_id === productSearch.value
-      );
-      setChangeAmount({
-        ...changeAmount,
-        itens: {
-          ...changeAmount.itens,
-          [lastItem.id]: amountItemAdd,
-        },
-      });
-      setMyOrder(response.order);
-      setItemsMyOrders(response.items);
+      const { dataOrder, items } = response;
+      setMyOrder(dataOrder);
+      setItemsMyOrders(items);
       setIsModalInsertItem(false);
       dispatch({
         type: SET_MESSAGE,
         payload: "Foi adicionado um item no pedido",
       });
       setProductSearch("");
-    });
-  }
 
-  function handleMessageWhatsapp(message) {
-    // window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
-    window.location.href = `https://wa.me/55${phoneWhatsapp}?text=${message}`;
-  }
-
-  function handleAmountValidate(value) {
-    const isNum = Number.isFinite(Number(value));
-    return !isNum;
-  }
-  // Calcular a alterar do quantidade no item do pedido
-  async function calcChangeItem(item, amount) {
-    const valueAmountOld = itemsMyOrders.find(
-      (itemOrder) => itemOrder.id === item
-    );
-    let valueAmount = amount;
-
-    if (valueAmount === "" || handleAmountValidate(valueAmount)) {
-      valueAmount = valueAmountOld.amount;
+      let indexChange = {}; // Criar index dos items do pedido para ser atualizados
+      items.forEach((item) => {
+        indexChange = { ...indexChange, [item.id]: item.amount };
+      });
       setChangeAmount({
         ...changeAmount,
-        isEdit: true,
-        itens: {
-          ...changeAmount.itens,
-          [item]: valueAmount,
-        },
+        itens: indexChange,
       });
-    }
-
-    // Alterar os valor na lista e recalculando a soma do item
-    const newItens = itemsMyOrders.map((itemMyOrder) => {
-      if (itemMyOrder.id === Number(item))
-        itemMyOrder.amount = parseFloat(valueAmount);
-      return itemMyOrder;
-    });
-    setItemsMyOrders(newItens);
-
-    // Recalcular o Total Geral de todos os itens após alteração
-    const newtotalPurchase = await itemsMyOrders.reduce((total, item) => {
-      return total + parseFloat(item.amount) * parseFloat(item.price);
-    }, 0);
-
-    const taxa =
-      newtotalPurchase >= taxaDelivery.vMinTaxa
-        ? 0
-        : parseFloat(taxaDelivery.taxa);
-
-    // Setar o novo valor no State
-    setMyOrder({
-      ...myOrder,
-      vTaxaDelivery: taxa,
-      totalPurchase: newtotalPurchase + taxa,
     });
   }
-
+  function handleMessageWhatsapp(message) {
+    window.location.href = `whatsapp://send/?phone=55${phoneWhatsapp}&text=${message}&app_absent=0`;
+    // href={`https://wa.me/55${phoneWhatsapp}?text=testando%20message%20whatsapp`}
+    // href={`whatsapp://send/?phone=55${phoneWhatsapp}&text=testando%20message%20whatsapp`}
+  }
+  function validateNumber(value) {
+    const isNum = Number.isFinite(Number(value));
+    return isNum;
+  }
   function handleEditAmountItem(event) {
     event.persist();
 
@@ -327,16 +277,73 @@ const DetailsMyOrder = (props) => {
     };
     setChangeAmount(dataChangeAmount);
   }
+  // Calcular a alterar do quantidade no item do pedido
+  async function calcChangeItem(idItem, amount) {
+    let totalPurchase = 0;
+    let totalAdditional = 0;
+    let grandTotal = 0;
+
+    //Recuperar os dados o item passado pelo id
+    const itemCurrent = itemsMyOrders.find(
+      (itemOrder) => itemOrder.id === idItem
+    );
+    //Quantidade alterada
+    let newAmount = parseFloat(amount) || "";
+
+    // Checar se a quantidade passada é valida
+    if (validateNumber(amount) && newAmount !== "") {
+      // Alterar os valor na lista e recalculando a soma do item sem os adicionais
+      const changeItens = itemsMyOrders.map((itemMyOrder) => {
+        //Somar o valor total dos addicional do pedido
+        totalAdditional = itemMyOrder.additional.reduce((total, item) => {
+          return total + parseFloat(item.price);
+        }, 0);
+
+        // Alterar a quantidade do item passado pelo Id
+        if (itemMyOrder.id === Number(idItem)) {
+          totalPurchase += newAmount * itemMyOrder.price;
+          totalAdditional = totalAdditional * newAmount;
+          itemMyOrder.amount = newAmount;
+        } else {
+          totalAdditional = totalAdditional * itemMyOrder.amount;
+          totalPurchase += itemMyOrder.amount * itemMyOrder.price;
+        }
+        grandTotal += totalPurchase + totalAdditional;
+        totalPurchase = 0;
+        totalAdditional = 0;
+        return itemMyOrder;
+      });
+
+      setItemsMyOrders(changeItens);
+
+      // Verificar se o valor do pedido atingiu isenção da taxa de entrega
+      const taxa =
+        grandTotal >= taxaDelivery.vMinTaxa ? 0 : parseFloat(taxaDelivery.taxa);
+
+      // Salvar os novos valores no State
+      setMyOrder({
+        ...myOrder,
+        vTaxaDelivery: taxa,
+        totalPurchase: grandTotal,
+      });
+    } else {
+      //Retonar a quantidade antiga. não houve mudança
+      setChangeAmount({
+        ...changeAmount,
+        isEdit: false,
+        itens: {
+          ...changeAmount.itens,
+          [idItem]: itemCurrent.amount,
+        },
+      });
+    }
+  }
 
   function salveChangeItem() {
     const itemsChanger = {
-      user_id: myOrder.user_id,
-      request_id: myOrder.id,
-      totalPurchase: myOrder.totalPurchase,
-      taxaDelivery: myOrder.vTaxaDelivery,
+      myOrder: myOrder,
       items: itemsMyOrders,
     };
-
     // Gravar as alterações no banco de dados
     changeItemMyOrder(itemsChanger).then((response) => {
       if (!response) {
@@ -355,8 +362,8 @@ const DetailsMyOrder = (props) => {
 
   const pageStyle = `
   @page { 
-    size: 80mm auto;
-    margin: 0mm;
+    size: 110mm auto;
+    margin: 0 0 0 5px;
   } 
   @media all {
       .pagebreak {
@@ -365,12 +372,16 @@ const DetailsMyOrder = (props) => {
     }
   @media print {
       .pagebreak {
-        page-break-before: always;
+        display: block;
+        page-break-before: auto;
       }
     }
   @media print { 
-    body { 
-      padding: 10px !important; 
+    html, body { 
+      height: initial !important;
+      overflow: initial !important;
+      width: 110mm
+      height: auto
     } 
   }
 `;
@@ -400,18 +411,14 @@ const DetailsMyOrder = (props) => {
                   >
                     <i className="fa fa-arrow-left" />
                   </Button>
-
+                  <span>Detalhe do pedido</span>
                   <div>
-                    {/* <i className="fa fa-shopping-basket" /> */}
-                    <span>Detalhe do pedido</span>
-                  </div>
-                  <div>
+                    <span>{state.deliveryType}</span>
                     <img
                       src={state.deliveryType_id === 1 ? imgDelivery : imgStore}
                       alt={state.deliveryType}
                       style={{ paddingRight: 10 }}
                     />
-                    <span>{state.deliveryType}</span>
                   </div>
                 </div>
               </CardTitle>
@@ -495,7 +502,7 @@ const DetailsMyOrder = (props) => {
                     {myOrder.statusRequest_id > 2 && (
                       <i className="fa fa-check" />
                     )}
-                    <span>Em preparação</span>
+                    <span>Preparado</span>
                   </div>
                   <div className="state" onClick={handleIsModal}>
                     {myOrder.statusRequest_id > 3 && (
@@ -503,7 +510,7 @@ const DetailsMyOrder = (props) => {
                     )}
                     <span>
                       {myOrder.deliveryType_id === 1
-                        ? "Rota de entrega"
+                        ? "Confirmar Entrega"
                         : "Retirar na Loja"}
                     </span>
                   </div>
@@ -525,6 +532,7 @@ const DetailsMyOrder = (props) => {
                 <Table responsive>
                   <thead className="text-primary">
                     <tr>
+                      <th>Item</th>
                       <th>Descrição</th>
                       <th>Quantidade</th>
                       <th>Valor Unitário</th>
@@ -532,54 +540,102 @@ const DetailsMyOrder = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itemsMyOrders.map((item, idx) => (
-                      <tr key={item.id}>
-                        <td>
-                          <div className="groupItem">
-                            <i
-                              className="fa fa-times"
-                              onClick={() => handleModalRemoveItem(item)}
+                    {itemsMyOrders.map((item, idx) => {
+                      let totalItemAdditional = 0;
+                      return (
+                        <tr key={item.id}>
+                          <td>
+                            <div className="groupItem">
+                              {myOrder.statusRequest_id <
+                              typeDelivery.EM_PREPARAÇÃO ? (
+                                <i
+                                  className="fa fa-times"
+                                  onClick={() => handleModalRemoveItem(item)}
+                                />
+                              ) : (
+                                <span>{idx + 1}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <div className="groupItem">
+                              <span className="textNameProduct">
+                                {item.name}
+                              </span>
+                              {item.additional.length > 0 && (
+                                <div>
+                                  <span className="titleAddicional">
+                                    Adicionais:
+                                  </span>
+                                </div>
+                              )}
+                              {item.additional.map((addit, idx) => {
+                                totalItemAdditional =
+                                  totalItemAdditional + Number(addit.price);
+                                return (
+                                  <div
+                                    key={idx}
+                                    className="itemGroupAdditional"
+                                  >
+                                    <span>{addit.description}</span>
+                                    <span>R$ {addit.price}</span>
+                                  </div>
+                                );
+                              })}
+                              {item.note && (
+                                <div className="content-note">
+                                  <span className="titleAddicional">
+                                    Observação:
+                                  </span>
+                                  <span className="note">{item.note}</span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name={item.id}
+                              disabled={
+                                myOrder.statusRequest_id <=
+                                typeDelivery.EM_PREPARAÇÃO
+                                  ? false
+                                  : true
+                              }
+                              onBlur={() =>
+                                calcChangeItem(
+                                  item.id,
+                                  changeAmount.itens[item.id]
+                                )
+                              }
+                              invalid={
+                                !validateNumber(changeAmount.itens[item.id]) ||
+                                changeAmount.itens[item.id] === ""
+                                  ? true
+                                  : false
+                              }
+                              // invalid={
+                              //   (changeAmount.itens[item.id] || item.amount) ===
+                              //   ""
+                              //     ? true
+                              //     : validateNumber(changeAmount.itens[item.id])
+                              // }
+                              onFocus={(event) => event.target.select()}
+                              value={changeAmount.itens[item.id] || ""}
+                              onChange={handleEditAmountItem}
                             />
-                            {item.name}
-                          </div>
-                        </td>
-                        <td>
-                          <Input
-                            type="text"
-                            name={item.id}
-                            disabled={
-                              myOrder.statusRequest_id <=
-                              typeDelivery.EM_PREPARAÇÃO
-                                ? false
-                                : true
-                            }
-                            onBlur={() =>
-                              calcChangeItem(
-                                item.id,
-                                changeAmount.itens[item.id]
-                              )
-                            }
-                            invalid={
-                              (changeAmount.itens[item.id] || item.amount) ===
-                              ""
-                                ? true
-                                : handleAmountValidate(
-                                    changeAmount.itens[item.id]
-                                  )
-                            }
-                            onFocus={(event) => event.target.select()}
-                            value={changeAmount.itens[item.id] || ""}
-                            onChange={handleEditAmountItem}
-                          />
-                        </td>
-                        <td>{item.price}</td>
-                        <td>
-                          {formatCurrency(
-                            parseFloat(item.amount) * parseFloat(item.price)
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>{item.price}</td>
+                          <td>
+                            {formatCurrency(
+                              parseFloat(item.amount) *
+                                (parseFloat(item.price) +
+                                  Number(totalItemAdditional))
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </Table>
                 {changeAmount.isEdit && (
@@ -591,7 +647,7 @@ const DetailsMyOrder = (props) => {
                           onClick={() => salveChangeItem()}
                           color="success"
                         >
-                          Salvar
+                          Salvar Alteração
                         </Button>
                       </div>
                     </Alert>
@@ -608,9 +664,7 @@ const DetailsMyOrder = (props) => {
                     <strong>SubTotal:</strong>
                     <span>
                       {formatCurrency(
-                        Number(myOrder.totalPurchase) -
-                          (Number(myOrder.vTaxaDelivery) +
-                            Number(myOrder.discount))
+                        Number(myOrder.totalPurchase - myOrder.vTaxaDelivery)
                       )}
                     </span>
                   </div>
@@ -628,7 +682,7 @@ const DetailsMyOrder = (props) => {
                   </div>
                   <div className="total">
                     <strong>Total</strong>
-                    <span>{formatCurrency(myOrder.totalPurchase)}</span>
+                    <span>{formatCurrency(Number(myOrder.totalPurchase))}</span>
                   </div>
                 </div>
               </div>
@@ -636,19 +690,29 @@ const DetailsMyOrder = (props) => {
             {myOrder.statusRequest_id !== 6 && (
               <CardFooter>
                 <div className="groupFooterButton">
-                  <Button
+                  {/* <Button
+                    disabled={
+                      myOrder.statusRequest_id <= typeDelivery.EM_PREPARAÇÃO
+                        ? false
+                        : true
+                    }
                     color="danger"
                     onClick={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
                   >
-                    <i className="fa fa-trash" aria-hidden="true" /> Excluir
+                    <i className="fa fa-times" aria-hidden="true" /> Excluir
                     Pedido
-                  </Button>
+                  </Button> */}
                   <Button
                     color="success"
+                    disabled={
+                      myOrder.statusRequest_id <= typeDelivery.EM_PREPARAÇÃO
+                        ? false
+                        : true
+                    }
                     onClick={() => handleModalItemProduct()}
                   >
-                    <i className="fa fa-trash" aria-hidden="true" /> Adicionar
-                    Item
+                    <i className="fa fa-plus-square" aria-hidden="true" />{" "}
+                    Adicionar Item
                   </Button>
                   <ReactToPrint
                     trigger={() => <Button>Imprimir</Button>}
@@ -661,6 +725,9 @@ const DetailsMyOrder = (props) => {
           </Card>
         </Col>
       </Row>
+
+      {/* MODAIS DA PAGE */}
+      {/* Alterar status do pedido */}
       <ModalView
         title={
           <>
@@ -689,6 +756,7 @@ const DetailsMyOrder = (props) => {
           )}
         </div>
       </ModalView>
+      {/* Remover item */}
       <ModalView
         title={
           <>
@@ -705,6 +773,7 @@ const DetailsMyOrder = (props) => {
           <strong>{itemSelected.name || ""}</strong>'?
         </div>
       </ModalView>
+      {/* Excluir Pedido */}
       <ModalView
         title={
           <>
@@ -717,11 +786,10 @@ const DetailsMyOrder = (props) => {
         confirmed={() => handleRemoverOrder()}
       >
         <div className="text-center">
-          <span>
-            Deseja realmente excluir o pedido, operação irreversível .
-          </span>
+          <span>Deseja realmente excluir o pedido?</span>
         </div>
       </ModalView>
+      {/* Adicionar item no pedido */}
       <ModalView
         title={
           <>
@@ -758,9 +826,7 @@ const DetailsMyOrder = (props) => {
                   value={amountItemAdd}
                   onFocus={(event) => event.target.select()}
                   invalid={
-                    amountItemAdd === ""
-                      ? true
-                      : handleAmountValidate(amountItemAdd)
+                    amountItemAdd === "" ? true : !validateNumber(amountItemAdd)
                   }
                   onChange={(event) => handleChangesAmount(event.target.value)}
                 />

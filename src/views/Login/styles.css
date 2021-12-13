@@ -8,11 +8,10 @@
 }
 
 #page-signin .signinImg {
-  background: url("../../assets/img/signIn.jpg");
+  background: url("https://res.cloudinary.com/lesoftware/image/upload/q_60/v1639085946/assets/signIn_lnirww.webp");
   background-repeat: no-repeat;
   background-size: cover;
-  background-position-x: center;
-  background-position-y: bottom;
+  background-position-y: bottom;  
 }
 #page-signin .content {
   display: flex;
@@ -28,6 +27,14 @@
   margin: 0 15px;
 }
 
+#page-signin .version {
+  position: absolute;
+  right: 35px;
+  bottom: 20px;
+  color: #c6c6c6;
+  font-size: 12px;
+}
+
 @media (max-width: 770px) {
   #page-signin .signinImg {
     display: none;
@@ -35,7 +42,7 @@
 }
 @media (max-height: 625px) {
   #page-signin .signinImg {
-    background: url("../../assets/img/signIn.jpg");
+    background: url("https://res.cloudinary.com/lesoftware/image/upload/q_60/v1639085946/assets/signIn_lnirww.webp");
     background-repeat: no-repeat;
     background-size: cover;
     background-position-x: center;

@@ -18,20 +18,20 @@ export const login = async (email, password) => {
         throw new Error("Usuário não tem permissão");
       }
 
-      localStorage.setItem("_accessAuthenticatedTokenPremium", token);
-      localStorage.setItem("_activeUserPremium", JSON.stringify(user));
-      localStorage.setItem("_openClosePremium", openClose);
-      localStorage.setItem("_totalUsersPremium", totalUsers);
+      localStorage.setItem("_accessAuthenticatedTokenCasaCarnePremium", token);
+      localStorage.setItem("_activeUserCasaCarnePremium", JSON.stringify(user));
+      localStorage.setItem("_openCloseCasaCarnePremium", openClose);
+      localStorage.setItem("_totalUsersCasaCarnePremium", totalUsers);
 
       return response.data;
     });
 };
 
 export const logout = () => {
-  localStorage.removeItem("_accessAuthenticatedTokenPremium");
-  localStorage.removeItem("_activeUserPremium");
-  localStorage.removeItem("_openClosePremium");
-  localStorage.removeItem("_totalUsersPremium");
+  localStorage.removeItem("_accessAuthenticatedTokenCasaCarnePremium");
+  localStorage.removeItem("_activeUserCasaCarnePremium");
+  localStorage.removeItem("_openCloseCasaCarnePremium");
+  localStorage.removeItem("_totalUsersCasaCarnePremium");
 };
 
 export const register = () => {
@@ -39,7 +39,9 @@ export const register = () => {
 };
 
 export const isAuthenticated = () => {
-  const token = localStorage.getItem("_accessAuthenticatedTokenPremium");
+  const token = localStorage.getItem(
+    "_accessAuthenticatedTokenCasaCarnePremium"
+  );
 
   if (token !== null) {
     // desestruturando pegando apenas a data de expiração do token

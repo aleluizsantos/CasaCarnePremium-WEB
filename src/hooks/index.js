@@ -7,6 +7,7 @@ export * from "./format";
 export * from "./Categorys";
 export * from "./Reports";
 export * from "./DebounceEvent";
+export * from "./TypeAdditional";
 export * from "./Establishment";
 export * from "./Cep";
 export * from "./Taxa";

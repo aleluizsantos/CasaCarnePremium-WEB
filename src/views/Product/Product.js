@@ -138,18 +138,18 @@ const Product = () => {
     }
     return <span>{value ? "Promotion" : "Normal"}</span>;
   };
-  //Redirecionar para a página de Cagastro de novo produto
+  // Redirecionar para a página de Cagastro de novo produto
   const goToAddNewProduct = () => {
     history.push({ pathname: "productNew" });
   };
-  //Redireciona para a pagina Produto para editar-lo
+  // Redireciona para a pagina Produto para editar-lo
   const goToEditProduct = (product) => {
     history.push({
       pathname: "/productNew",
       state: product,
     });
   };
-  //Abre o modal
+  // Abre o modal
   const handleShowModal = (product) => {
     setIdProdSelected(product.id);
     setProductSelected(product);
@@ -183,6 +183,7 @@ const Product = () => {
         type: SET_MESSAGE,
         payload: response.message,
       });
+      setModal(false);
     });
   };
 
@@ -200,7 +201,6 @@ const Product = () => {
     setDataProduct(newDataProduct);
     upgradeProductVisibleApp(item);
   };
-
   // Atualizar o produto Visivel no aplicativo
   const upgradeProductVisibleApp = async (product) => {
     const data = new FormData();
@@ -212,7 +212,6 @@ const Product = () => {
     data.append("category_id", parseInt(product.category_id));
     data.append("measureUnid_id", parseInt(product.measureUnid_id));
     data.append("visibleApp", !product.visibleApp);
-    data.append("inventory", parseFloat(product.inventory));
 
     // ATUALIZAR os dados do produto
     await updateProduct(product.id, data);
@@ -221,32 +220,15 @@ const Product = () => {
   return (
     <>
       <div className="content">
+        {isloading && (
+          <div className="spinner">
+            <Spinner color="light" />
+          </div>
+        )}
         <Row>
           <Col md="12">
             <Card>
               <CardHeader>
-                <ModalView
-                  title={
-                    <>
-                      <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
-                      <Label> Remover Produto </Label>
-                    </>
-                  }
-                  modal={modal}
-                  toggle={() => setModal(!modal)}
-                  confirmed={() => handleDeleteProduct(idProdSelected)}
-                >
-                  {productSelected && (
-                    <div className="text-center">
-                      <strong>Deseje realmente excluir o produto?</strong>
-                      <p>
-                        O produto <strong>{productSelected.name}</strong> será
-                        revomido.
-                      </p>
-                    </div>
-                  )}
-                </ModalView>
-
                 <CardTitle tag="h4">Meus Produtos </CardTitle>
                 <div className="contentButton">
                   <Dropdown
@@ -324,7 +306,7 @@ const Product = () => {
                               className="avatar"
                             >
                               <img
-                                src={`${url}/uploads/default.png`}
+                                src={`${url}/uploads/default.jpg`}
                                 alt={item.description}
                                 className="avatar"
                               />
@@ -389,12 +371,6 @@ const Product = () => {
                   Total de produto: <strong>{totalRecords}</strong>
                 </span>
 
-                {isloading && (
-                  <div className="isloading">
-                    <Spinner color="#f1f1f1" size="md" />
-                  </div>
-                )}
-
                 <PaginationNew
                   totalRecords={totalRecords}
                   pageLimit={10}
@@ -415,6 +391,27 @@ const Product = () => {
           </Col>
         </Row>
       </div>
+      {/* Confirmação de remover produto */}
+      <ModalView
+        title={
+          <>
+            <img src={icoTrash} alt="trash" style={{ height: 40 }} />{" "}
+            <Label> Remover Produto </Label>
+          </>
+        }
+        modal={modal}
+        toggle={() => setModal(!modal)}
+        confirmed={() => handleDeleteProduct(idProdSelected)}
+      >
+        {productSelected && (
+          <div className="text-center">
+            <strong>Deseje realmente excluir o produto?</strong>
+            <p>
+              O produto <strong>{productSelected.name}</strong> será revomido.
+            </p>
+          </div>
+        )}
+      </ModalView>
     </>
   );
 };

@@ -8,13 +8,13 @@ export const typeStatusMyOrders = {
   RETIRAR_LOJA: 4,
   AGENDADO: 5,
   FINALIZADO: 6,
-  GROUP: "1,2,3,4,5",
+  ACTIVE: "1,2,3,4,5",
   ALL: "1,2,3,4,5,6",
 };
 
 /**
  * RETORNA UMA LISTA DE PEDIDOS, CONFORME O STATUS PASSADO.
- * @param {String} statusReq Recebe uma string contendo os id dos status dos
+ * @param {string} statusReq Recebe uma string contendo os id dos status dos
  * pedidos. Ex: 1: Em analise | 2: Em Preparação | 3: Rota de entrega | 4: Retira na Loja |
  * 5: Agendado  | 6: Finalizado
  */
@@ -39,18 +39,15 @@ export const getOrders = async (statusReq) => {
 export const getItemsMyOrders = async (idMyOrder) => {
   const { Authorization } = authHeader();
   return await api
-    .get("request/items", {
-      headers: {
-        Authorization: Authorization,
-        request_id: idMyOrder,
-      },
+    .get(`request/items/${idMyOrder}`, {
+      headers: { Authorization: Authorization },
     })
     .then((response) => response.data);
 };
 /**
  * ALTERA O STATUS DO PEDIDO
  * @param {Number} idMyOrder Recebe o id da Order para alterar o status do pedido
- * @returns Object {success: boolean, nextState: number, descriptionNextActionRequest: String}
+ * @returns {object} {success: boolean, nextState: number, descriptionNextActionRequest: String}
  */
 export const upDateStateMyOrders = async (idMyOrder) => {
   const { Authorization } = authHeader();
@@ -85,20 +82,19 @@ export const deletePedido = async (idMyOrder) => {
  */
 export const deleteItemPedido = async (idMyOrder, idItem) => {
   const { Authorization } = authHeader();
+
   return await api
-    .delete(`request/item/${idItem}`, {
-      headers: {
-        Authorization: Authorization,
-        request_id: idMyOrder,
-      },
+    .delete(`request/delete/item/${idMyOrder}/${idItem}`, {
+      headers: { Authorization: Authorization },
     })
     .then((response) => response.data);
 };
+
 /**
  * Retorna um object contendo o pedidos e outro objeto com os item do pedido
  * Object return { order, items }
- * @param {Object} item
- * @returns { order, items }
+ * @param {object} item
+ * @returns {object} { order, items }
  */
 export const addItemOrder = async (item) => {
   const { Authorization } = authHeader();
@@ -111,7 +107,7 @@ export const addItemOrder = async (item) => {
 
 /**
  * Atualiza o item do pedido
- * @param {Object} itemChange
+ * @param {object} itemChange
  * @returns JSON
  */
 export const changeItemMyOrder = async (itemChange) => {

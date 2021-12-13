@@ -14,49 +14,87 @@ import {
   Row,
   Col,
 } from "reactstrap";
-// core components
 
 import "./styles.css";
-
-import { getSaleDay, getSaleWeek, getSaleYear } from "../../hooks/Reports";
+import imgTop10 from "../../assets/img/imgTop10.svg";
+import imgDelivery from "../../assets/img/imgDelivery.svg";
+import imgPayment from "../../assets/img/imgPayment.svg";
+import {
+  getSaleDay,
+  getSaleWeek,
+  getSaleYear,
+  getTop10,
+} from "../../hooks/Reports";
 import { formatTime, formatDate, formatCurrency } from "../../hooks/format";
+import { Graphic } from "../../components";
 
 const Dashboard = (props) => {
   const history = useHistory();
   const [saleDay, setSaleDay] = useState("");
   const [saleweek, setSaleWeek] = useState({});
   const [saleYear, setSaleYear] = useState([]);
+  const [top10, setTop10] = useState(null);
   const { clientsOnline, clientsRegistered, newOrders } = useSelector(
     (state) => state.Notificate
   );
 
   useEffect(() => {
     (async () => {
-      getSaleDay().then((resposne) => {
-        setSaleDay(resposne.totalSaleDay);
-        getSaleWeek().then((resposne) => {
-          setSaleWeek(resposne);
-          getSaleYear().then((resposne) => setSaleYear(resposne));
+      getSaleDay().then((respSaleDay) => {
+        setSaleDay(respSaleDay.totalSaleDay);
+        getSaleWeek().then((respSaleWeek) => {
+          setSaleWeek(respSaleWeek);
+          getSaleYear().then((respSaleYear) => {
+            setSaleYear(respSaleYear);
+            getTop10().then((respTop10) => setTop10(respTop10));
+          });
         });
       });
     })();
   }, []);
 
+  // Lista as venda Semana ATUAL
+  const currentWeek = () => {
+    getSaleWeek().then((response) => {
+      setSaleWeek(response);
+    });
+  };
+  // Lista as venda de semanas posteriores
+  const incrementWeek = () => {
+    const currentWeek = new Date(saleweek.interval?.from);
+    const lastWeek = addDays(currentWeek, 7);
+    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
+
+    getSaleWeek(lastWeekFormated).then((response) => {
+      setSaleWeek(response);
+    });
+  };
+  // Lista as venda de semanas anteriores
+  const decrementWeek = async () => {
+    const currentWeek = new Date(saleweek.interval?.from);
+    const lastWeek = subDays(currentWeek, 7);
+    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
+
+    getSaleWeek(lastWeekFormated).then((response) => {
+      setSaleWeek(response);
+    });
+  };
+
   const chartSaleWeek = {
-    data: (canvas) => {
-      return {
-        labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
-        datasets: [
-          {
-            borderColor: "#00bf55",
-            backgroundColor: "#6bd098",
-            pointRadius: 5,
-            pointHoverRadius: 10,
-            borderWidth: 2,
-            data: saleweek.data,
-          },
-        ],
-      };
+    data: {
+      labels: ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"],
+      datasets: [
+        {
+          label: "Venda Semanal",
+          data: saleweek.data,
+          fill: true,
+          borderColor: "#5D4C9B",
+          backgroundColor: "rgba(93,76,155,0.1)",
+          pointRadius: 2,
+          pointHoverRadius: 10,
+          borderWidth: 2,
+        },
+      ],
     },
     options: {
       legend: {
@@ -121,55 +159,64 @@ const Dashboard = (props) => {
       ],
       datasets: [
         {
+          label: "Venda Anual",
           data: saleYear,
-          fill: false,
-          borderColor: "#fbc658",
-          backgroundColor: "transparent",
-          pointBorderColor: "#fbc658",
-          pointRadius: 4,
-          pointHoverRadius: 4,
-          pointBorderWidth: 8,
+          fill: true,
+          borderColor: "#5D4C9B",
+          backgroundColor: "rgba(93,76,155,0.1)",
+          pointRadius: 2,
+          pointHoverRadius: 10,
+          borderWidth: 2,
         },
       ],
     },
     options: {
       legend: {
         display: false,
-        position: "top",
+      },
+      tooltips: {
+        enabled: true,
+      },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              fontColor: "#9f9f9f",
+              beginAtZero: false,
+              maxTicksLimit: 5,
+              padding: 20,
+            },
+            gridLines: {
+              drawBorder: false,
+              zeroLineColor: "#ccc",
+              color: "rgba(255,255,255,0.5)",
+            },
+          },
+        ],
+
+        xAxes: [
+          {
+            barPercentage: 1.6,
+            gridLines: {
+              drawBorder: false,
+              color: "rgba(255,255,255,0.1)",
+              zeroLineColor: "transparent",
+              display: false,
+            },
+            ticks: {
+              padding: 20,
+              fontColor: "#9f9f9f",
+            },
+          },
+        ],
       },
     },
-  };
-
-  // Lista as venda Semana ATUAL
-  const currentWeek = () => {
-    getSaleWeek().then((response) => {
-      setSaleWeek(response);
-    });
-  };
-  // Lista as venda de semanas posteriores
-  const incrementWeek = () => {
-    const currentWeek = new Date(saleweek.interval?.from);
-    const lastWeek = addDays(currentWeek, 7);
-    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
-
-    getSaleWeek(lastWeekFormated).then((response) => {
-      setSaleWeek(response);
-    });
-  };
-  // Lista as venda de semanas anteriores
-  const decrementWeek = async () => {
-    const currentWeek = new Date(saleweek.interval?.from);
-    const lastWeek = subDays(currentWeek, 7);
-    const lastWeekFormated = format(lastWeek, "yyyy-M-d");
-
-    getSaleWeek(lastWeekFormated).then((response) => {
-      setSaleWeek(response);
-    });
   };
 
   return (
     <>
       <div className="content">
+        {/* Box de informações */}
         <Row>
           <Col lg="3" md="6" sm="6">
             <Card className="card-stats">
@@ -280,11 +327,12 @@ const Dashboard = (props) => {
             </Card>
           </Col>
         </Row>
+        {/* Gráficos Vendas semanal e vendas anual */}
         <Row>
-          <Col md="12">
+          <Col md="6">
             <Card>
               <CardHeader className="headerWeek">
-                <CardTitle tag="h5">
+                <CardTitle tag="h6">
                   Vendas Semanal
                   {saleweek.interval && (
                     <p className="card-category">
@@ -293,7 +341,6 @@ const Dashboard = (props) => {
                     </p>
                   )}
                 </CardTitle>
-
                 <div className="action">
                   <i
                     className=" nc-icon nc-minimal-left"
@@ -311,7 +358,34 @@ const Dashboard = (props) => {
                   data={chartSaleWeek.data}
                   options={chartSaleWeek.options}
                   width={400}
-                  height={100}
+                  height={200}
+                />
+              </CardBody>
+              <CardFooter>
+                <hr />
+                <div className="stats">
+                  <i className="fa fa-history" />
+                  {formatDate(new Date())}
+                </div>
+              </CardFooter>
+            </Card>
+          </Col>
+          <Col md="6">
+            <Card>
+              <CardHeader className="headerWeek">
+                <CardTitle tag="h6">
+                  Venda Anual
+                  <p className="card-category">
+                    Vendas realizadas em {1900 + new Date().getYear()}
+                  </p>
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <Line
+                  data={chartSaleYear.data}
+                  options={chartSaleYear.options}
+                  width={400}
+                  height={200}
                 />
               </CardBody>
               <CardFooter>
@@ -324,32 +398,100 @@ const Dashboard = (props) => {
             </Card>
           </Col>
         </Row>
+        {/* Tabelas de estatísticas de Usuários|Produtos|Categorias */}
         <Row>
-          <Col md="12">
-            <Card className="card-chart">
+          <Col md="6">
+            <Card>
               <CardHeader>
-                <CardTitle tag="h5">Vendas anuais</CardTitle>
-                <p className="card-category">Totais vendas mês a mês.</p>
+                <CardTitle>
+                  <div className="content-cardTitle">
+                    <span>Top 10 clientes</span>
+                    <img src={imgTop10} alt="icone usser" />
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardBody>
-                <Line
-                  data={chartSaleYear.data}
-                  options={chartSaleYear.options}
-                  width={400}
-                  height={100}
-                />
+                <div className="content-cardBody">
+                  {top10 !== null &&
+                    top10.top10Client.map((item, idx) => (
+                      <div key={idx} className="itemTop10client">
+                        <div className="itemCountClient">{idx + 1}</div>
+                        <div className="itemClient">
+                          <span>{item.name}</span>
+                          <span>{item.address}</span>
+                        </div>
+                        <div className="itemTotalPur">
+                          <span>R$ {item.totalPur}</span>
+                          <span>{item.amountOrder} pedidos</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
               </CardBody>
               <CardFooter>
-                <div className="chart-legend">
-                  <i className="fa fa-circle text-warning" />{" "}
-                  {1900 + new Date().getYear()}
-                </div>
-                <hr />
-                <div className="card-stats">
-                  <i className="fa fa-check" /> Dados atualizados
-                </div>
+                Ver mais <i className="fa fa-caret-right" />
               </CardFooter>
             </Card>
+          </Col>
+          <Col md="6">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <div className="content-cardTitle">
+                    <span>Top 10 produtos</span>
+                    <img src={imgTop10} alt="icone usser" />
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <div className="content-cardBody">
+                  <div className="itemTop10client">
+                    <div className="itemCountClient">#</div>
+                    <div className="itemClient">
+                      <span>Produto</span>
+                    </div>
+                    <div className="itemTotalPur">
+                      <span>Qtd</span>
+                    </div>
+                  </div>
+
+                  {top10 !== null &&
+                    top10.top10Product.map((item, idx) => (
+                      <div key={idx} className="itemTop10client">
+                        <div className="itemCountClient">{idx + 1}</div>
+                        <div className="itemClient">
+                          <span>{item.name}</span>
+                        </div>
+                        <div className="itemTotalPur">
+                          <span>{item.amountProduct}</span>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </CardBody>
+              <CardFooter>
+                Ver mais <i className="fa fa-caret-right" />
+              </CardFooter>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col md="6">
+            <Graphic
+              title="Pagamentos"
+              iconTitle={imgPayment}
+              label={top10?.topPayDelivery.graphic.label}
+              sourceData={top10?.topPayDelivery.graphic.data}
+            />
+          </Col>
+          <Col md="6">
+            <Graphic
+              title="Tipo entrega"
+              iconTitle={imgDelivery}
+              label={top10?.topDelivery.graphic.label}
+              sourceData={top10?.topDelivery.graphic.data}
+            />
           </Col>
         </Row>
       </div>

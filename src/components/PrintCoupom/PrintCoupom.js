@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { formatDateTime, formatCurrency, addZeros } from "../../hooks/format";
+// import imgLogo from "../../assets/img/logo.png";
 import "./styles.css";
 
 class PrintCoupom extends Component {
@@ -20,13 +21,14 @@ class PrintCoupom extends Component {
       <div className="container-print pagebreak">
         <div className="header-print">
           {/* <img src={imgLogo} alt="logo" style={{ width: 80 }} /> */}
-          <span>CASA DE CARNE PREMIUM</span>
-          <p>Rua Jorge Amado, Nº 177, Jd. Arapuã, Jales/SP</p>
-          <p>(17) 99663-4236 | (17) 3622-2702</p>
+          <span>CASA CARNE PREMIUM</span>
+          <br />
+          <p>Rua Jorge Amado, 3286, Jardim Arapua, Jales/SP</p>
+          <p>(17) 99663-4236</p>
           <span>CUPOM NÃO FISCAL</span>
         </div>
-        <div className="line-dashed" />
 
+        <div className="line-dashed" />
         {/* PEDIDO */}
         <div className="fieldGroup">
           <strong>PEDIDO N: {addZeros(this.myOrder.id, 8)}</strong>
@@ -53,18 +55,17 @@ class PrintCoupom extends Component {
         <div className="line-dashed" />
 
         <div className="wraper-print">
-          <span className="title">#</span>
-          <span className="title">Descrição</span>
-          <span className="title" style={{ textAlign: "center" }}>
-            Qtd
-          </span>
-          <span className="title" style={{ textAlign: "right" }}>
-            Total
-          </span>
+          <span>#</span>
+          <span>Descrição</span>
+          <span style={{ textAlign: "center" }}>Qtd</span>
+          <span style={{ textAlign: "right" }}>Total</span>
         </div>
         <div className="line-dashed" />
 
         {this.items.map((item, idx) => {
+          let vAdditional = item.additional.reduce((total, itemAddit) => {
+            return total + item.amount * itemAddit.price;
+          }, 0);
           return (
             <div key={idx}>
               <div className="wraper-print">
@@ -74,9 +75,25 @@ class PrintCoupom extends Component {
                   {item.amount} x {item.price}
                 </span>
                 <span style={{ textAlign: "right" }}>
-                  {formatCurrency(item.amount * item.price, "decimal")}
+                  {formatCurrency(
+                    item.amount * item.price + vAdditional,
+                    "decimal"
+                  )}
                 </span>
               </div>
+              {item.additional.length > 0 && (
+                <div className="content-additional">
+                  <strong>Adicionais</strong>
+                  {item.additional.map((addit, idx) => {
+                    return (
+                      <div className="additional" key={idx}>
+                        <span>{addit.description}</span>
+                        <span>{addit.price}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {item.note && (
                 <div className="content-note">
@@ -84,12 +101,12 @@ class PrintCoupom extends Component {
                   <p>{item.note}</p>
                 </div>
               )}
+              <div className="line-dashed" />
             </div>
           );
         })}
 
         {/* TOTAIS */}
-        <div className="line-dashed" />
         <div className="total">
           <div className="fieldGroup">
             <strong>SubTotal: </strong>
@@ -121,7 +138,7 @@ class PrintCoupom extends Component {
         <div className="line-dashed" />
 
         {/* AGRADECIMENTOS */}
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", fontSize: 14, fontWeight: 700 }}>
           <p>AGUADECEMOS SUA PREFERENCIA !!!</p>
           <p>Emissão: {formatDateTime(new Date().getTime())}</p>
         </div>

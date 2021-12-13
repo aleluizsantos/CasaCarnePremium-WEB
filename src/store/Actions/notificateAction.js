@@ -1,12 +1,6 @@
-import {
-  OPEN_CLOSE,
-  SET_MESSAGE,
-  // CLIENT_REGISTERED,
-  NEW_ORDERS,
-} from "./types";
+import { OPEN_CLOSE, SET_MESSAGE, NEW_ORDERS } from "./types";
 
 import { typeStatusMyOrders } from "../../hooks/MyOrders";
-
 import { getOpenClose, setOpenClose, getOrders } from "../../hooks";
 
 export const statusOpenClose = () => (dispatch) => {
@@ -18,12 +12,10 @@ export const statusOpenClose = () => (dispatch) => {
       });
     },
     (error) => {
-      const message =
-        error.response.data.error || error.message || error.toString();
-
+      // const message = error;
       dispatch({
         type: SET_MESSAGE,
-        payload: message,
+        payload: "Opss!! Erro na comunição",
       });
     }
   );
@@ -56,7 +48,7 @@ export const upgradeOpenClose = () => (dispatch) => {
 };
 
 export const myOrders = () => (dispatch) => {
-  return getOrders(typeStatusMyOrders.GROUP).then(
+  return getOrders(typeStatusMyOrders.ACTIVE).then(
     (data) => {
       dispatch({
         type: NEW_ORDERS,

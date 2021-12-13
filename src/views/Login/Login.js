@@ -116,6 +116,7 @@ const Login = (props) => {
       <Row xs="1" sm="1" md="2">
         <Col className="signinImg" />
         <Col className="content">
+          <span className="version">Version: 1.2.0</span>
           <Card className="contentCard">
             <CardHeader className="text-center">
               {message && (
@@ -127,7 +128,7 @@ const Login = (props) => {
               )}
               <CardTitle tag="h4">Sign-In</CardTitle>
               <p className="card-category">
-                Bem vindo ao sistema Casa Carne Premium
+                Bem vindo ao sistema Casa de Carne Premium
               </p>
             </CardHeader>
             <CardBody>
@@ -165,7 +166,7 @@ const Login = (props) => {
                 <div className="button-container">
                   <Button
                     type="submit"
-                    color="warning"
+                    color="danger"
                     block
                     disabled={!formState.isValid}
                   >

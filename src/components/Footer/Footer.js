@@ -17,7 +17,7 @@ const Footer = (props) => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Casa Carne Premium
+                  Casa de Carne Premium
                 </a>
               </li>
             </ul>
@@ -25,7 +25,7 @@ const Footer = (props) => {
           <div className="credits ml-auto">
             <div className="copyright">
               &copy; {1900 + new Date().getYear()}, desenvolvido por lesoftware
-              - version 1.2.3
+              - version 1.2.0
             </div>
           </div>
         </Row>

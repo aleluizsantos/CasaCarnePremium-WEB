@@ -16,6 +16,7 @@ export const getSaleDay = async () => {
 
 export const getSaleWeek = async (dateCurrent = new Date()) => {
   const { Authorization } = authHeader();
+
   return await api
     .get("report/saleweek", {
       headers: {
@@ -37,6 +38,18 @@ export const getSaleYear = async () => {
       headers: {
         Authorization: Authorization,
       },
+    })
+    .then((response) => {
+      return response.data;
+    });
+};
+
+export const getTop10 = async () => {
+  const { Authorization } = authHeader();
+
+  return await api
+    .get("report/top10", {
+      headers: { Authorization: Authorization },
     })
     .then((response) => {
       return response.data;

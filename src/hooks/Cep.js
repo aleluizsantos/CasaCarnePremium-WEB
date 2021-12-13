@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const getCep = async (cep) => {
+  // Retirar todos caracteres que não for número
   const parseCep = cep.replace(/[^0-9]/g, "");
 
   // Checar se o cep possui os 8 digitos
@@ -20,6 +21,6 @@ export const getCep = async (cep) => {
       return { cep, logradouro, bairro, localidade, uf, erro };
     })
     .catch((error) => {
-      console.log(error);
+      return error;
     });
 };

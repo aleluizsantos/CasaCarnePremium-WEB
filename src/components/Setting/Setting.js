@@ -4,9 +4,9 @@ import { useDispatch } from "react-redux";
 import validate from "validate.js";
 import "./styles.css";
 
-import Swift from "../Switch";
 import { SET_MESSAGE } from "../../store/Actions/types";
 import { getTaxa, updateTaxa } from "../../hooks";
+import { Alert_Sound } from "../../components";
 
 const schemaTaxa = {
   vMinTaxa: {
@@ -29,6 +29,10 @@ const typeForm = {
 const Setting = ({ open, onChange }) => {
   const dispatch = useDispatch();
   const [formTaxa, setFormTaxa] = useState(typeForm);
+  const [buttonAlert, setButtonAlert] = useState({
+    active: false,
+    title: "Testar",
+  });
   const width = open ? 280 : 0;
 
   useEffect(() => {
@@ -81,6 +85,22 @@ const Setting = ({ open, onChange }) => {
     });
   };
 
+  // Toogle para testar o som de alert
+  const toogleAlert = () => {
+    Alert_Sound(buttonAlert.active ? "pause" : "play");
+    setButtonAlert({
+      active: !buttonAlert.active,
+      title: buttonAlert.active ? "Testar" : "Parar",
+    });
+    setInterval(() => {
+      Alert_Sound("pause");
+      setButtonAlert({
+        active: false,
+        title: "Testar",
+      });
+    }, 20000);
+  };
+
   return (
     <div className="containerSetting" style={{ width: width }}>
       <div className="headerSetting">
@@ -117,13 +137,13 @@ const Setting = ({ open, onChange }) => {
 
         <div className="groupSetting">
           <div className="caption">
-            <p>Ocultar categoria vazia</p>
-            <small>
-              Ocultar do aplicativos as categorias que não possuem produtos
-            </small>
+            <p>Alerta notificação</p>
+            <small>Testa o alerta de notificação</small>
           </div>
           <div className="actions">
-            <Swift value={true} onClick={() => {}} />
+            <Button onClick={() => toogleAlert()} size="sm">
+              {buttonAlert.title}
+            </Button>
           </div>
         </div>
       </div>

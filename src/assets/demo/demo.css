@@ -1,3 +1,41 @@
+* {
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+   user-select: none;
+}
+::-webkit-scrollbar-track{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar{
+	width: 6px;
+  height: 5px;
+	background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb{
+  border-radius: 100px;
+	background-color: #922A2C;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(220, 98%, 61%);
+}
+
+.spinner {
+  display: flex;
+  position: absolute;
+  left: 45%;
+  top: 25%;
+  background: #922A2C;
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1;
+}
+
 .logo-imgs {
   width: 100%;
 }
@@ -76,7 +114,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 5px 0;
+  padding: 25px 5px 0;
   margin-left: 12px;
 }
 
@@ -400,8 +438,8 @@ table.table td i {
   font-size: 19px;
 }
 table.table .avatar {
-  width: 60px;
-  height: 50px;
+  width: 70px;
+  height: 60px;
   border-radius: 20%;
   vertical-align: middle;
   margin-right: 10px;
@@ -418,10 +456,9 @@ table.table .avatar {
 }
 
 .groupButton {
-  width: 70px;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
 }
 
 .status {
@@ -494,5 +531,14 @@ table.table .avatar {
 }
 .badgeOrder span {
   font-size: 10px;
-  color: #fff;
+  color: var(--red);
+}
+
+span.error {
+  font-size: smaller;
+  color:var(--red);
+  padding-left: 10px;
+}
+@media print {
+  @page { size: 80mm auto; }
 }

@@ -33,16 +33,14 @@
 .imgTypeDelivery {
     height: 35px;
 }
-.isloading {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    left: 50%;
-}
 .imgOrderEmpty {
     width: 100%;
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+.contentBody {
+    display: flex;
+    overflow-y: auto;
+    height: calc(100vh - 230px);
 }

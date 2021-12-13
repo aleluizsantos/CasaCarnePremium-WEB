@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import validate from "validate.js";
 
 // reactstrap components
 import {
+  Table,
   Button,
   Card,
   CardHeader,
@@ -16,167 +18,364 @@ import {
   Row,
   Col,
   Spinner,
+  FormText,
+  Label,
 } from "reactstrap";
 
 import "./styles.css";
-
 import { SET_MESSAGE } from "../../store/Actions/types";
+import { Additional } from "../../components";
+import { ModalView } from "../../components";
 import { url } from "../../services/host";
+import imgMobile from "../../assets/img/mobile.png";
+import imgNoMobile from "../../assets/img/noMobile.png";
+import imgPlus from "../../assets/img/icoPlus.gif";
+import icoUploadToCloud from "../../assets/img/icon-upload-to-cloud.svg";
 import {
   getCategorys,
+  getAdditional,
   getMeasureUnit,
-  toCurrency,
   createProduct,
   updateProduct,
 } from "../../hooks";
 
-import imgMobile from "../../assets/img/mobile.png";
-import imgNoMobile from "../../assets/img/noMobile.png";
+// Schema de validação de dados
+const schemaProduct = {
+  name: {
+    presence: { allowEmpty: false, message: "^Nome do produto é obrigatório" },
+  },
+  category_id: {
+    presence: {
+      allowEmpty: false,
+      message: "^Você deve informar o tipo de categoria",
+    },
+    numericality: { greaterThan: 0, message: "^Escolha um das opções" },
+  },
+  measureUnid_id: {
+    presence: {
+      allowEmpty: false,
+      message: "^Você deve informar o tipo de unidade",
+    },
+    numericality: { greaterThan: 0, message: "^Escolha um das opções" },
+  },
+  price: {
+    presence: {
+      allowEmpty: false,
+      message: "^Valor obrigatório",
+    },
+    numericality: {
+      strict: true,
+      message: "^Informe o valor correto, utilize 0.00 invés de 0,00",
+    },
+  },
+  pricePromotion: {
+    numericality: {
+      strict: true,
+      message: "^Informe o valor correto, utilize 0.00 invés de 0,00",
+    },
+  },
+};
 
 const ProductNew = (props) => {
   const { state } = props.location;
-  const history = useHistory();
   const dispatch = useDispatch();
-  const [image, setImage] = useState([]);
+  const history = useHistory();
+  const [listAddicionais, setListAdditional] = useState([]);
+  const [selectedAddicional, setSelectedAdditional] = useState([]);
+  const [valueDefaultAdditional, setValueDefaultAdditional] = useState([]);
   const [categorys, setCategorys] = useState([]);
   const [measureUnit, setMeasureUnit] = useState([]);
-  const [previewImage, setPreviewImage] = useState([]);
+  const [image, setImage] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
   const [isLoading, setIsloading] = useState(false);
-
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("0.00");
-  const [promotion, setPromotion] = useState(0);
-  const [pricePromotion, setPricePromotion] = useState(0);
-  const [stockQuantity, setStockQuantity] = useState(0);
-  const [category_id, setCategory_id] = useState("");
-  const [measureUnid_id, setMeasureUnid_id] = useState("");
-  const [measureDesc, setMeasureDesc] = useState("");
-  const [visibleApp, setVisibleApp] = useState(false);
+  const [isModalAdditionalDefault, setIsModalAdditionalDefault] =
+    useState(false);
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: {},
+    touched: {},
+    errors: {},
+  });
 
   useEffect(() => {
     (() => {
       if (state !== undefined) {
-        setName(state.name);
-        setDescription(state.description);
-        setPrice(state.price);
-        setPreviewImage([state.image_url]);
-        setPromotion(state.promotion ? 1 : 0);
-        setPricePromotion(state.pricePromotion);
-        setCategory_id(state.category_id);
-        setMeasureUnid_id(state.measureUnid_id);
-        setMeasureDesc(state.measureUnid);
-        setStockQuantity(state.inventory);
-        setVisibleApp(state.visibleApp ? 1 : 0);
+        setFormState({
+          ...formState,
+          isValid: true,
+          isEdit: true,
+          values: state,
+        });
+        setPreviewImage(state.image_url);
+        if (state.additional !== "") {
+          setSelectedAdditional(state.additional.split(",").map(Number));
+          getAdditional(state.additional).then((response) =>
+            setListAdditional(response)
+          );
+        }
+
+        if (state.additional !== "") {
+          state.valueDefautAdditional !== null &&
+            setValueDefaultAdditional(
+              state.valueDefautAdditional.split(",").map(Number)
+            );
+        }
       }
     })();
+    // eslint-disable-next-line
   }, [state]);
 
   useEffect(() => {
     (() => {
-      getCategorys().then((response) => setCategorys(response));
-      getMeasureUnit().then((response) => setMeasureUnit(response));
+      getCategorys().then((response) => {
+        setCategorys(response);
+        getMeasureUnit().then((response) => setMeasureUnit(response));
+      });
     })();
   }, []);
 
+  // Atualização os dados do Formulário
+  const handleChange = (event) => {
+    event.persist();
+
+    let dataForm = {
+      ...formState,
+      values: {
+        ...formState.values,
+        [event.target.name]:
+          event.target.type === "checkbox"
+            ? event.target.checked
+            : event.target.value === "true"
+            ? true
+            : event.target.value === "false"
+            ? false
+            : event.target.value,
+      },
+      touched: {
+        ...formState.touched,
+        [event.target.name]: true,
+      },
+    };
+
+    const errors = validate(dataForm.values, schemaProduct);
+
+    dataForm = {
+      ...dataForm,
+      isValid: errors ? false : true,
+      errors: errors || {},
+    };
+
+    setFormState(dataForm);
+  };
+
+  // Checar se tem error no campos do Formulário
+  const hasError = (field) =>
+    formState.touched[field] && formState.errors[field] ? true : false;
+
   // Selecionar imagem e salvar no state
-  // --------------------------------------------------------------------
   const handleSelectImage = (event) => {
     if (!event.target.files) {
       return;
     }
-    // método Array.from() cria uma nova instância de um Array quando for
-    // passado um array-like ou um iterable object como argumento
-    const selectImage = Array.from(event.target.files);
-    setImage(selectImage);
-    // Cria um novo objeto URL, cujo tempo de vida está ligado ao document na
-    // janela na qual este objeto foi criado. O novo objeto URL representa o
-    // objeto File
-    const selectImagePreview = selectImage.map((image) => {
-      return URL.createObjectURL(image);
-    });
-    setPreviewImage(selectImagePreview);
-  };
 
+    try {
+      // método Array.from() cria uma nova instância de um Array quando for
+      // passado um array-like ou um iterable object como argumento
+      const selectImage = Array.from(event.target.files);
+      setImage(selectImage);
+      // Cria um novo objeto URL, cujo tempo de vida está ligado ao document na
+      // janela na qual este objeto foi criado. O novo objeto URL representa o
+      // objeto File
+      const selectImagePreview = URL.createObjectURL(selectImage[0]);
+      setPreviewImage(selectImagePreview);
+    } catch (error) {
+      setPreviewImage(previewImage);
+    }
+  };
+  // Remove uma image
   const handleRemoverImage = () => {
     setImage([]);
-    setPreviewImage([]);
+    setPreviewImage(null);
   };
-
-  const handleChangePrice = (number) => {
-    const numberFormat = toCurrency(number);
-    setPrice(numberFormat);
-  };
-  const handleChangePricePromotion = (number) => {
-    const numberFormat = toCurrency(number);
-    setPricePromotion(numberFormat);
-  };
-
-  const clearFields = () => {
-    setName("");
-    setDescription("");
-    setPrice(0);
-    setPromotion(false);
-    setVisibleApp(false);
-    setPricePromotion(0);
-    setCategory_id("");
-    setMeasureUnid_id("");
-    setImage([]);
-    setPreviewImage([]);
-  };
-
+  // Enviar dados do Formulário produto para Salvar ou Editar
   const handlerSubmit = (event) => {
     event.preventDefault();
     setIsloading(true);
 
+    const dataForm = {
+      name: formState.values.name,
+      description: formState.values.description || "",
+      ingredient: formState.values.ingredient || "",
+      price: parseFloat(formState.values.price),
+      promotion: formState.values.promotion || false,
+      pricePromotion: formState.values.pricePromotion || 0,
+      visibleApp: formState.values.visibleApp,
+      category_id: formState.values.category_id,
+      measureUnid_id: formState.values.measureUnid_id,
+      additional: formState.values.additional,
+      valueDefautAdditional: formState.values.valueDefautAdditional,
+    };
+
     // validação dos dados
-    if (name === "" || description === "" || price === "") {
-      setIsloading(false);
-      return dispatch({
-        type: SET_MESSAGE,
-        payload: "Verifique os campos obrigatórios",
+    if (formState.isValid) {
+      const data = new FormData();
+      data.append("name", dataForm.name);
+      data.append("description", dataForm.description);
+      data.append("ingredient", dataForm.ingredient);
+      data.append("price", dataForm.price);
+      data.append("promotion", dataForm.promotion);
+      data.append("additional", dataForm.additional);
+      data.append("pricePromotion", dataForm.pricePromotion);
+      data.append("visibleApp", dataForm.visibleApp);
+      data.append("category_id", dataForm.category_id);
+      data.append("measureUnid_id", dataForm.measureUnid_id);
+      data.append("valueDefautAdditional", dataForm.valueDefautAdditional);
+
+      // Incluir todas as imagens selecionadas
+      image.forEach((img) => {
+        data.append("image", img);
       });
-    }
 
-    const data = new FormData();
-    data.append("name", name);
-    data.append("description", description);
-    data.append("price", parseFloat(price));
-    data.append("promotion", !!promotion);
-    data.append("pricePromotion", parseFloat(pricePromotion));
-    data.append("category_id", parseInt(category_id));
-    data.append("measureUnid_id", parseInt(measureUnid_id));
-    data.append("visibleApp", !!visibleApp);
-    data.append("inventory", parseFloat(stockQuantity));
-    // Incluir todas as imagens selecionadas
-    image.forEach((img) => {
-      data.append("image", img);
-    });
-
-    // Salvar ou criar um novo produto, se existir o state enviado pelo
-    // produto ATUALIZAR senão SALVAR
-    if (state !== undefined) {
-      // ATUALIZAR os dados do produto
-      updateProduct(state.id, data).then((response) => {
-        response.success &&
+      // Salvar ou criar um novo produto, se existir o state enviado pelo
+      // produto ATUALIZAR senão SALVAR
+      if (formState.isEdit) {
+        const changeImage = previewImage === state.image_url ? false : true;
+        updateProduct(formState.values.id, data, changeImage).then(() => {
           dispatch({
             type: SET_MESSAGE,
             payload: "Seu produto foi atualizado com sucesso.",
           });
-        history.goBack();
-      });
-    } else {
-      // SALVAR os dados do novo produto
-      createProduct(data).then((response) => {
-        response.success &&
+          setIsloading(false);
+          history.goBack();
+        });
+      } else {
+        // SALVAR os dados do novo produto
+        createProduct(data).then((response) => {
+          let message = "";
+          if (response.success) {
+            message = "Seu produto foi adiconado com sucesso.";
+            clearFields();
+          } else {
+            message = "Produto já cadastrado.";
+          }
+          setIsloading(false);
           dispatch({
             type: SET_MESSAGE,
-            payload: "Seu produto foi adiconado com sucesso.",
+            payload: message,
           });
-        clearFields();
-        setIsloading(false);
+        });
+      }
+    }
+  };
+  // Selecionar itens de adicionais
+  const handleSelectItem = (id) => {
+    // Checar se o item já foi selecionado
+    const alreadySelected = selectedAddicional.findIndex((item) => item === id);
+
+    // Caso o item já existe na lista retirar
+    if (alreadySelected >= 0) {
+      const filteredItems = selectedAddicional.filter((item) => item !== id);
+      setSelectedAdditional(filteredItems);
+      setFormState({
+        ...formState,
+        values: {
+          ...formState.values,
+          additional: filteredItems.toString(),
+        },
+      });
+      const filteredListAddicionais = listAddicionais.filter(
+        (item) => item.typeAdditional_id !== id
+      );
+      setListAdditional(filteredListAddicionais);
+    } else {
+      // Não existe na lista
+      const alreadyListAdditional = listAddicionais.some(
+        (addit) => addit.typeAdditional_id === id
+      );
+
+      if (!alreadyListAdditional) {
+        getAdditional(id).then((response) =>
+          setListAdditional([...listAddicionais, ...response])
+        );
+      }
+      setSelectedAdditional([...selectedAddicional, id]);
+      setFormState({
+        ...formState,
+        values: {
+          ...formState.values,
+          additional: [...selectedAddicional, id].toString(),
+        },
       });
     }
+  };
+
+  // Selecionar ou Remover Adicionais padrão
+  const handleSelectAdditionlDefault = (additional) => {
+    // Valor não encontrado retorna -1 | valor localizado retorna 0
+    const alreadySelected = valueDefaultAdditional.findIndex(
+      (item) => item === additional.id
+    );
+    // // Item de selção unica já escolhida
+    const itemUniqueSelected = listAddicionais
+      .filter((addit) => addit.manySelected === false)
+      .filter((item) => valueDefaultAdditional.includes(item.id))
+      .find(
+        (typeAddit) => typeAddit.typeAdditional === additional.typeAdditional
+      );
+
+    if (alreadySelected >= 0) {
+      const filteredItems = valueDefaultAdditional.filter(
+        (item) => item !== additional.id
+      );
+      setValueDefaultAdditional(filteredItems);
+      setFormState({
+        ...formState,
+        values: {
+          ...formState.values,
+          valueDefautAdditional: filteredItems.toString(),
+        },
+      });
+    } else {
+      // Se o adicional é do tipo apenas uma escolha verificar se já foi
+      // escolhido um deste item
+      if (typeof itemUniqueSelected !== "undefined") {
+        const filteredItems = valueDefaultAdditional.filter(
+          (item) => item !== itemUniqueSelected.id
+        );
+        setValueDefaultAdditional([...filteredItems, additional.id]);
+        setFormState({
+          ...formState,
+          values: {
+            ...formState.values,
+            valueDefautAdditional: [...filteredItems, additional.id].toString(),
+          },
+        });
+      } else {
+        setValueDefaultAdditional([...valueDefaultAdditional, additional.id]);
+        setFormState({
+          ...formState,
+          values: {
+            ...formState.values,
+            valueDefautAdditional: [
+              ...valueDefaultAdditional,
+              additional.id,
+            ].toString(),
+          },
+        });
+      }
+    }
+  };
+  // Limpar os campos
+  const clearFields = () => {
+    setFormState({
+      isValid: false,
+      values: {},
+      touched: {},
+      errors: {},
+    });
+    setSelectedAdditional([]);
+    setImage([]);
+    setPreviewImage(null);
   };
 
   return (
@@ -189,7 +388,9 @@ const ProductNew = (props) => {
                 <CardTitle tag="h5">
                   <div className="imageVisibleMobile">
                     <img
-                      src={visibleApp ? imgMobile : imgNoMobile}
+                      src={
+                        formState.values.visibleApp ? imgMobile : imgNoMobile
+                      }
                       alt="mobile"
                     />
                     {state !== undefined ? "Editar Produto" : "Novo Produto"}
@@ -197,217 +398,333 @@ const ProductNew = (props) => {
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                <Form onSubmit={handlerSubmit}>
+                <Form onSubmit={handlerSubmit} className="form-control">
                   <Row>
-                    <Col md="9">
+                    <Col md="12">
                       <Row>
-                        <Col md="12">
-                          <FormGroup>
-                            <label>Nome*</label>
-                            <Input
-                              placeholder="nome do produto"
-                              autoFocus={true}
-                              type="text"
-                              value={name}
-                              onChange={(event) => setName(event.target.value)}
-                            />
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Categoria*</label>
-                            <Input
-                              type="select"
-                              placeholder="Selecione Categoria"
-                              onChange={(event) =>
-                                setCategory_id(event.target.value)
-                              }
-                              value={category_id}
-                              name="select"
-                              id="category"
-                            >
-                              <option value="0">Selecionar Categoria</option>
-                              {categorys.map((item) => (
-                                <option key={item.id} value={item.id}>
-                                  {item.name}
-                                </option>
-                              ))}
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Unid. Medida*</label>
-                            <Input
-                              type="select"
-                              name="select"
-                              id="selectMeasure"
-                              onChange={(event) => {
-                                const index = event.target.selectedIndex;
-                                const el = event.target.childNodes[index];
-                                const unid = el.getAttribute("id");
-
-                                setMeasureUnid_id(event.target.value);
-                                setMeasureDesc(unid);
-                              }}
-                              value={measureUnid_id}
-                            >
-                              <option value="0">Selecionar Unid. Medida</option>
-                              {measureUnit.map((item) => (
-                                <option
-                                  key={item.id}
-                                  value={item.id}
-                                  id={item.unid}
+                        <Col md="9">
+                          <Row>
+                            <Col md="12">
+                              <FormGroup>
+                                <label>Nome</label>
+                                <Input
+                                  name="name"
+                                  placeholder="nome do produto"
+                                  autoFocus={true}
+                                  type="text"
+                                  invalid={hasError("name")}
+                                  value={formState.values.name || ""}
+                                  onChange={(event) => handleChange(event)}
+                                />
+                                {formState.touched.name &&
+                                  Array.isArray(formState.errors.name) &&
+                                  formState.errors.name.map((error, idx) => {
+                                    return (
+                                      <FormText key={idx}>
+                                        <span className="error">{error}</span>
+                                      </FormText>
+                                    );
+                                  })}
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Categoria</label>
+                                <Input
+                                  type="select"
+                                  id="category_id"
+                                  name="category_id"
+                                  invalid={hasError("category_id")}
+                                  placeholder="Selecione Categoria"
+                                  onChange={(event) => handleChange(event)}
+                                  value={formState.values.category_id || 0}
                                 >
-                                  {item.description}
-                                </option>
-                              ))}
-                            </Input>
-                          </FormGroup>
+                                  <option value="0">
+                                    Selecionar Categoria
+                                  </option>
+                                  {categorys.map((item) => (
+                                    <option key={item.id} value={item.id}>
+                                      {item.name}
+                                    </option>
+                                  ))}
+                                </Input>
+                                {formState.touched.category_id &&
+                                  Array.isArray(formState.errors.category_id) &&
+                                  formState.errors.category_id.map(
+                                    (error, idx) => {
+                                      return (
+                                        <FormText key={idx}>
+                                          <span className="error">{error}</span>
+                                        </FormText>
+                                      );
+                                    }
+                                  )}
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Unid. Medida</label>
+                                <Input
+                                  id="measureUnid_id"
+                                  type="select"
+                                  invalid={hasError("measureUnid_id")}
+                                  name="measureUnid_id"
+                                  value={formState.values.measureUnid_id || 0}
+                                  onChange={(event) => handleChange(event)}
+                                >
+                                  <option value="0">
+                                    Selecionar Unid. Medida
+                                  </option>
+                                  {measureUnit.map((item) => (
+                                    <option
+                                      key={item.id}
+                                      value={item.id}
+                                      id={item.unid}
+                                    >
+                                      {item.description}
+                                    </option>
+                                  ))}
+                                </Input>
+                                {formState.touched.measureUnid_id &&
+                                  Array.isArray(
+                                    formState.errors.measureUnid_id
+                                  ) &&
+                                  formState.errors.measureUnid_id.map(
+                                    (error, idx) => {
+                                      return (
+                                        <FormText key={idx}>
+                                          <span className="error">{error}</span>
+                                        </FormText>
+                                      );
+                                    }
+                                  )}
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Preço</label>
+                                <Input
+                                  valid={
+                                    formState.values.promotion ? false : true
+                                  }
+                                  type="text"
+                                  name="price"
+                                  invalid={hasError("price")}
+                                  value={formState.values.price || ""}
+                                  onChange={(event) => handleChange(event)}
+                                  style={{ fontWeight: 600, fontSize: 16 }}
+                                />
+                                {formState.touched.price &&
+                                  Array.isArray(formState.errors.price) &&
+                                  formState.errors.price.map((error, idx) => {
+                                    return (
+                                      <FormText key={idx}>
+                                        <span className="error">{error}</span>
+                                      </FormText>
+                                    );
+                                  })}
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Exibir produto no App</label>
+                                <Input
+                                  type="select"
+                                  name="visibleApp"
+                                  value={formState.values.visibleApp || 0}
+                                  onChange={(event) => handleChange(event)}
+                                >
+                                  <option value={false}>Não</option>
+                                  <option value={true}>Sim</option>
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Promoção</label>
+                                <Input
+                                  type="select"
+                                  name="promotion"
+                                  value={formState.values.promotion || 0}
+                                  onChange={(event) => handleChange(event)}
+                                >
+                                  <option value={false}>Não</option>
+                                  <option value={true}>Sim</option>
+                                </Input>
+                              </FormGroup>
+                            </Col>
+                            <Col className="pl-3" md="4">
+                              <FormGroup>
+                                <label>Preço Promocional</label>
+                                <Input
+                                  valid={
+                                    formState.values.promotion ? true : false
+                                  }
+                                  type="text"
+                                  name="pricePromotion"
+                                  invalid={hasError("pricePromotion")}
+                                  value={formState.values.pricePromotion || ""}
+                                  onChange={(event) => handleChange(event)}
+                                  style={{ fontWeight: 600, fontSize: 16 }}
+                                />
+                                {formState.touched.pricePromotion &&
+                                  Array.isArray(
+                                    formState.errors.pricePromotion
+                                  ) &&
+                                  formState.errors.pricePromotion.map(
+                                    (error, idx) => {
+                                      return (
+                                        <FormText key={idx}>
+                                          <span className="error">{error}</span>
+                                        </FormText>
+                                      );
+                                    }
+                                  )}
+                              </FormGroup>
+                            </Col>
+                          </Row>
                         </Col>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Preço*</label>
-                            <Input
-                              valid={promotion ? false : true}
-                              style={{ fontWeight: 600, fontSize: 16 }}
-                              placeholder="0,00"
-                              type="text"
-                              onChange={(event) =>
-                                handleChangePrice(event.target.value)
-                              }
-                              value={price}
-                            />
-                          </FormGroup>
+                        <Col md="3" className="row">
+                          <div className="contentProduct">
+                            <div className="imgContent">
+                              {previewImage && (
+                                <i
+                                  style={{ fontSize: 16, color: "#B80F0A" }}
+                                  className="fa fa-trash"
+                                  onClick={() => handleRemoverImage()}
+                                />
+                              )}
+                              {previewImage === null ? (
+                                <label htmlFor="button-file">
+                                  <img src={icoUploadToCloud} alt="icon" />
+                                </label>
+                              ) : (
+                                <object
+                                  data={previewImage}
+                                  type="image/png"
+                                  className="imgProduct"
+                                >
+                                  <img
+                                    src={`${url}/uploads/default.jpg`}
+                                    alt="default"
+                                    className="imgProduct"
+                                  />
+                                </object>
+                              )}
+                            </div>
+
+                            <div className="textNameProduc">
+                              {formState.values?.name || "Nome Produto"}
+                            </div>
+                          </div>
+
+                          <input
+                            id="button-file"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleSelectImage}
+                          />
                         </Col>
                       </Row>
-                      <Row>
-                        <Col className="pl-3" md="4">
-                          <span className="measureUnid">{measureDesc}</span>
-                          <FormGroup>
-                            <label>Em Estoque</label>
-                            <Input
-                              type="text"
-                              placeholder="0.0"
-                              value={stockQuantity}
-                              onChange={(event) =>
-                                setStockQuantity(event.target.value)
-                              }
-                            />
-                          </FormGroup>
-                        </Col>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Promoção</label>
-                            <Input
-                              type="select"
-                              name="select"
-                              value={promotion}
-                              onChange={(event) => {
-                                setPromotion(parseInt(event.target.value, 10));
-                              }}
-                            >
-                              <option value={0}>Não</option>
-                              <option value={1}>Sim</option>
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Preço Promocional</label>
-                            <Input
-                              valid={promotion ? true : false}
-                              style={{ fontWeight: 600, fontSize: 16 }}
-                              placeholder="0.0"
-                              type="text"
-                              value={pricePromotion}
-                              onChange={(event) =>
-                                handleChangePricePromotion(event.target.value)
-                              }
-                            />
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col className="pl-3" md="4">
-                          <FormGroup>
-                            <label>Exibir produto no App</label>
-                            <Input
-                              type="select"
-                              name="select"
-                              value={visibleApp}
-                              onChange={(event) => {
-                                setVisibleApp(parseInt(event.target.value, 10));
-                              }}
-                            >
-                              <option value={0}>Não</option>
-                              <option value={1}>Sim</option>
-                            </Input>
-                          </FormGroup>
-                        </Col>
-                      </Row>
+
                       <Row>
                         <Col md="12">
                           <FormGroup>
-                            <label>Descrição*</label>
+                            <label>Descrição</label>
                             <Input
                               type="textarea"
-                              value={description}
-                              onChange={(event) =>
-                                setDescription(event.target.value)
-                              }
-                              placeholder="Informe a descrição do produto"
+                              name="ingredient"
+                              value={formState.values.ingredient || ""}
+                              onChange={(event) => handleChange(event)}
+                              placeholder="Descrição do produto"
                             />
                           </FormGroup>
                         </Col>
                       </Row>
                     </Col>
-                    <Col md="3" className="row justify-content-center">
-                      <div className="contentImageProdut">
-                        {previewImage.length > 0 ? (
-                          previewImage.map((image, idx) => (
-                            <div key={idx}>
-                              <object
-                                data={image}
-                                type="image/png"
-                                className="imageProduct"
-                              >
-                                <img
-                                  src={`${url}/uploads/default.png`}
-                                  alt="default"
-                                  className="avatar"
-                                />
-                              </object>
-                              {/* <img src={image} alt="carne" className="cover" /> */}
-                              <i
-                                className="fa fa-times-circle close"
-                                aria-hidden="true"
-                                onClick={() => handleRemoverImage()}
-                              />
-                            </div>
-                          ))
-                        ) : (
-                          <label htmlFor="icon-button-file">
-                            <i
-                              className="fa fa-camera fa-2x"
-                              style={{ padding: 40 }}
-                            />
-                          </label>
-                        )}
-                        <input
-                          id="icon-button-file"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleSelectImage}
-                        />
-                      </div>
-                    </Col>
                   </Row>
+
                   <Row>
-                    <CardFooter>
-                      <div className="ml-auto mr-auto">
+                    <Col md="12">
+                      <Additional
+                        selected={selectedAddicional}
+                        onClick={(id) => handleSelectItem(id)}
+                      />
+                    </Col>
+                    {selectedAddicional.length > 0 && (
+                      <Col md="12">
+                        <div className="listAdditionalDefault">
+                          <div>
+                            <span>O produto possui adicional padrão.</span>
+                            <p>
+                              Este(s) são os adicionais definidos como padrão
+                              para este produto.
+                            </p>
+                          </div>
+                          <Button
+                            color="dark"
+                            onClick={() => setIsModalAdditionalDefault(true)}
+                          >
+                            Definir
+                          </Button>{" "}
+                        </div>
+                        {valueDefaultAdditional.length > 0 && (
+                          <Table responsive>
+                            <thead>
+                              <tr>
+                                <th style={{ textAlign: "center" }}>#</th>
+                                <th>Descrição</th>
+                                <th>Preço</th>
+                                <th>Categoria</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {listAddicionais.map((item, idx) => {
+                                if (valueDefaultAdditional.includes(item.id)) {
+                                  return (
+                                    <tr key={idx}>
+                                      <td
+                                        onClick={() =>
+                                          handleSelectAdditionlDefault(item)
+                                        }
+                                        style={{
+                                          textAlign: "center",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        <i
+                                          style={{ color: "#B80F0A" }}
+                                          className="fa fa-trash"
+                                        />
+                                      </td>
+                                      <td>{item.description}</td>
+                                      {item.price === "0.00" ? (
+                                        <td style={{ color: "#008000" }}>
+                                          grátis
+                                        </td>
+                                      ) : (
+                                        <td>{item.price}</td>
+                                      )}
+                                      <td>{item.typeAdditional}</td>
+                                    </tr>
+                                  );
+                                }
+                                return null;
+                              })}
+                            </tbody>
+                          </Table>
+                        )}
+                      </Col>
+                    )}
+                  </Row>
+
+                  <Row>
+                    <CardFooter style={{ width: "100%" }}>
+                      <div className="ml-auto mr-auto footerButton">
                         <Button color="dark" onClick={() => history.goBack()}>
                           Voltar
                         </Button>{" "}
@@ -419,7 +736,11 @@ const ProductNew = (props) => {
                         >
                           Nova Categoria
                         </Button>{" "}
-                        <Button disabled={isLoading} color="info" type="submit">
+                        <Button
+                          disabled={isLoading || !formState.isValid}
+                          color="info"
+                          type="submit"
+                        >
                           {isLoading && <Spinner size="sm" color="warning" />}{" "}
                           {state === undefined
                             ? "Cadastrar"
@@ -434,6 +755,67 @@ const ProductNew = (props) => {
           </Col>
         </Row>
       </div>
+
+      {/* MODAL: ADICIONAR/EDITAR CATEGORIA */}
+      <ModalView
+        size="lg"
+        title={
+          <>
+            <img src={imgPlus} alt="icon" style={{ height: 40 }} />
+            <Label>Selecionar adicionais como padrão.</Label>
+          </>
+        }
+        modal={isModalAdditionalDefault}
+        toggle={() => setIsModalAdditionalDefault(!isModalAdditionalDefault)}
+        confirmed={() => setIsModalAdditionalDefault(!isModalAdditionalDefault)}
+      >
+        <div className="contentAddAdditinalDefault">
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th style={{ textAlign: "center" }}>#</th>
+                <th>Descrição</th>
+                <th>Preço</th>
+                <th>Categoria</th>
+              </tr>
+            </thead>
+            <tbody>
+              {listAddicionais.map((item, idx) => {
+                return (
+                  <tr key={idx}>
+                    <td
+                      onClick={() => handleSelectAdditionlDefault(item)}
+                      style={{
+                        textAlign: "center",
+                        cursor: "pointer",
+                        color: "#008000",
+                      }}
+                    >
+                      {valueDefaultAdditional.includes(item.id) && (
+                        <i className="fa fa-check" />
+                      )}
+                    </td>
+                    <td
+                      onClick={() => handleSelectAdditionlDefault(item)}
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      {item.description}
+                    </td>
+                    {item.price === "0.00" ? (
+                      <td style={{ color: "#008000" }}>grátis</td>
+                    ) : (
+                      <td>{item.price}</td>
+                    )}
+                    <td>{item.typeAdditional}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </div>
+      </ModalView>
     </>
   );
 };

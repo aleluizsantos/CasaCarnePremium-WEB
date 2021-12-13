@@ -14,6 +14,7 @@ import {
   NEW_ORDERS,
 } from "./store/Actions/types";
 import { statusOpenClose } from "./store/Actions";
+import { Alert_Sound } from "./components";
 
 const history = createBrowserHistory();
 
@@ -27,7 +28,7 @@ const App = () => {
         transports: ["websocket"],
         jsonp: false,
       });
-      socket.on("Operation", (response) => {
+      socket.on("operation", (response) => {
         dispatch({
           type: OPEN_CLOSE,
           payload: response.open_close,
@@ -46,7 +47,7 @@ const App = () => {
         });
       });
       socket.on("CreateOrder", (response) => {
-        new Audio("/notification.mp3").play();
+        Alert_Sound("play");
         dispatch({
           type: NEW_ORDERS,
           payload: response.newOrder.countReq,
