@@ -2,7 +2,7 @@ const alertSound = new Audio("/notification2.mp3");
 
 const playAudio = () => {
   alertSound.loop = true;
-  alertSound.volume = 1;
+  alertSound.volume = 1.0;
   alertSound.play().catch((error) => console.log(error));
 };
 

@@ -1,9 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { formatDateTime, formatCurrency, addZeros } from "../../hooks/format";
 // import imgLogo from "../../assets/img/logo.png";
 import "./styles.css";
 
-class PrintCoupom extends Component {
+class PrintCoupom extends React.PureComponent {
   constructor(props) {
     super(props);
     const { myOrder, items } = props;

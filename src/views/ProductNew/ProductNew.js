@@ -115,10 +115,15 @@ const ProductNew = (props) => {
         }
 
         if (state.additional !== "") {
-          state.valueDefautAdditional !== null &&
+          const hasAdditValueDefault =
+            state.valueDefautAdditional !== "" &&
+            state.valueDefautAdditional !== null;
+
+          if (hasAdditValueDefault) {
             setValueDefaultAdditional(
               state.valueDefautAdditional.split(",").map(Number)
             );
+          }
         }
       }
     })();
@@ -192,11 +197,13 @@ const ProductNew = (props) => {
       setPreviewImage(previewImage);
     }
   };
+
   // Remove uma image
   const handleRemoverImage = () => {
     setImage([]);
     setPreviewImage(null);
   };
+
   // Enviar dados do Formulário produto para Salvar ou Editar
   const handlerSubmit = (event) => {
     event.preventDefault();
@@ -267,6 +274,7 @@ const ProductNew = (props) => {
       }
     }
   };
+
   // Selecionar itens de adicionais
   const handleSelectItem = (id) => {
     // Checar se o item já foi selecionado
@@ -365,6 +373,7 @@ const ProductNew = (props) => {
       }
     }
   };
+
   // Limpar os campos
   const clearFields = () => {
     setFormState({

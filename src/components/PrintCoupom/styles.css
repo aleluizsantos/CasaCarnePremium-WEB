@@ -1,9 +1,10 @@
 .container-print {
-    width: 80mm; 
+    width: 110mm; 
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    background: #FBFBCA;
+    justify-content: flex-start;
+    background: #fff;
     font-family: Arial, Helvetica, sans-serif;
     padding: 20px 12px;
 }
@@ -68,4 +69,36 @@
 .container-print p {
     padding: 0;
     margin: 0 ;
+}
+
+@media all {
+    .pagebreak {
+        display: none;
+    }
+}
+@media print {
+    * {
+        background: transparent;
+        color: #000;
+        text-shadow: none; 
+        filter: none;
+       -ms-filter: none;
+    }
+    @page { 
+        size: 80mm 60vh;
+        margin-top: 0 !important;
+        size-adjust: initial;
+    }
+    .pagebreak {
+        display: block;
+        page-break-before: always; 
+    }
+}
+@media print { 
+html, body { 
+    overflow: initial !important;
+    width: 110mm !important;
+    height: auto;
+    margin: 0;
+} 
 }

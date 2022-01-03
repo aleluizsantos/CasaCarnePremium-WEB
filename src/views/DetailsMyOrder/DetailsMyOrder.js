@@ -362,8 +362,8 @@ const DetailsMyOrder = (props) => {
 
   const pageStyle = `
   @page { 
-    size: 110mm auto;
-    margin: 0 0 0 5px;
+    size: 80mm auto;
+    margin: 0 0 0 0px;
   } 
   @media all {
       .pagebreak {
@@ -378,9 +378,8 @@ const DetailsMyOrder = (props) => {
     }
   @media print { 
     html, body { 
-      height: initial !important;
       overflow: initial !important;
-      width: 110mm
+      width: 80mm
       height: auto
     } 
   }
@@ -614,12 +613,6 @@ const DetailsMyOrder = (props) => {
                                   ? true
                                   : false
                               }
-                              // invalid={
-                              //   (changeAmount.itens[item.id] || item.amount) ===
-                              //   ""
-                              //     ? true
-                              //     : validateNumber(changeAmount.itens[item.id])
-                              // }
                               onFocus={(event) => event.target.select()}
                               value={changeAmount.itens[item.id] || ""}
                               onChange={handleEditAmountItem}
@@ -690,18 +683,6 @@ const DetailsMyOrder = (props) => {
             {myOrder.statusRequest_id !== 6 && (
               <CardFooter>
                 <div className="groupFooterButton">
-                  {/* <Button
-                    disabled={
-                      myOrder.statusRequest_id <= typeDelivery.EM_PREPARAÇÃO
-                        ? false
-                        : true
-                    }
-                    color="danger"
-                    onClick={() => setIsModalDeleteOrder(!isModalDeleteOrder)}
-                  >
-                    <i className="fa fa-times" aria-hidden="true" /> Excluir
-                    Pedido
-                  </Button> */}
                   <Button
                     color="success"
                     disabled={

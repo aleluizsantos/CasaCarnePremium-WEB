@@ -16,7 +16,7 @@ export const getCategorys = async () => {
 /**
  * Atualizar uma categoria
  * @param {object} category Recebe um objeto Category com os valores:
- * { isChange:false, nameOld:"", values:{}, image:[] }
+ * @returns {object} { isChange:false, nameOld:"", values:{}, image:[] }
  */
 export const updateCategory = async (category) => {
   const { Authorization } = authHeader();
