@@ -57,7 +57,7 @@ const Additional = ({ selected, onClick }) => {
       <div className="container">
         {listAdditional.map(
           (item, idx) =>
-            item.typeAdditionVisible && (
+            item?.typeAdditionVisible && (
               <ItemAdditional
                 key={idx}
                 item={item}

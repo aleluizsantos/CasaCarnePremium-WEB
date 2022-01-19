@@ -205,6 +205,7 @@ const UserClient = () => {
       {isLoading && (
         <div className="spinner">
           <Spinner color="light" />
+          <span>Atualizando</span>
         </div>
       )}
       <Row>

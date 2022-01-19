@@ -387,6 +387,61 @@ const ProductNew = (props) => {
     setPreviewImage(null);
   };
 
+  const ListDefaultAdditional = () => {
+    let titleCategory = null;
+    let separateLine;
+    return (
+      <Table striped bordered hover responsive>
+        <thead>
+          <tr>
+            <th style={{ textAlign: "center" }}>#</th>
+            <th>Descrição</th>
+            <th>Preço</th>
+            <th>Categoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listAddicionais.map((item, idx) => {
+            separateLine =
+              titleCategory === item.typeAdditional ? "" : "borderSepared";
+
+            titleCategory = item.typeAdditional;
+            return (
+              <tr key={idx} className={separateLine}>
+                <td
+                  onClick={() => handleSelectAdditionlDefault(item)}
+                  style={{
+                    textAlign: "center",
+                    cursor: "pointer",
+                    color: "#008000",
+                  }}
+                >
+                  {valueDefaultAdditional.includes(item.id) && (
+                    <i className="fa fa-check" />
+                  )}
+                </td>
+                <td
+                  onClick={() => handleSelectAdditionlDefault(item)}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  {item.description}
+                </td>
+                {item.price === "0.00" ? (
+                  <td style={{ color: "#008000" }}>grátis</td>
+                ) : (
+                  <td>{item.price}</td>
+                )}
+                <td>{item.typeAdditional}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+    );
+  };
+
   return (
     <>
       <div className="content">
@@ -779,50 +834,7 @@ const ProductNew = (props) => {
         confirmed={() => setIsModalAdditionalDefault(!isModalAdditionalDefault)}
       >
         <div className="contentAddAdditinalDefault">
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "center" }}>#</th>
-                <th>Descrição</th>
-                <th>Preço</th>
-                <th>Categoria</th>
-              </tr>
-            </thead>
-            <tbody>
-              {listAddicionais.map((item, idx) => {
-                return (
-                  <tr key={idx}>
-                    <td
-                      onClick={() => handleSelectAdditionlDefault(item)}
-                      style={{
-                        textAlign: "center",
-                        cursor: "pointer",
-                        color: "#008000",
-                      }}
-                    >
-                      {valueDefaultAdditional.includes(item.id) && (
-                        <i className="fa fa-check" />
-                      )}
-                    </td>
-                    <td
-                      onClick={() => handleSelectAdditionlDefault(item)}
-                      style={{
-                        cursor: "pointer",
-                      }}
-                    >
-                      {item.description}
-                    </td>
-                    {item.price === "0.00" ? (
-                      <td style={{ color: "#008000" }}>grátis</td>
-                    ) : (
-                      <td>{item.price}</td>
-                    )}
-                    <td>{item.typeAdditional}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+          <ListDefaultAdditional />
         </div>
       </ModalView>
     </>

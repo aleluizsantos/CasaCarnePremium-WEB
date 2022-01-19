@@ -27,13 +27,19 @@
 
 .spinner {
   display: flex;
-  position: absolute;
-  left: 45%;
-  top: 25%;
+  align-items: center;
+  position: fixed;
+  left: 50%;
+  top: 50%;
   background: #922A2C;
   padding: 20px;
   border-radius: 8px;
   z-index: 1;
+}
+.spinner span {
+  color: #ffffff;
+  font-weight: bold;
+  padding: 0 20px;
 }
 
 .logo-imgs {

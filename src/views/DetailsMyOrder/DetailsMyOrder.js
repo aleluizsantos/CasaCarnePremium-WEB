@@ -17,6 +17,7 @@ import {
   FormGroup,
   Label,
   Alert,
+  Spinner,
 } from "reactstrap";
 
 import "./styles.css";
@@ -53,6 +54,7 @@ const DetailsMyOrder = (props) => {
   const history = useHistory();
   const { state } = useLocation();
   const dispatch = useDispatch();
+  const [isloading, setIsloading] = useState(false);
   const [currentPorcent, setCurrentPorcent] = useState(0);
   const [descriptioStatus, setDescriptionStatus] = useState(null);
   const [itemsMyOrders, setItemsMyOrders] = useState([]);
@@ -68,7 +70,7 @@ const DetailsMyOrder = (props) => {
   const [phoneWhatsapp, setPhoneWhatsapp] = useState("");
   const [changeAmount, setChangeAmount] = useState({
     isEdit: false,
-    request_id: state.id,
+    request_id: state?.id || 0,
     itens: {},
   });
 
@@ -340,18 +342,22 @@ const DetailsMyOrder = (props) => {
   }
 
   function salveChangeItem() {
+    setIsloading(true);
     const itemsChanger = {
       myOrder: myOrder,
       items: itemsMyOrders,
     };
+
     // Gravar as alterações no banco de dados
     changeItemMyOrder(itemsChanger).then((response) => {
+      setMyOrder({ ...myOrder, ...response });
       if (!response) {
         dispatch({
           type: SET_MESSAGE,
           payload: "Erro ao atualizar verifiques as quantidades.",
         });
       }
+      setIsloading(false);
     });
     // Alterar o Status de isEdit = false;
     setChangeAmount({
@@ -362,25 +368,32 @@ const DetailsMyOrder = (props) => {
 
   const pageStyle = `
   @page { 
-    size: 80mm auto;
-    margin: 0 0 0 0px;
+    size: 80mm auto !important;
+    margin: 0 !important;
   } 
   @media all {
       .pagebreak {
-        display: none;
+        display: none !important;
+        page-break-before: always !important; 
       }
     }
   @media print {
+      @page { 
+        size: 80mm auto !important;
+        margin: 0 !important;
+        size-adjust: initial !important;
+      }
       .pagebreak {
-        display: block;
-        page-break-before: auto;
+        display: block !important;
+        page-break-before: auto !important;
       }
     }
   @media print { 
     html, body { 
       overflow: initial !important;
-      width: 80mm
-      height: auto
+      width: 80mm !important;
+      height: auto !important;
+      margin: 0 !important;
     } 
   }
 `;
@@ -475,6 +488,7 @@ const DetailsMyOrder = (props) => {
               <div className="shapePayment">
                 <div>
                   <strong>Forma de Pagamento: </strong>
+                  <img src={state.imgTypePayment} alt={state.payment} />
                   <span>{state.payment}</span>
                 </div>
                 {state.payment_id === 1 && (
@@ -631,6 +645,12 @@ const DetailsMyOrder = (props) => {
                     })}
                   </tbody>
                 </Table>
+                {isloading && (
+                  <div className="spinner">
+                    <Spinner color="light" />
+                    <span>Atualizando</span>
+                  </div>
+                )}
                 {changeAmount.isEdit && (
                   <div>
                     <Alert color="success" fade={true}>
@@ -699,6 +719,7 @@ const DetailsMyOrder = (props) => {
                     trigger={() => <Button>Imprimir</Button>}
                     content={() => componetRef.current}
                     pageStyle={pageStyle}
+                    removeAfterPrint
                   />
                 </div>
               </CardFooter>

@@ -91,3 +91,6 @@
     border-radius: 10%;
     transform: scale(1.2);
 }
+.borderSepared {
+    border-top: 3px solid #922A2C;
+}

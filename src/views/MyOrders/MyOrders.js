@@ -70,6 +70,7 @@ const MyOrders = () => {
         {isloading && (
           <div className="spinner">
             <Spinner color="light" />
+            <span>Atualizando</span>
           </div>
         )}
         <Row>

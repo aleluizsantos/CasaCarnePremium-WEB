@@ -1,9 +1,9 @@
 .container-print {
     width: 110mm; 
     height: auto;
-    display: flex;
+    /* display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-start; */
     background: #fff;
     font-family: Arial, Helvetica, sans-serif;
     padding: 20px 12px;
@@ -70,35 +70,29 @@
     padding: 0;
     margin: 0 ;
 }
-
 @media all {
-    .pagebreak {
-        display: none;
+    .page-break {
+      display: none;
     }
-}
-@media print {
-    * {
-        background: transparent;
-        color: #000;
-        text-shadow: none; 
-        filter: none;
-       -ms-filter: none;
+  }
+  
+  @media print {
+    html, body {
+      height: initial !important;
+      overflow: initial !important;
+      /* -webkit-print-color-adjust: exact; */
     }
-    @page { 
-        size: 80mm 60vh;
-        margin-top: 0 !important;
-        size-adjust: initial;
+  }
+  
+  @media print {
+    .page-break {
+      margin-top: 0;
+      display: block;
+      page-break-before: auto;
     }
-    .pagebreak {
-        display: block;
-        page-break-before: always; 
-    }
-}
-@media print { 
-html, body { 
-    overflow: initial !important;
-    width: 110mm !important;
-    height: auto;
+  }
+  
+  @page {
+    size: 80mm auto;
     margin: 0;
-} 
-}
+  }

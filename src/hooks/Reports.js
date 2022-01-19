@@ -1,12 +1,18 @@
 import api from "../services/api";
 import { authHeader } from "../services/authHeader";
+import { format } from "date-fns";
 
 export const getSaleDay = async () => {
   const { Authorization } = authHeader();
+  const dateCurrent = format(new Date(), "yyyy-M-d");
+
   return await api
     .get("report/saleday", {
       headers: {
         Authorization: Authorization,
+      },
+      params: {
+        dateCurrent: dateCurrent,
       },
     })
     .then((response) => {
@@ -14,7 +20,9 @@ export const getSaleDay = async () => {
     });
 };
 
-export const getSaleWeek = async (dateCurrent = new Date()) => {
+export const getSaleWeek = async (
+  dateCurrent = format(new Date(), "yyyy-M-d")
+) => {
   const { Authorization } = authHeader();
 
   return await api
@@ -46,7 +54,6 @@ export const getSaleYear = async () => {
 
 export const getTop10 = async () => {
   const { Authorization } = authHeader();
-
   return await api
     .get("report/top10", {
       headers: { Authorization: Authorization },
