@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
-import { Switch, Redirect } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { Switch, Redirect, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { PrivateRouteWithLayout, RouteWithLayout } from "./components";
@@ -16,6 +15,7 @@ import {
   DetailsMyOrder as DetailsMyOrderView,
   Users as UserView,
   UserClient as UserClientView,
+  Account as AccountView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -53,24 +53,16 @@ const listRoutes = [
     path: "/product",
     security: true,
   },
-  // {
-  //   name: "Entrada Produto",
-  //   icon: "nc-icon nc-cart-simple",
-  //   component: EntryProductStockView,
-  //   layout: MainLayout,
-  //   path: "/entryProduct",
-  //   security: true,
-  // },
-  // {
-  //   name: "Fornecedores",
-  //   icon: "nc-icon nc-app",
-  //   component: ProviderView,
-  //   layout: MainLayout,
-  //   path: "/provider",
-  //   security: true,
-  // },
   {
-    name: "Users",
+    name: "Clientes",
+    icon: "nc-icon nc-badge",
+    component: UserClientView,
+    layout: MainLayout,
+    path: "/userClient",
+    security: true,
+  },
+  {
+    name: "Perfil da conta",
     icon: "nc-icon nc-single-02",
     component: UserView,
     layout: MainLayout,
@@ -78,11 +70,11 @@ const listRoutes = [
     security: true,
   },
   {
-    name: "Clientes",
-    icon: "nc-icon nc-badge",
-    component: UserClientView,
+    name: "Configurações",
+    icon: "nc-icon nc-settings-gear-65",
+    component: AccountView,
     layout: MainLayout,
-    path: "/userClient",
+    path: "/setting",
     security: true,
   },
 ];
