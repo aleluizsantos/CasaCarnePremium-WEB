@@ -1,19 +1,12 @@
 import React from "react";
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  CardTitle,
-  Label,
-} from "reactstrap";
+import { Card, CardHeader, CardBody, CardTitle, Label } from "reactstrap";
 
 import "./styles.css";
-import FormsAccount from "./FormsAccount";
-import Verified from "./Verified";
-
 import imgLogo from "../../assets/img/logo.svg";
 import imgPlanFree from "../../assets/img/plan-free.svg";
+import FormsAccount from "./FormsAccount";
+import Payment from "./Payment";
+import Verified from "./Verified";
 
 export default function Account() {
   return (
@@ -43,8 +36,9 @@ export default function Account() {
             </div>
           </section>
         </CardBody>
-        <CardFooter></CardFooter>
       </Card>
+
+      <Payment />
     </div>
   );
 }

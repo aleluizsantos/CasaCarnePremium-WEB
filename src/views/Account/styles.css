@@ -53,13 +53,13 @@
     transition: all 0.5s;
 }
 .icoEdit i:hover{
-    transform: rotate(180deg) scale(1.2);
+    transform: rotate(180deg)
+               scale(1.2);
 }
 /* Style Verified */
 .content-verified {
     position: absolute;
     right: 0;
-    width: 130px;
     padding: 8px;
     background: #1A453B;
     color: #0ECB81;
@@ -70,6 +70,14 @@
     width: 25px;
 }
 .content-verified span {
-    /* position: fixed; */
     padding: 0 10px;
+}
+/* Card Payment */
+.contentDatePix {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+.contentDatePix span {
+    font-size: 12px;
 }

@@ -16,6 +16,7 @@ import {
   Users as UserView,
   UserClient as UserClientView,
   Account as AccountView,
+  Payments as PaymentsView,
 } from "./views";
 
 import { clearMessage } from "./store/Actions";
@@ -67,6 +68,14 @@ const listRoutes = [
     component: UserView,
     layout: MainLayout,
     path: "/users",
+    security: true,
+  },
+  {
+    name: "Pagamento/Fatura",
+    icon: "nc-icon nc-credit-card",
+    component: PaymentsView,
+    layout: MainLayout,
+    path: "/payments",
     security: true,
   },
   {

@@ -11,3 +11,4 @@ export { default as EntryProductStock } from "./EntryProductStock";
 export { default as Provider } from "./Provider";
 export { default as UserClient } from "./UserClient";
 export { default as Account } from "./Account";
+export { default as Payments } from "./Payments";

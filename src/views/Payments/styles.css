@@ -1,0 +1,22 @@
+.contentHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px;
+}
+.contentHeader img {
+    height: 100px;
+    margin: 0 20px 0 0; 
+}
+.content-title {
+    display: flex;
+    flex-direction: column;
+}
+.content-title span:first-child {
+    font-weight: bold;
+    font-size: 22px;
+}
+.content-title span:nth-child(2) {
+    font-size: 14px;
+    color: #bbbbbb;
+}
