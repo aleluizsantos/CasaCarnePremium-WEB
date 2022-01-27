@@ -10,8 +10,8 @@ import {
   Label,
 } from "reactstrap";
 import { useHistory } from "react-router-dom";
-import imgPix from "../../assets/img/pix.png";
-import imgQrcode from "../../assets/img/qrcode.png";
+import imgPix from "../../../assets/img/pix.png";
+import imgQrcode from "../../../assets/img/qrcode.png";
 
 export default function Payment() {
   const history = useHistory();

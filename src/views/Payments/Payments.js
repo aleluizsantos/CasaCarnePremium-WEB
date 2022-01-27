@@ -1,5 +1,12 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardBody } from "reactstrap";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  Input,
+  Label,
+} from "reactstrap";
 
 import "./styles.css";
 import imgLogo from "../../assets/img/logo.svg";
@@ -19,6 +26,15 @@ export default function Payments() {
               <span>Casa de Carne Premium</span>
               <span>casacarnepremium@gmail.com</span>
             </div>
+          </div>
+
+          <div className="contentDropbox">
+            <Label>Filtrar por</Label>
+            <Input id="selectYear" bsSize="lg" type="select">
+              <option value="0">2022</option>
+              <option value="0">2021</option>
+              <option value="0">2020</option>
+            </Input>
           </div>
 
           <TablePayments />

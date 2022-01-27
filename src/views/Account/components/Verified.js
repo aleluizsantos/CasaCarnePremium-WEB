@@ -1,7 +1,7 @@
 import React from "react";
-import "./styles.css";
+import "../styles.css";
 
-import imgVerifiedOk from "../../assets/img/verified-ok.svg";
+import imgVerifiedOk from "../../../assets/img/verified-ok.svg";
 // import imgVerifiedAnalyzed from "../../assets/img/verified-analyzed.svg";
 // import imgVerifiedPending from "../../assets/img/verified-pending.svg";
 

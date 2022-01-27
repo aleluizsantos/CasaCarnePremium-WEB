@@ -4,9 +4,9 @@ import { Card, CardHeader, CardBody, CardTitle, Label } from "reactstrap";
 import "./styles.css";
 import imgLogo from "../../assets/img/logo.svg";
 import imgPlanFree from "../../assets/img/plan-free.svg";
-import FormsAccount from "./FormsAccount";
-import Payment from "./Payment";
-import Verified from "./Verified";
+import FormsAccount from "./components/FormsAccount";
+import Payment from "./components/Payment";
+import Verified from "./components/Verified";
 
 export default function Account() {
   return (

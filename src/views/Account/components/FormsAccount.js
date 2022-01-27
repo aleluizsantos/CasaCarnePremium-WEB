@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, FormGroup, Label, Input, Row, Col, Button } from "reactstrap";
 
-import "./styles.css";
+import "../styles.css";
 
 export default function FormsAccount() {
   const [disabledEdit, setDisabledEdit] = useState(true);
